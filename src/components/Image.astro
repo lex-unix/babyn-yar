@@ -8,9 +8,9 @@ export interface Props {
 const { src, alt, caption } = Astro.props
 ---
 
-<div class="relative w-full h-auto">
-  <img src={src} alt={alt} class="object-cover aspect-[4/3]" />
-  <div class="absolute left-0 bottom-4 bg-black/60 py-0.5 pl-6 pr-2">
-    <span class="text-white text-sm">{caption}</span>
+<div class="relative h-auto w-full">
+  <img src={src} alt={alt} class="aspect-[4/3] object-cover" />
+  <div class="absolute bottom-4 left-0 bg-black/60 py-0.5 pl-6 pr-2">
+    <span class="text-sm text-white">{caption}</span>
   </div>
 </div>

@@ -1,4 +1,5 @@
 import { languages } from '@/i18n/ui'
+import './LanguagePicker.css'
 
 interface LanguagePickerProps {
   lang: string
@@ -8,7 +9,7 @@ export default function LanguagePicker({ lang }: LanguagePickerProps) {
   return (
     <label>
       <select
-        className="py-1 px-1.5 border rounded border-black/20"
+        className="language-picker appearance-none rounded border border-black/20 py-1 pl-1.5 pr-6"
         value={lang}
         onChange={e => {
           const newLang = e.currentTarget.value

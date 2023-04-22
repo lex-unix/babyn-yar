@@ -5,7 +5,7 @@ const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
 ---
 
-<footer class="text-center mt-10 mb-5 opacity-70 text-sm">
+<footer class="mb-5 mt-10 text-center text-sm opacity-70">
   <p>&copy; {new Date().getFullYear()}, {t('footer.main')}</p>
   <p>{t('footer.address')}</p>
 </footer>
