@@ -1,0 +1,18 @@
+---
+import { useTranslations, getLangFromUrl } from 'src/i18n/utils'
+
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+---
+
+<header class="w-full border-b shadow fixed top-0">
+  <div class="flex max-w-6xl mx-auto h-10 px-5 items-center">
+    <h3 class="mr-20">{t('nav.title')}</h3>
+    <nav class="flex gap-4 justify-between items-center">
+      <a>{t('nav.visit')}</a>
+      <a>{t('nav.education')}</a>
+      <a>{t('nav.connect')}</a>
+      <a>{t('nav.support')}</a>
+    </nav>
+  </div>
+</header>

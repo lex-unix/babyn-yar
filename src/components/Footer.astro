@@ -1,0 +1,11 @@
+---
+import { useTranslations, getLangFromUrl } from 'src/i18n/utils'
+
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+---
+
+<footer class="text-center text-sm">
+  <p>&copy; {new Date().getFullYear()}, {t('footer.main')}</p>
+  <p>{t('footer.address')}</p>
+</footer>
