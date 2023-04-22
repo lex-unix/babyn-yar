@@ -20,7 +20,7 @@ export default function LanguagePicker({ lang }: LanguagePickerProps) {
       >
         {Object.entries(languages).map(([code, name]) => (
           <option key={name} value={code}>
-            <span>{name}&nbsp;&nbsp;</span>
+            {name}&nbsp;&nbsp;
           </option>
         ))}
       </select>
