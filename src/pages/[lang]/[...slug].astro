@@ -1,0 +1,22 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { allPages } from '@/content'
+import { getLangFromSlug, stripLangFromSlug } from '@/util'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+
+export async function getStaticPaths() {
+  return allPages.map(page => {
+    const lang = getLangFromSlug(page.slug)
+    const slug = stripLangFromSlug(page.slug)
+    return { params: { lang, slug }, props: page }
+  })
+}
+
+export type Props = CollectionEntry<'site'>
+const { data, render } = Astro.props
+const { Content } = await render()
+---
+
+<BaseLayout title={data.title}>
+  <Content />
+</BaseLayout>
