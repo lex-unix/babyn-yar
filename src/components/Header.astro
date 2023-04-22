@@ -5,11 +5,11 @@ const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
 ---
 
-<header class="w-full border-b shadow fixed top-0">
+<header class="w-full bg-white z-10 border-b shadow fixed top-0">
   <div class="flex max-w-6xl mx-auto h-10 px-5 items-center">
-    <h3 class="mr-20">{t('nav.title')}</h3>
+    <a href={`/${lang}/home`} class="mr-20">{t('nav.title')}</a>
     <nav class="flex gap-4 justify-between items-center">
-      <a>{t('nav.visit')}</a>
+      <a href={`/${lang}/visit`}>{t('nav.visit')}</a>
       <a>{t('nav.education')}</a>
       <a>{t('nav.connect')}</a>
       <a>{t('nav.support')}</a>

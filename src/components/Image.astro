@@ -1,0 +1,16 @@
+---
+export interface Props {
+  src: string
+  alt: string
+  caption: string
+}
+
+const { src, alt, caption } = Astro.props
+---
+
+<div class="relative w-full h-auto">
+  <img src={src} alt={alt} class="object-cover aspect-[4/3]" />
+  <div class="absolute left-0 bottom-4 bg-black/60 py-0.5 pl-6 pr-2">
+    <span class="text-white text-sm">{caption}</span>
+  </div>
+</div>
