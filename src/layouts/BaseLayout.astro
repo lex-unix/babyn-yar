@@ -1,5 +1,5 @@
 ---
-import Header from '@/components/Header.astro'
+import Header from '@/components/Header/Header.astro'
 import { getLangFromUrl } from '@/i18n/utils'
 import Footer from '@/components/Footer.astro'
 
@@ -22,7 +22,7 @@ const { title } = Astro.props
   </head>
   <body>
     <Header />
-    <main class="prose mx-auto max-w-6xl px-5 pt-12">
+    <main class="prose mx-auto max-w-6xl px-5 pt-24">
       <slot />
     </main>
     <Footer />
