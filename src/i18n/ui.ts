@@ -3,7 +3,7 @@ export const languages = {
   ua: 'Українська'
 }
 
-export const defaultLang = 'en'
+export const defaultLang = 'ua'
 
 export const ui = {
   en: {
