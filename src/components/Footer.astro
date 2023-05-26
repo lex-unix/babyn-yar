@@ -5,7 +5,13 @@ const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
 ---
 
-<footer class="mb-5 mt-10 text-center text-sm opacity-70">
-  <p>&copy; {new Date().getFullYear()}, {t('footer.main')}</p>
+<footer class="mx-auto mb-5 mt-28 max-w-4xl space-y-1 text-left">
+  <p>{t('footer.main')}</p>
   <p>{t('footer.address')}</p>
+  <p>
+    e-mail:
+    <a href={`mailto:${t('footer.email')}`}>
+      {t('footer.email')}
+    </a>
+  </p>
 </footer>
