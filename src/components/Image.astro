@@ -2,15 +2,15 @@
 export interface Props {
   src: string
   alt: string
-  caption: string
+  caption?: string
 }
 
 const { src, alt, caption } = Astro.props
 ---
 
 <div class="relative h-auto w-full">
-  <img src={src} alt={alt} class="aspect-[4/3] object-cover" />
+  <img src={src} alt={alt} class="" />
   <div class="absolute bottom-4 left-0 bg-black/60 py-0.5 pl-6 pr-2">
-    <span class="text-sm text-white">{caption}</span>
+    {caption && <span class="text-sm text-white">{caption}</span>}
   </div>
 </div>
