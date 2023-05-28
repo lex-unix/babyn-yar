@@ -37,7 +37,3 @@
   font-display: block;
   src: url(/fonts/RobotoCondensed-BoldItalic.ttf) format('opentype');
 }
-
-h1 {
-  font-size: 32px !important;
-}
