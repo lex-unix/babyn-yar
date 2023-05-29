@@ -1,6 +1,6 @@
 export const languages = {
-  en: 'English',
-  ua: 'Українська'
+  en: 'EN',
+  ua: 'UA'
 }
 
 export const defaultLang = 'ua'
