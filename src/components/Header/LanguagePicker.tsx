@@ -1,5 +1,4 @@
 import { languages } from '@/i18n/ui'
-import { LanguageIcon, ChevronDownIcon } from '@heroicons/react/24/solid'
 
 interface LanguagePickerProps {
   lang: string
@@ -7,15 +6,9 @@ interface LanguagePickerProps {
 
 export default function LanguagePicker({ lang }: LanguagePickerProps) {
   return (
-    <label className="relative flex items-center text-xs font-semibold uppercase text-sky-600">
-      <span className="absolute left-1 top-[50%] translate-y-[-50%]">
-        <LanguageIcon className="h-4 w-4" />
-      </span>
-      <span className="absolute right-0.5 top-[50%] translate-y-[-50%]">
-        <ChevronDownIcon className="h-4 w-4" />
-      </span>
+    <label className="relative w-32 text-center text-lg uppercase">
       <select
-        className="flex-1 appearance-none rounded border border-gray-400/20 bg-gray-50 px-6 py-3 uppercase"
+        className="mx-2 flex-1 appearance-none rounded px-1"
         value={lang}
         onChange={e => {
           const newLang = e.currentTarget.value

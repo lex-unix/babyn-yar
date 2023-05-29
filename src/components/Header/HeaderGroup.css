@@ -1,17 +1,17 @@
-[data-radix-popper-content-wrapper] {
-  left: 0;
-  right: 0;
+.trigger {
+  transition: background 100ms ease, color 100ms ease;
+}
+
+.content {
+  animation-duration: 250ms;
+  animation-timing-function: ease;
 }
 
 .content[data-state='open'] {
-  animation-duration: 250ms;
-  animation-timing-function: ease;
   animation-name: fadeIn;
 }
 
 .content[data-state='closed'] {
-  animation-duration: 250ms;
-  animation-timing-function: ease;
   animation-name: fadeOut;
 }
 
@@ -33,4 +33,16 @@
   to {
     opacity: 0;
   }
+}
+
+astro-island:has(button[data-state='open']) + astro-island > button {
+  border-left-color: transparent;
+}
+
+nav > astro-island:first-of-type > button {
+  border-left-color: transparent !important;
+}
+
+nav > astro-island:nth-last-of-type(2) > button {
+  border-right: 1px solid black;
 }

@@ -6,6 +6,9 @@ export interface Props {
 const { href } = Astro.props
 ---
 
-<a href={href} class="font-light text-sky-600 underline underline-offset-4">
+<a
+  href={href}
+  class="px-4 py-1 text-right font-light lowercase transition-colors hover:bg-black hover:text-white"
+>
   <slot />
 </a>

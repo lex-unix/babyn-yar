@@ -1,5 +1,4 @@
 import * as Popover from '@radix-ui/react-popover'
-import { ChevronDownIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react'
 import './HeaderGroup.css'
 
@@ -13,21 +12,11 @@ export default function HeaderItem({ group, children }: HeaderGroupProps) {
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger className="flex items-center gap-1 text-xs font-semibold uppercase text-sky-600">
-        <span>{group}</span>
-        <span
-          className={`${
-            open ? 'rotate-180' : ''
-          } origin-center transition duration-150`}
-        >
-          <ChevronDownIcon className="h-4 w-4" />
-        </span>
+      <Popover.Trigger className="trigger w-32 border-l border-l-black text-center text-lg lowercase data-[state=open]:border-l-transparent data-[state=open]:bg-black data-[state=open]:text-white">
+        {group}
       </Popover.Trigger>
-      <Popover.Portal className="w-full">
-        <Popover.Content
-          sideOffset={24}
-          className="content z-10 mt-2 flex flex-col gap-4 border bg-white px-8 py-12"
-        >
+      <Popover.Portal className="">
+        <Popover.Content className="content z-10 flex w-32 flex-col bg-white">
           {children}
         </Popover.Content>
       </Popover.Portal>
