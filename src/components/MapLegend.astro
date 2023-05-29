@@ -1,14 +1,18 @@
 ---
 import MapLegendItem from './MapLegendItem.astro'
+import { useTranslations, getLangFromUrl } from 'src/i18n/utils'
+
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
 ---
 
 <div class="mx-auto max-w-4xl">
   <div class="px-4">
     <div class="flex items-center justify-between">
-      <MapLegendItem color="31FB24">Active Synagogue</MapLegendItem>
-      <MapLegendItem color="3466FF">Inactive Synagogue</MapLegendItem>
-      <MapLegendItem color="FF0200">Memorial</MapLegendItem>
-      <MapLegendItem color="4F6128">Place of mass executions</MapLegendItem>
+      <MapLegendItem color="31FB24">{t('map.legend.active')}</MapLegendItem>
+      <MapLegendItem color="3466FF">{t('map.legend.inactive')}</MapLegendItem>
+      <MapLegendItem color="FF0200">{t('map.legend.memorial')}</MapLegendItem>
+      <MapLegendItem color="4F6128">{t('map.legend.execution')}</MapLegendItem>
     </div>
   </div>
 </div>

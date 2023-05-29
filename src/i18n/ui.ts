@@ -26,7 +26,11 @@ export const ui = {
     'contact.form.name': 'Name',
     'contact.form.email': 'Email',
     'contact.form.message': 'Message text',
-    'contact.form.button': 'Send'
+    'contact.form.button': 'Send',
+    'map.legend.active': 'Active Synagogue',
+    'map.legend.inactive': 'Inactive Synagogue',
+    'map.legend.memorial': 'Memorial',
+    'map.legend.execution': 'Place of mass executions'
   },
   ua: {
     'nav.title': 'Бабин Яр',
@@ -48,6 +52,10 @@ export const ui = {
     'contact.form.name': "Ім'я",
     'contact.form.email': 'Email',
     'contact.form.message': 'Текст повідомлення',
-    'contact.form.button': 'Надіслати'
+    'contact.form.button': 'Надіслати',
+    'map.legend.active': 'Діюча Синагога ',
+    'map.legend.inactive': 'Недіюча Синагога',
+    'map.legend.memorial': 'Меморіал',
+    'map.legend.execution': 'Місце масового вбивства'
   }
 } as const
