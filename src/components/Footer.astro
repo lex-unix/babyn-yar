@@ -1,17 +1,18 @@
 ---
 import { useTranslations, getLangFromUrl } from 'src/i18n/utils'
+import { EMAIL } from '@/constants'
 
 const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
 ---
 
-<footer class="mx-auto mb-5 mt-28 max-w-4xl space-y-1 px-4 text-left">
+<footer class="mb-5 mt-20 space-y-1 px-4 text-left md:px-12">
   <p>{t('footer.main')}</p>
   <p>{t('footer.address')}</p>
   <p>
     e-mail:
-    <a href={`mailto:${t('footer.email')}`}>
-      {t('footer.email')}
+    <a href={`mailto:${EMAIL}`}>
+      {EMAIL}
     </a>
   </p>
 </footer>
