@@ -8,7 +8,7 @@ export default function ContactForm({ lang }: { lang: 'en' | 'ua' }) {
 
   return (
     <div className="mx-auto max-w-6xl px-4">
-      <form className="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2">
+      <form className="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2 md:gap-y-8">
         <InfoSection
           icon={<MapPinIcon className="h-6 w-6 text-emerald-900" />}
           className="order-1 md:order-none"
@@ -16,8 +16,18 @@ export default function ContactForm({ lang }: { lang: 'en' | 'ua' }) {
           {t('contact.address')}
         </InfoSection>
         <div className="flex w-full gap-4">
-          <FormInput name="surname" label={t('contact.form.surname')} />
-          <FormInput name="name" label={t('contact.form.name')} />
+          <FormInput
+            name="surname"
+            label={t('contact.form.surname')}
+            autoComplete="off"
+            required
+          />
+          <FormInput
+            name="name"
+            label={t('contact.form.name')}
+            autoComplete="off"
+            required
+          />
         </div>
         <InfoSection
           icon={<MapPinIcon className="2-6 h-6 text-emerald-900" />}
@@ -25,7 +35,14 @@ export default function ContactForm({ lang }: { lang: 'en' | 'ua' }) {
         >
           {t('contact.office')}
         </InfoSection>
-        <FormInput name="email" label={t('contact.form.email')} type="email" />
+        <FormInput
+          name="email"
+          label={t('contact.form.email')}
+          type="email"
+          autoComplete="off"
+          autoCorrect="off"
+          required
+        />
         <InfoSection
           icon={<EnvelopeIcon className="2-6 h-6 text-emerald-900" />}
           className="order-3 md:order-none"
@@ -34,11 +51,15 @@ export default function ContactForm({ lang }: { lang: 'en' | 'ua' }) {
         </InfoSection>
         <label className="block w-full text-base">
           {t('contact.form.message')}
-          <textarea className="block min-h-[120px] w-full border border-black/70"></textarea>
+          <textarea
+            className="block min-h-[120px] w-full border border-black/70"
+            autoComplete="off"
+            required
+          ></textarea>
         </label>
         <div></div>
         <div className="text-right">
-          <button className="w-fit bg-black px-6 py-3 text-white">
+          <button className="w-fit bg-black px-6 py-3 text-base text-white">
             {t('contact.form.button')}
           </button>
         </div>
