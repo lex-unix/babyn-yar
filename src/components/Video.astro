@@ -1,0 +1,15 @@
+---
+export interface Props {
+  src: string
+  poster: string
+  type?: string
+}
+
+const { src, poster, type = 'video/mp4; codec=h.264' } = Astro.props
+---
+
+<div class="my-6 flex items-center justify-center">
+  <video controls class="block w-full" poster={poster}>
+    <source src={src} type={type} />
+  </video>
+</div>
