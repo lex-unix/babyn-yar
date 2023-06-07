@@ -27,6 +27,9 @@ export const ui = {
     'contact.form.email': 'Email',
     'contact.form.message': 'Message text',
     'contact.form.button': 'Send',
+    'contact.address':
+      'National Historical and Memorial Reserve "Babyn Yar" 44 Yuria Illienka Street, Kyiv, 04119 Ukraine',
+    'contact.office': 'Office: 48-b Melnykova Street, Kyiv, 04119',
     'map.legend.active': 'Active Synagogue',
     'map.legend.inactive': 'Inactive Synagogue',
     'map.legend.memorial': 'Memorial',
@@ -53,6 +56,9 @@ export const ui = {
     'contact.form.email': 'Email',
     'contact.form.message': 'Текст повідомлення',
     'contact.form.button': 'Надіслати',
+    'contact.address':
+      'Національний історико-меморіальний заповідник «Бабин Яр» Україна,04119 м. Київ, вул. Юрія Іллєнка, 44',
+    'contact.office': 'Офіс: 04119 Київ, вул. Мельникова, 48-б',
     'map.legend.active': 'Діюча Синагога ',
     'map.legend.inactive': 'Недіюча Синагога',
     'map.legend.memorial': 'Меморіал',
