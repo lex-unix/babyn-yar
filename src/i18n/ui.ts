@@ -48,7 +48,7 @@ export const ui = {
     'footer.address': 'Україна, 04119  м. Київ, вул. Юрія  Іллєнка, 44',
     'footer.email': 'babinyar@ukr.net',
     'footer.office': 'Офіс: 04119, м. Київ, вул. Мельникова, 48-б',
-    'contact.form.surname': 'Призвище',
+    'contact.form.surname': 'Прізвище',
     'contact.form.name': "Ім'я",
     'contact.form.email': 'Email',
     'contact.form.message': 'Текст повідомлення',
