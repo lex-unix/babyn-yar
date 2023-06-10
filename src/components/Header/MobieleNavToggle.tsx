@@ -21,6 +21,7 @@ export default function MobileNavToggle() {
   return (
     <button
       className="inline-flex items-center justify-center md:hidden"
+      aria-label="Toggle Mobile Nav"
       onClick={() => setOpen(!open)}
     >
       <Bars3Icon className="h-6 w-6" />
