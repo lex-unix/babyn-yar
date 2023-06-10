@@ -4,7 +4,6 @@ import LanguagePicker from './LanguagePicker'
 import HeaderGroup from './HeaderGroup'
 import HeaderLink from './HeaderLink.astro'
 import MobileNavToggle from './MobieleNavToggle'
-import MobileNav from './MobileNav.astro'
 
 const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
@@ -56,5 +55,4 @@ const t = useTranslations(lang)
       <MobileNavToggle client:idle />
     </nav>
   </div>
-  <MobileNav />
 </header>

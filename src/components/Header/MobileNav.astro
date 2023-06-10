@@ -8,9 +8,11 @@ const t = useTranslations(lang)
 
 <nav
   id="mobile-nav"
-  class="pointer-events-auto absolute inset-x-0 bottom-0 top-28 z-20 hidden min-h-screen bg-white px-4 md:hidden"
+  class="fixed inset-x-0 bottom-0 top-28 z-20 hidden bg-white px-4 md:hidden"
 >
-  <ul class="space-y-8">
+  <ul
+    class="max-h-full space-y-8 overflow-y-auto overflow-x-visible overscroll-contain"
+  >
     <MobileNavContent
       group={t('nav.visit')}
       links={[{ text: t('nav.visit.events'), href: `/${lang}/visit/events` }]}
