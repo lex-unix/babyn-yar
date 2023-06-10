@@ -1,9 +1,9 @@
 export const languages = {
   en: 'EN',
-  ua: 'UA'
+  uk: 'UA'
 }
 
-export const defaultLang = 'ua'
+export const defaultLang = 'uk'
 
 export const ui = {
   en: {
@@ -34,7 +34,7 @@ export const ui = {
     'map.legend.memorial': 'Memorial',
     'map.legend.execution': 'Place of mass executions'
   },
-  ua: {
+  uk: {
     'nav.title': 'Бабин Яр',
     'nav.visit': 'відвідати',
     'nav.visit.events': 'події',
