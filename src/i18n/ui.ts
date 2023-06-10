@@ -11,7 +11,7 @@ export const ui = {
     'nav.visit': 'visit',
     'nav.visit.events': 'events',
     'nav.education': 'education',
-    'nav.education.history': 'historiy',
+    'nav.education.history': 'history',
     'nav.education.map': 'map of Holocaust',
     'nav.education.archive': 'archive',
     'nav.connect': 'connect',
