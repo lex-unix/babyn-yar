@@ -43,6 +43,6 @@ nav > astro-island:first-of-type > button {
   border-left-color: transparent !important;
 }
 
-nav > astro-island:nth-last-of-type(2) > button {
+nav > astro-island:nth-last-of-type(3) > button {
   border-right: 1px solid black;
 }

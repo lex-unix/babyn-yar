@@ -6,15 +6,16 @@ interface LanguagePickerProps {
 
 export default function LanguagePicker({ lang }: LanguagePickerProps) {
   return (
-    <label className="relative w-32 text-center text-lg uppercase">
+    <label className="relative w-fit text-center text-lg uppercase md:w-32">
       <select
-        className="mx-2 flex-1 appearance-none rounded px-1"
+        className="mx-1 flex-1 appearance-none rounded bg-white px-0.5 md:mx-2 md:px-1"
         value={lang}
         onChange={e => {
           const newLang = e.currentTarget.value
           const [_leadingSlash, _oldLang, ...rest] =
             window.location.pathname.split('/')
           const slug = rest.join('/')
+          console.log('Changing')
           window.location.pathname = `/${newLang}/${slug}`
         }}
       >

@@ -3,17 +3,21 @@ import { useTranslations, getLangFromUrl } from 'src/i18n/utils'
 import LanguagePicker from './LanguagePicker'
 import HeaderGroup from './HeaderGroup'
 import HeaderLink from './HeaderLink.astro'
+import MobileNavToggle from './MobieleNavToggle'
+import MobileNav from './MobileNav.astro'
 
 const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
 ---
 
 <header class="fixed top-0 z-10 w-full bg-white">
-  <div class="mx-auto flex items-start px-12 pb-3 pt-8">
+  <div
+    class="mx-auto flex items-start justify-between px-4 pb-3 pt-8 md:justify-normal md:px-12"
+  >
     <a href={`/${lang}/home`} class="mr-12">
       <img src={`/logo${lang === 'ua' ? '' : '-en'}.png`} class="w-44" />
     </a>
-    <nav class="flex items-center justify-between">
+    <nav class="flex items-center justify-end md:justify-between">
       <HeaderGroup group={t('nav.visit')} client:load>
         <>
           <HeaderLink href={`/${lang}/visit/events`}>
@@ -49,6 +53,8 @@ const t = useTranslations(lang)
         </>
       </HeaderGroup>
       <LanguagePicker lang={lang} client:idle />
+      <MobileNavToggle client:idle />
     </nav>
   </div>
+  <MobileNav />
 </header>

@@ -12,7 +12,7 @@ export default function HeaderItem({ group, children }: HeaderGroupProps) {
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger className="trigger w-32 border-l border-l-black text-center text-lg lowercase data-[state=open]:border-l-transparent data-[state=open]:bg-black data-[state=open]:text-white">
+      <Popover.Trigger className="trigger hidden w-32 border-l border-l-black text-center text-lg data-[state=open]:border-l-transparent data-[state=open]:bg-black data-[state=open]:text-white md:block">
         {group}
       </Popover.Trigger>
       <Popover.Portal className="">
