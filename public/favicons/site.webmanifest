@@ -1,6 +1,7 @@
 {
   "name": "National Historical and Memorial Reserve \"Babyn Yar\"",
   "short_name": "NM \"Babyn Yar\"",
+  "description": "Website for National Historical and Memorial Reserve \"Babyn Yar\"",
   "icons": [
     {
       "src": "/favicons/android-chrome-192x192.png",
