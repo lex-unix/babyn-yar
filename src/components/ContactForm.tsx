@@ -3,11 +3,11 @@ import type { ComponentProps, ReactNode } from 'react'
 import { EnvelopeIcon, MapPinIcon } from '@heroicons/react/24/outline'
 import { EMAIL } from '@/constants'
 
-export default function ContactForm({ lang }: { lang: 'en' | 'ua' }) {
+export default function ContactForm({ lang }: { lang: 'en' | 'uk' }) {
   const t = useTranslations(lang)
 
   return (
-    <div className="mx-auto max-w-4xl px-4">
+    <div className="not-prose mx-auto w-full px-4 md:px-[calc(3rem+176px)]">
       <form className="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2 md:gap-y-8">
         <InfoSection
           icon={<MapPinIcon className="h-6 w-6 text-emerald-900" />}
@@ -97,7 +97,7 @@ function InfoSection({
   return (
     <div className={`flex items-start ${className}`}>
       <span className="pt-0.5">{icon}</span>
-      <p className="!m-0 text-base">{children}</p>
+      <p className="!m-0 px-4 text-base">{children}</p>
     </div>
   )
 }

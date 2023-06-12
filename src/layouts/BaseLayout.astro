@@ -25,8 +25,14 @@ const { content } = Astro.props
   <body class="relative">
     <Header />
     <MobileNav />
+    {
+      /*
+      When calculating padding for text elements we add the padding of header which is 3rem (px-12 in tailwind)
+      and the size of the logo which is 176px (w-44) to text to the last letter of the logo
+    */
+    }
     <main
-      class="prose mx-auto max-w-none pt-32 text-xl text-black prose-headings:mx-auto prose-headings:max-w-4xl prose-headings:px-4 prose-p:mx-auto prose-p:max-w-4xl prose-p:px-4 prose-a:italic prose-ul:mx-auto prose-ul:max-w-4xl prose-img:m-0"
+      class="prose max-w-none pt-32 text-xl text-black prose-headings:mx-auto prose-headings:px-4 prose-p:mx-auto prose-p:px-4 prose-a:italic prose-li:pl-0 prose-img:m-0 md:prose-headings:px-[calc(3rem+176px)] md:prose-p:px-[calc(3rem+176px)] md:prose-ul:px-[calc(3rem+176px)]"
     >
       <slot />
     </main>
