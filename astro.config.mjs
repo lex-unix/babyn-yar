@@ -14,10 +14,10 @@ export default defineConfig({
     mdx(),
     sitemap({
       i18n: {
-        defaultLocale: 'ua',
+        defaultLocale: 'uk',
         locales: {
           en: 'en-US',
-          ua: 'uk-UA'
+          uk: 'uk-UA'
         }
       }
     })
