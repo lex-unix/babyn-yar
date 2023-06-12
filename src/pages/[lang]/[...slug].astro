@@ -17,6 +17,6 @@ const { data, render } = Astro.props
 const { Content } = await render()
 ---
 
-<BaseLayout title={data.title}>
+<BaseLayout content={data}>
   <Content />
 </BaseLayout>

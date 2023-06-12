@@ -7,6 +7,7 @@ export const defaultLang = 'uk'
 
 export const ui = {
   en: {
+    'site.title': ' National Historical and Memorial Reserve "Babyn Yar"',
     'nav.title': 'Babyn Yar',
     'nav.visit': 'visit',
     'nav.visit.events': 'events',
@@ -35,6 +36,7 @@ export const ui = {
     'map.legend.execution': 'Place of mass executions'
   },
   uk: {
+    'site.title': 'Національний історико-меморіальний заповідник "Бабин Яр"',
     'nav.title': 'Бабин Яр',
     'nav.visit': 'відвідати',
     'nav.visit.events': 'події',

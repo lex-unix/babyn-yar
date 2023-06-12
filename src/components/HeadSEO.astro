@@ -1,0 +1,35 @@
+---
+import { getLangFromUrl, useTranslations } from '@/i18n/utils'
+import type { CollectionEntry } from 'astro:content'
+
+export interface Props {
+  content: CollectionEntry<'site'>['data']
+}
+
+const { content } = Astro.props
+
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+
+const canonicalURL = new URL(
+  Astro.url.pathname.replace(/([^/])$/, '$1/'),
+  Astro.site
+)
+
+const ogImage = `/og-image${lang === 'uk' ? '' : '-en'}.png`
+---
+
+<title>{content.title}</title>
+<meta name="description" content={content.description} />
+<meta name="theme-color" content="#ffffff" />
+<meta name="generator" content={Astro.generator} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:title" content={content.title} />
+<meta property="og:site_name" content={t('site.title')} />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={content.title} />
+<meta name="twitter:description" content={content.description} />
+<meta name="twitter:image" content={ogImage} />
+<link rel="canonical" href={canonicalURL} />
