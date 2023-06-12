@@ -28,11 +28,11 @@ const { content } = Astro.props
     {
       /*
       When calculating padding for text elements we add the padding of header which is 3rem (px-12 in tailwind)
-      and the size of the logo which is 176px (w-44) to text to the last letter of the logo
+      and the size of the prefix in logo which is 39px to text to the last letter of the logo
     */
     }
     <main
-      class="prose max-w-none pt-32 text-xl text-black prose-headings:mx-auto prose-headings:px-4 prose-p:mx-auto prose-p:px-4 prose-a:italic prose-li:pl-0 prose-img:m-0 md:prose-headings:px-[calc(3rem+176px)] md:prose-p:px-[calc(3rem+176px)] md:prose-ul:px-[calc(3rem+176px)]"
+      class="prose max-w-none pt-32 text-xl text-black prose-headings:mx-auto prose-headings:px-4 prose-p:mx-auto prose-p:px-4 prose-a:italic prose-li:pl-0 prose-img:m-0 md:prose-headings:px-[calc(3rem+39px)] md:prose-p:px-[calc(3rem+39px)] md:prose-ul:px-[calc(3rem+39px)]"
     >
       <slot />
     </main>

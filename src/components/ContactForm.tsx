@@ -7,7 +7,7 @@ export default function ContactForm({ lang }: { lang: 'en' | 'uk' }) {
   const t = useTranslations(lang)
 
   return (
-    <div className="not-prose mx-auto w-full px-4 md:px-[calc(3rem+176px)]">
+    <div className="not-prose mx-auto w-full px-4 md:px-[calc(3rem+39px)]">
       <form className="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2 md:gap-y-8">
         <InfoSection
           icon={<MapPinIcon className="h-6 w-6 text-emerald-900" />}
