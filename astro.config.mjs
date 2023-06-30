@@ -7,7 +7,7 @@ import sitemap from '@astrojs/sitemap'
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://www.babynyar.org.ua',
+  site: 'https://babynyar.org.ua',
   integrations: [
     tailwind(),
     react(),
