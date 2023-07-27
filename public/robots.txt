@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.babynyar.org.ua/sitemap-index.xml
+Sitemap: https://babynyar.org.ua/sitemap-index.xml
 
