@@ -4,6 +4,7 @@ import LanguagePicker from './LanguagePicker'
 import HeaderGroup from './HeaderGroup'
 import HeaderLink from './HeaderLink.astro'
 import MobileNavToggle from './MobieleNavToggle'
+import { PAGES } from '@/constants'
 
 const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
@@ -58,5 +59,8 @@ const t = useTranslations(lang)
       <LanguagePicker lang={lang} client:idle />
       <MobileNavToggle client:idle />
     </nav>
+  </div>
+  <div class="hidden">
+    {PAGES.map(slug => <a href={`/${lang}/${slug}`}>{slug}</a>)}
   </div>
 </header>
