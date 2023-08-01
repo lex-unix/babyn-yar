@@ -8,7 +8,7 @@ test('shoud remove lang from the slug', () => {
   expect(stripped).toBe('visit/events')
 })
 
-test('should return the lang of the slug', () => {
+test('should return the lang from the slug', () => {
   const lang = getLangFromSlug(slug)
   expect(lang).toBe('uk')
 })

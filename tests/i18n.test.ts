@@ -9,7 +9,7 @@ test('returns correct language', () => {
   expect(lang).toBe('uk')
 })
 
-test('returns default language if parsed language in not defined', () => {
+test('returns default language if parsed language is not defined', () => {
   const url = new URL('/fr/events/visit', baseUrl)
   const lang = getLangFromUrl(url)
   expect(lang).toBe('uk')
