@@ -7,6 +7,23 @@ const baseCollection = defineCollection({
   })
 })
 
+const eventSchema = z.object({
+  title: z.string(),
+  slug: z.string(),
+  image: z.string()
+})
+
+const dataCollection = defineCollection({
+  type: 'data',
+  schema: z.object({
+    uk: z.array(eventSchema),
+    en: z.array(eventSchema)
+  })
+})
+
+export type EventData = z.infer<typeof eventSchema>
+
 export const collections = {
-  site: baseCollection
+  site: baseCollection,
+  data: dataCollection
 }
