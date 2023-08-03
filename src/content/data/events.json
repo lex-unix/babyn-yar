@@ -3,34 +3,34 @@
     {
       "title": "81-і роковини в часи болю",
       "slug": "/uk/visit/events/81-anniversary",
-      "image": ""
+      "image": "/assets/events/81-anniversary/img_0.webp"
     },
     {
       "title": "\"Exodus: Шлях з небуття\" - разом крізь віки",
       "slug": "/uk/visit/events/exodus",
-      "image": ""
+      "image": "/assets/events/exodus/01.webp"
     },
     {
       "title": "День пам’яті українців, які рятували євреїв під час Другої світової війни",
       "slug": "/uk/visit/events/ukrainian-rescuers",
-      "image": ""
+      "image": "/assets/events/ukrainian-rescuers/01.webp"
     }
   ],
   "en": [
     {
       "title": "81 Anniversary in the time of pain",
       "slug": "/en/visit/events/81-anniversary",
-      "image": ""
+      "image": "/assets/events/81-anniversary/img_0.webp"
     },
     {
       "title": "\"Exodus: The Path from Non-Existence\" - Together Through the Ages",
       "slug": "/en/visit/events/exodus",
-      "image": ""
+      "image": "/assets/events/exodus/01.webp"
     },
     {
       "title": "Day of Remembrance for Ukrainians who saved Jews during World War II",
       "slug": "/en/visit/events/ukrainian-rescuers",
-      "image": ""
+      "image": "/assets/events/ukrainian-rescuers/01.webp"
     }
   ]
 }
