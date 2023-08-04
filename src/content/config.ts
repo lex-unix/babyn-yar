@@ -9,8 +9,10 @@ const baseCollection = defineCollection({
 
 const eventSchema = z.object({
   title: z.string(),
+  description: z.string(),
   slug: z.string(),
-  image: z.string()
+  image: z.string(),
+  featured: z.boolean().default(false)
 })
 
 const dataCollection = defineCollection({
