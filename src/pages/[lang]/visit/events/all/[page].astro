@@ -7,6 +7,7 @@ import { languages } from '@/i18n/ui'
 import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/24/solid'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import Event from '@/components/Event.astro'
+import { getLangFromUrl, useTranslations } from '@/i18n/utils'
 
 export function getStaticPaths({ paginate }: GetStaticPathsOptions) {
   return objectKeys(languages).map(lang => {
@@ -23,11 +24,18 @@ export type Props = {
 }
 
 const { page } = Astro.props
-
 const events = page.data
+
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
 ---
 
-<BaseLayout content={{ title: 'Events', description: 'Description' }}>
+<BaseLayout
+  content={{
+    title: t('page.events.title'),
+    description: t('page.events.description')
+  }}
+>
   <div class="px-4 not-prose md:px-[calc(3rem+39px)]">
     <div class="space-y-8 md:space-y-12">
       {

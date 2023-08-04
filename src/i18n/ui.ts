@@ -8,6 +8,8 @@ export const defaultLang = 'uk'
 export const ui = {
   en: {
     'site.title': ' National Historical and Memorial Reserve "Babyn Yar"',
+    'page.events.title': 'Events',
+    'page.events.description': 'Browse all events',
     'nav.title': 'Babyn Yar',
     'nav.visit': 'visit',
     'nav.visit.events': 'events',
@@ -37,6 +39,8 @@ export const ui = {
   },
   uk: {
     'site.title': 'Національний історико-меморіальний заповідник "Бабин Яр"',
+    'page.events.title': 'Події',
+    'page.events.description': 'Переглянути усі події',
     'nav.title': 'Бабин Яр',
     'nav.visit': 'відвідати',
     'nav.visit.events': 'події',
