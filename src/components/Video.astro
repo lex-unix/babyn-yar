@@ -6,15 +6,10 @@ export interface Props {
 }
 
 const { src, poster, type = 'video/mp4; codec=h.264' } = Astro.props
-
-const isProd = import.meta.env.PROD
-const baseUrl = isProd
-  ? 'https://res.cloudinary.com/dym29aodl/video/upload'
-  : ''
 ---
 
 <div class="my-4 flex items-center justify-center md:my-8">
   <video controls class="block w-full" poster={poster}>
-    <source src={baseUrl + src} type={type} />
+    <source src={src} type={type} />
   </video>
 </div>
