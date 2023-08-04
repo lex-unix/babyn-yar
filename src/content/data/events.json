@@ -1,44 +1,44 @@
 {
   "uk": [
     {
-      "title": "81-і роковини в часи болю",
-      "description": "29-30 вересня в Національному історико-меморіальному заповіднику «Бабин Яр» відбулися пам’ятні заходи присвячені 81-й роковині трагедії.",
-      "slug": "/uk/visit/events/81-anniversary",
-      "image": "/assets/events/81-anniversary/img_0.webp",
-      "featured": true
-    },
-    {
       "title": "\"Exodus: Шлях з небуття\" - разом крізь віки",
       "description": "Український та єврейські народи мають спільний історичний шлях у прагненні свободи. Показати цю єдність та вшанувати всіх праведників, які ризикували життям заради інших людей, покликаний проєкт «Exodus: Шлях з небуття».",
       "slug": "/uk/visit/events/exodus",
-      "image": "/assets/events/exodus/01.webp"
+      "image": "/assets/events/exodus/01.webp",
+      "featured": true
     },
     {
       "title": "День пам’яті українців, які рятували євреїв під час Другої світової війни",
       "description": "Щороку 14 травня відзначається День пам’яті українців, які рятували євреїв під час Другої світової війни. Історій порятунку євреїв українцями багато, не всі вони задокументовані, проте пам’ять про тисячі врятованих від смерті євреїв жива в наших народах.",
       "slug": "/uk/visit/events/ukrainian-rescuers",
       "image": "/assets/events/ukrainian-rescuers/01.webp"
+    },
+    {
+      "title": "81-і роковини в часи болю",
+      "description": "29-30 вересня в Національному історико-меморіальному заповіднику «Бабин Яр» відбулися пам’ятні заходи присвячені 81-й роковині трагедії.",
+      "slug": "/uk/visit/events/81-anniversary",
+      "image": "/assets/events/81-anniversary/img_0.webp"
     }
   ],
   "en": [
     {
-      "title": "81 Anniversary in the time of pain",
-      "description": "On September 29-30, commemorative events dedicated to the 81st Anniversary of the tragedy took place at the Babyn Yar National Historical and Memorial Reserve.",
-      "slug": "/en/visit/events/81-anniversary",
-      "image": "/assets/events/81-anniversary/img_0.webp",
-      "featured": true
-    },
-    {
       "title": "\"Exodus: The Path from Non-Existence\" - Together Through the Ages",
       "description": "The Ukrainian and Jewish peoples share a common historical path in the pursuit of freedom. The project \"Exodus: The Path from Non-Existence\" aims to demonstrate this unity and honor all the Righteous who risked their lives for the sake of others.",
       "slug": "/en/visit/events/exodus",
-      "image": "/assets/events/exodus/01.webp"
+      "image": "/assets/events/exodus/01.webp",
+      "featured": true
     },
     {
       "title": "Day of Remembrance for Ukrainians who saved Jews during World War II",
       "description": "Every year on May 14 the Day of Remembrance is observed in honor of Ukrainians who saved Jews during World War II. There are many stories of Ukrainians saving Jews, not all of them documented, but the memory of thousands of Jews saved from death lives on in our nations.",
       "slug": "/en/visit/events/ukrainian-rescuers",
       "image": "/assets/events/ukrainian-rescuers/01.webp"
+    },
+    {
+      "title": "81 Anniversary in the time of pain",
+      "description": "On September 29-30, commemorative events dedicated to the 81st Anniversary of the tragedy took place at the Babyn Yar National Historical and Memorial Reserve.",
+      "slug": "/en/visit/events/81-anniversary",
+      "image": "/assets/events/81-anniversary/img_0.webp"
     }
   ]
 }
