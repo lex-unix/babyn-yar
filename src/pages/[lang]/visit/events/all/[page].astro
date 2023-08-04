@@ -1,0 +1,62 @@
+---
+import type { EventData } from '@/content/config'
+import type { GetStaticPathsOptions, Page } from 'astro'
+import { allEvents } from '@/content'
+import { objectKeys } from '@/util'
+import { languages } from '@/i18n/ui'
+import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/24/solid'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Event from '@/components/Event.astro'
+
+export function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  return objectKeys(languages).map(lang => {
+    const eventsByLang = allEvents.data[lang]
+    return paginate(eventsByLang, {
+      params: { lang },
+      pageSize: 4
+    })
+  })
+}
+
+export type Props = {
+  page: Page<EventData>
+}
+
+const { page } = Astro.props
+
+const events = page.data
+---
+
+<BaseLayout content={{ title: 'Events', description: 'Description' }}>
+  <div class="px-4 not-prose md:px-[calc(3rem+39px)]">
+    <div class="space-y-8 md:space-y-12">
+      {
+        events.map(({ title, description, slug, image, featured }) => (
+          <Event
+            title={title}
+            description={description}
+            slug={slug}
+            image={image}
+            featured={featured}
+          />
+        ))
+      }
+    </div>
+    <div class="mt-10 flex justify-end items-center gap-4">
+      {
+        page.url.prev && (
+          <a href={page.url.prev}>
+            <ChevronLeftIcon className="w-5 h-5" />
+          </a>
+        )
+      }
+      {
+        page.url.next && (
+          <a href={page.url.next}>
+            <ChevronRightIcon className="w-5 h-5" />
+          </a>
+        )
+      }
+    </div>
+  </div>
+</BaseLayout>

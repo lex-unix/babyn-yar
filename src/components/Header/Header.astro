@@ -2,6 +2,7 @@
 import { useTranslations, getLangFromUrl } from 'src/i18n/utils'
 import LanguagePicker from './LanguagePicker'
 import HeaderGroup from './HeaderGroup'
+
 import HeaderLink from './HeaderLink.astro'
 import MobileNavToggle from './MobieleNavToggle'
 import { PAGES } from '@/constants'
@@ -24,7 +25,7 @@ const t = useTranslations(lang)
     <nav class="flex items-center justify-end md:justify-between">
       <HeaderGroup group={t('nav.visit')} client:load>
         <>
-          <HeaderLink href={`/${lang}/visit/events`}>
+          <HeaderLink href={`/${lang}/visit/events/all/1`}>
             {t('nav.visit.events')}
           </HeaderLink>
         </>
