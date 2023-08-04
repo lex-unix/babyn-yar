@@ -6,7 +6,7 @@ const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
 ---
 
-<footer class="mb-5 mt-20 space-y-1 px-4 text-left md:px-12">
+<footer class="mb-5 mt-20 space-y-1 px-4 text-left md:px-[calc(3rem+39px)]">
   <p>{t('footer.main')}</p>
   <p>{t('footer.address')}</p>
   <p>
