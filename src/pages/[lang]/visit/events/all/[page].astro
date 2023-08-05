@@ -36,7 +36,7 @@ const t = useTranslations(lang)
     description: t('page.events.description')
   }}
 >
-  <div class="px-4 not-prose md:px-[calc(3rem+39px)]">
+  <div class="not-prose px-4 md:px-[calc(3rem+39px)]">
     <div class="space-y-8 md:space-y-12">
       {
         events.map(({ title, description, slug, image, featured }) => (
@@ -50,18 +50,18 @@ const t = useTranslations(lang)
         ))
       }
     </div>
-    <div class="mt-10 flex justify-end items-center gap-4">
+    <div class="mt-10 flex items-center justify-end gap-4">
       {
         page.url.prev && (
           <a href={page.url.prev}>
-            <ChevronLeftIcon className="w-5 h-5" />
+            <ChevronLeftIcon className="h-5 w-5" />
           </a>
         )
       }
       {
         page.url.next && (
           <a href={page.url.next}>
-            <ChevronRightIcon className="w-5 h-5" />
+            <ChevronRightIcon className="h-5 w-5" />
           </a>
         )
       }
