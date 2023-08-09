@@ -1,11 +1,17 @@
 {
   "uk": [
     {
+      "title": "Виставка «Бахмут. Обличчя геноциду 1942/2022»",
+      "description": "1 серпня, у річницю початку битви за Бахмут, у Києві відкрилась виставка «Бахмут. Обличчя геноциду 1942/2022»",
+      "slug": "/uk/visit/events/bakhmut",
+      "image": "/assets/events/bakhmut/01.webp",
+      "featured": true
+    },
+    {
       "title": "Мурали Матвія Вайсберга в Бабиному Яру - символ опору та єдності",
       "description": "У травні 2023 року український художник Матвій Вайсберг створив у Бабиному Яру три монументальні панно: «Ангел Збройних Сил України», «Зірка Давида» та «Менора». Це твори з його «Дорожнього щоденника», написаного у березні – травні 2022 року: «Малювання в цей час було не тільки спробою не збожеволіти, але й надією хоч чимось посильно допомогти, зробити свій, єдино можливий у цих обставинах, маленький внесок у допомогу своїй країні», - говорить Матвій Вайсберг.",
       "slug": "/uk/visit/events/mural",
-      "image": "/assets/events/mural/01.webp",
-      "featured": true
+      "image": "/assets/events/mural/01.webp"
     },
     {
       "title": "\"Exodus: Шлях з небуття\" - разом крізь віки",
@@ -28,11 +34,17 @@
   ],
   "en": [
     {
+      "title": "BAKHMUT. THE FACES OF GENOCIDE 1942/2022",
+      "description": "On August 1, on the anniversary of the beginning of the battle of Bakhmut, the exhibition \"Bakhmut: the Faces of Genocide 1942/2022\" opened in Kyiv.",
+      "slug": "/en/visit/events/bakhmut",
+      "image": "/assets/events/bakhmut/01.webp",
+      "featured": true
+    },
+    {
       "title": "Matvii Vaisberh’s murals in Babyn Yar are a symbol of resistance and unity",
       "description": "In May 2023, Ukrainian artist Matvii Vaisberh created three monumental murals in Babyn Yar: \"Angel of the Armed Forces of Ukraine\", \"Star of David\", and \"Menorah\". These works are from his \"Travel Diary\" created from March to May 2022. Matvii Vaisberh stated, \"Painting at that time was not only an attempt not to go crazy, but also a hope to help in some way, to make my own, the only possible small contribution to helping my country in these circumstances\".",
       "slug": "/en/visit/events/mural",
-      "image": "/assets/events/mural/01.webp",
-      "featured": true
+      "image": "/assets/events/mural/01.webp"
     },
     {
       "title": "\"Exodus: The Path from Non-Existence\" - Together Through the Ages",

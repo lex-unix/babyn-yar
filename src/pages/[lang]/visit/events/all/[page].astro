@@ -28,6 +28,8 @@ const events = page.data
 
 const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
+const baseUrl = `/${lang}/visit/events/all/`
+const totalPages = Array.from({ length: page.lastPage }, (_, i) => i + 1)
 ---
 
 <BaseLayout
@@ -50,21 +52,32 @@ const t = useTranslations(lang)
         ))
       }
     </div>
-    <div class="mt-10 flex items-center justify-end gap-4">
+    <div class="mt-10 flex items-center justify-end gap-2">
+      <a href={page.url.prev}>
+        <ChevronLeftIcon
+          className={`w-4 h-4 ${
+            page.url.prev ? '' : 'pointer-events-none opacity-30'
+          }`}
+        />
+      </a>
       {
-        page.url.prev && (
-          <a href={page.url.prev}>
-            <ChevronLeftIcon className="h-5 w-5" />
+        totalPages.map(pageNum => (
+          <a
+            href={baseUrl + pageNum}
+            class={`text-base ${
+              pageNum === page.currentPage ? 'font-bold' : ''
+            }`}
+          >
+            {pageNum}
           </a>
-        )
+        ))
       }
-      {
-        page.url.next && (
-          <a href={page.url.next}>
-            <ChevronRightIcon className="h-5 w-5" />
-          </a>
-        )
-      }
+      <a
+        href={page.url.next}
+        class={`${page.url.next ? '' : 'pointer-events-none opacity-30'}`}
+      >
+        <ChevronRightIcon className="w-4 h-4" />
+      </a>
     </div>
   </div>
 </BaseLayout>
