@@ -1,9 +1,12 @@
 ---
 import type { EventData } from '@/content/config'
+import { getLangFromUrl } from '@/i18n/utils'
 
 export type Props = EventData
 
 const { title, description, slug, image, featured } = Astro.props
+const lang = getLangFromUrl(Astro.url)
+const url = `/${lang}/visit/events/${slug}`
 ---
 
 <div>
@@ -20,7 +23,7 @@ const { title, description, slug, image, featured } = Astro.props
     </div>
     <div class="flex-1">
       <a
-        href={slug}
+        href={url}
         class={`underline underline-offset-4 ${
           featured ? 'line-clamp-4' : 'line-clamp-2'
         }`}
