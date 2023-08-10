@@ -53,12 +53,11 @@ const totalPages = Array.from({ length: page.lastPage }, (_, i) => i + 1)
       }
     </div>
     <div class="mt-10 flex items-center justify-end gap-2">
-      <a href={page.url.prev}>
-        <ChevronLeftIcon
-          className={`w-4 h-4 ${
-            page.url.prev ? '' : 'pointer-events-none opacity-30'
-          }`}
-        />
+      <a
+        href={page.url.prev}
+        class={`${page.url.prev ? '' : 'pointer-events-none opacity-30'}`}
+      >
+        <ChevronLeftIcon className="w-4 h-4" />
       </a>
       {
         totalPages.map(pageNum => (
