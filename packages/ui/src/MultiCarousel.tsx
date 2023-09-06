@@ -30,7 +30,7 @@ export default function MultiCarousel({ slides }: Props) {
       />
       {show && (
         <div
-          className="absolute inset-0 z-40 bg-black/40 px-3 pt-10"
+          className="fixed inset-0 z-40 bg-black/40 px-3 pt-10"
           onClick={handleOutsideClick}
         >
           <Carousel
