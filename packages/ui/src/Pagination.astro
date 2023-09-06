@@ -42,7 +42,7 @@ const pages = Array.from({ length: upper - lower + 1 }, (_, i) => i + lower)
     <ChevronRight className="w-4 h-4" />
   </a>
   <a
-    href={baseUrl + 1}
+    href={baseUrl + total}
     class={`-ml-2.5 flex -space-x-3 ${
       next ? '' : 'pointer-events-none opacity-30'
     }`}
