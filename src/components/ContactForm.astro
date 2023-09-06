@@ -1,8 +1,0 @@
----
-import { getLangFromUrl } from '@/i18n/utils'
-import ContactForm from './ContactForm'
-
-const lang = getLangFromUrl(Astro.url)
----
-
-<ContactForm client:load lang={lang} />

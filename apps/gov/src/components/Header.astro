@@ -1,0 +1,74 @@
+---
+import {
+  HeaderSection,
+  HeaderDropdownItem,
+  HeaderLink,
+  HeaderDropdown
+} from 'ui'
+---
+
+<header class="fixed top-0 z-10 w-full bg-white">
+  <div
+    class="mx-auto flex items-start justify-between px-4 pb-3 pt-8 md:justify-normal md:px-12"
+  >
+    <a href="/" aria-label="Go to home page" class="mr-12">
+      <img src="/logo.webp" alt="Site logo" class="w-44" />
+    </a>
+    <nav class="flex items-center justify-end md:justify-between">
+      <HeaderSection>
+        <HeaderLink href="/events/1">події</HeaderLink>
+      </HeaderSection>
+      <HeaderDropdown>
+        <HeaderLink slot="trigger">голокост</HeaderLink>
+        <Fragment slot="list">
+          <HeaderDropdownItem href="/holocaust/list-of-holocaust-victims/1">
+            списки розстріляних
+          </HeaderDropdownItem>
+          <HeaderDropdownItem href="/holocaust/documents/1">
+            документи
+          </HeaderDropdownItem>
+          <HeaderDropdownItem href="/holocaust/list-of-righteous/1">
+            списки праведників
+          </HeaderDropdownItem>
+          <HeaderDropdownItem href="/holocaust/testimonies/1">
+            свідчення очивидців трагедії
+          </HeaderDropdownItem>
+        </Fragment>
+      </HeaderDropdown>
+      <HeaderDropdown>
+        <HeaderLink slot="trigger">освіта</HeaderLink>
+        <Fragment slot="list">
+          <HeaderDropdownItem href="/education/history">
+            історія
+          </HeaderDropdownItem>
+          <HeaderDropdownItem href="/education/map">
+            мапа Голокосту
+          </HeaderDropdownItem>
+          <HeaderDropdownItem href="/education/archive">
+            архів
+          </HeaderDropdownItem>
+          <HeaderDropdownItem href="/education/library/1">
+            бібліотека
+          </HeaderDropdownItem>
+          <HeaderDropdownItem href="/education/library/1">
+            тематичні екскурсії
+          </HeaderDropdownItem>
+        </Fragment>
+      </HeaderDropdown>
+      <HeaderDropdown>
+        <HeaderLink slot="trigger">connect</HeaderLink>
+        <Fragment slot="list">
+          <HeaderDropdownItem href="/connect/find-us">
+            знайти нас
+          </HeaderDropdownItem>
+          <HeaderDropdownItem href="/connect/contact">
+            контакти
+          </HeaderDropdownItem>
+        </Fragment>
+      </HeaderDropdown>
+      <HeaderSection>
+        <HeaderLink href="/gallery">галерея</HeaderLink>
+      </HeaderSection>
+    </nav>
+  </div>
+</header>

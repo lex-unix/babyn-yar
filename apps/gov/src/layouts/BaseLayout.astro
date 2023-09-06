@@ -1,0 +1,35 @@
+---
+import Header from '@/components/Header.astro'
+import Footer from '@/components/Footer.astro'
+import { Head, HeadSEO } from 'ui'
+import '@/styles/roboto.css'
+
+export interface Props {
+  title: string
+  description: string
+}
+
+const { title, description } = Astro.props
+---
+
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <Head />
+    <HeadSEO
+      {title}
+      {description}
+      ogImage="/og-image.png"
+      siteTitle='Національний історико-меморіальний заповідник "Бабин Яр"'
+    />
+  </head>
+  <body class="relative">
+    <Header />
+    <main
+      class="prose prose-img:p-0 prose-img:m-0 max-w-none px-4 pt-32 text-xl text-black md:px-[calc(3rem+39px)]"
+    >
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

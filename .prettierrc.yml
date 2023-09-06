@@ -5,6 +5,7 @@ endOfLine: 'lf'
 semi: false
 tabWidth: 2
 trailingComma: 'none'
+proseWrap: always
 plugins:
   - prettier-plugin-astro
   - prettier-plugin-tailwindcss

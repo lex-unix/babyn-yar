@@ -1,0 +1,59 @@
+---
+import {
+  HeaderSection,
+  HeaderDropdownItem,
+  HeaderLink,
+  HeaderDropdown
+} from 'ui'
+---
+
+<header class="fixed top-0 z-10 w-full bg-white">
+  <div
+    class="mx-auto flex items-start justify-between px-4 pb-3 pt-8 md:justify-normal md:px-12"
+  >
+    <a href="/" aria-label="Go to home page" class="mr-12">
+      <img src="/logo-en.webp" alt="Site logo" class="w-44" />
+    </a>
+    <nav class="flex items-center justify-end md:justify-between">
+      <HeaderSection>
+        <HeaderLink href="/events/1">events</HeaderLink>
+      </HeaderSection>
+      <HeaderDropdown>
+        <HeaderLink slot="trigger">holocaust</HeaderLink>
+        <Fragment slot="list">
+          <HeaderDropdownItem href="/holocaust/list-of-holocaust-victims/1">
+            list of holocaust victims
+          </HeaderDropdownItem>
+        </Fragment>
+      </HeaderDropdown>
+      <HeaderDropdown>
+        <HeaderLink slot="trigger">education</HeaderLink>
+        <Fragment slot="list">
+          <HeaderDropdownItem href="/education/history">
+            list of holocaust victims
+          </HeaderDropdownItem>
+          <HeaderDropdownItem href="/education/map">
+            map of Holocaust
+          </HeaderDropdownItem>
+          <HeaderDropdownItem href="/education/archive">
+            archive
+          </HeaderDropdownItem>
+        </Fragment>
+      </HeaderDropdown>
+      <HeaderDropdown>
+        <HeaderLink slot="trigger">connect</HeaderLink>
+        <Fragment slot="list">
+          <HeaderDropdownItem href="/connect/find-us">
+            find us
+          </HeaderDropdownItem>
+          <HeaderDropdownItem href="/connect/contact">
+            contact
+          </HeaderDropdownItem>
+        </Fragment>
+      </HeaderDropdown>
+      <HeaderSection>
+        <HeaderLink href="/gallery">gallery</HeaderLink>
+      </HeaderSection>
+    </nav>
+  </div>
+</header>

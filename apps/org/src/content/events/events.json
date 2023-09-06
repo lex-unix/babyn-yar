@@ -1,0 +1,35 @@
+{
+  "events": [
+    {
+      "title": "BAKHMUT. THE FACES OF GENOCIDE 1942/2022",
+      "description": "On August 1, on the anniversary of the beginning of the battle of Bakhmut, the exhibition \"Bakhmut: the Faces of Genocide 1942/2022\" opened in Kyiv.",
+      "slug": "bakhmut",
+      "image": "/assets/events/bakhmut/01.webp",
+      "featured": true
+    },
+    {
+      "title": "Matvii Vaisberh’s murals in Babyn Yar are a symbol of resistance and unity",
+      "description": "In May 2023, Ukrainian artist Matvii Vaisberh created three monumental murals in Babyn Yar: \"Angel of the Armed Forces of Ukraine\", \"Star of David\", and \"Menorah\". These works are from his \"Travel Diary\" created from March to May 2022. Matvii Vaisberh stated, \"Painting at that time was not only an attempt not to go crazy, but also a hope to help in some way, to make my own, the only possible small contribution to helping my country in these circumstances\".",
+      "slug": "mural",
+      "image": "/assets/events/mural/01.webp"
+    },
+    {
+      "title": "\"Exodus: The Path from Non-Existence\" - Together Through the Ages",
+      "description": "The Ukrainian and Jewish peoples share a common historical path in the pursuit of freedom. The project \"Exodus: The Path from Non-Existence\" aims to demonstrate this unity and honor all the Righteous who risked their lives for the sake of others.",
+      "slug": "exodus",
+      "image": "/assets/events/exodus/01.webp"
+    },
+    {
+      "title": "Day of Remembrance for Ukrainians who saved Jews during World War II",
+      "description": "Every year on May 14 the Day of Remembrance is observed in honor of Ukrainians who saved Jews during World War II. There are many stories of Ukrainians saving Jews, not all of them documented, but the memory of thousands of Jews saved from death lives on in our nations.",
+      "slug": "ukrainian-rescuers",
+      "image": "/assets/events/ukrainian-rescuers/01.webp"
+    },
+    {
+      "title": "81 Anniversary in the time of pain",
+      "description": "On September 29-30, commemorative events dedicated to the 81st Anniversary of the tragedy took place at the Babyn Yar National Historical and Memorial Reserve.",
+      "slug": "81-anniversary",
+      "image": "/assets/events/81-anniversary/img_0.webp"
+    }
+  ]
+}

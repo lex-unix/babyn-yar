@@ -1,0 +1,58 @@
+---
+import type { EventData } from 'content-schema'
+import type { GetStaticPathsOptions, Page } from 'astro'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { Pagination, FloatImage, MediaListItem } from 'ui'
+import { allEvents } from '@/content'
+
+export function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const events = allEvents.data.events
+  return paginate(events, { pageSize: 4 })
+}
+
+export type Props = {
+  page: Page<EventData>
+}
+
+const { page } = Astro.props
+const events = page.data
+---
+
+<BaseLayout title="Події" , description="Переглянути всі події">
+  <div class="not-prose">
+    {
+      events.map(({ title, description, slug, image, featured }) => (
+        <MediaListItem
+          href={slug}
+          maxImgWidth={`${featured ? 'md:max-w-[480px]' : 'md:max-w-[400px]'}`}
+        >
+          <h2
+            slot="header"
+            class={`${featured ? 'text-3xl' : 'text-2xl'} font-bold text-black`}
+          >
+            {title}
+          </h2>
+          <FloatImage slot="left" src={image} alt={title} />
+
+          <p
+            slot="right"
+            class={`${
+              featured ? 'line-clamp-4' : 'line-clamp-2'
+            } italic hover:underline hover:underline-offset-4`}
+          >
+            {description}
+          </p>
+        </MediaListItem>
+      ))
+    }
+    <div class="mt-10">
+      <Pagination
+        next={page.url.next}
+        prev={page.url.prev}
+        current={page.currentPage}
+        total={page.lastPage}
+        baseUrl=""
+      />
+    </div>
+  </div>
+</BaseLayout>
