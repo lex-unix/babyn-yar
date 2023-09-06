@@ -1,10 +1,16 @@
 import { z } from 'zod'
 
-export const siteCollectionSchema = z.object({
+const baseSchema = z.object({
   type: z.literal('base').optional().default('base'),
   title: z.string(),
   description: z.string()
 })
+
+const compactSchema = baseSchema.extend({
+  type: z.literal('compact')
+})
+
+export const siteCollectionSchema = z.union([baseSchema, compactSchema])
 
 export const eventSchema = z.object({
   title: z.string(),
