@@ -1,0 +1,59 @@
+---
+import type { GetStaticPaths, Page } from 'astro'
+import { victimsData } from 'shared'
+import { Pagination } from 'ui'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+
+export const getStaticPaths = (({ paginate }) => {
+  return paginate(victimsData, {
+    pageSize: 100
+  })
+}) satisfies GetStaticPaths
+
+interface Props {
+  page: Page<(typeof victimsData)[number]>
+}
+
+const { page } = Astro.props
+const victims = page.data
+---
+
+<BaseLayout title="Списки розстріляних" description="Списки розстріляних">
+  <div class="not-prose">
+    <div class="mb-7">
+      <h1 class="text-3xl font-bold">Списки розстріляних</h1>
+      <p class="mt-2 text-sm italic">
+        Матеріали взяті з фонду "Пам’ять Бабиного Яру", голова І. М. Левітас
+      </p>
+    </div>
+    <table class="w-full max-w-4xl border-collapse">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="text-left font-bold">ПІБ</th>
+          <th class="text-left font-bold">Інфо</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          victims.map((victim, i) => (
+            <tr class="text-base odd:bg-zinc-50 even:bg-white">
+              <td class="pl-3">{i + 1}</td>
+              <td class="py-2">{victim.fullname}</td>
+              <td class="py-2">{victim.info}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+    <div class="mt-10">
+      <Pagination
+        next={page.url.next}
+        prev={page.url.prev}
+        current={page.currentPage}
+        total={page.lastPage}
+        baseUrl="/holocaust/list-of-holocaust-victims/"
+      />
+    </div>
+  </div>
+</BaseLayout>

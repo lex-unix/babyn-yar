@@ -1,3 +1,4 @@
+export { data as victimsData } from './victims'
 export const EMAIL = 'babinyar@ukr.net'
 
 export const stripLangFromSlug = (slug: string) =>
