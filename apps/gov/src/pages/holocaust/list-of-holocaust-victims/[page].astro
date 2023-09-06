@@ -26,21 +26,23 @@ const victims = page.data
         Матеріали взяті з фонду "Пам’ять Бабиного Яру", голова І. М. Левітас
       </p>
     </div>
-    <table class="w-full max-w-4xl border-collapse">
+    <table class="w-full max-w-4xl table-auto border-collapse">
       <thead>
         <tr>
-          <th></th>
-          <th class="text-left font-bold">ПІБ</th>
-          <th class="text-left font-bold">Інфо</th>
+          <th class="border-l border-t"></th>
+          <th class="border-t py-2 pl-3 text-left font-bold">ПІБ</th>
+          <th class="border-r border-t py-2 pl-3 text-left font-bold">Інфо</th>
         </tr>
       </thead>
       <tbody>
         {
           victims.map((victim, i) => (
             <tr class="text-base odd:bg-zinc-50 even:bg-white">
-              <td class="pl-3">{i + 1}</td>
-              <td class="py-2">{victim.fullname}</td>
-              <td class="py-2">{victim.info}</td>
+              <td class="border-b border-l border-t pl-3">{i + 1}</td>
+              <td class="border-b border-t py-2 pl-3">{victim.fullname}</td>
+              <td class="border-b border-r border-t py-2 pl-3">
+                {victim.info}
+              </td>
             </tr>
           ))
         }
