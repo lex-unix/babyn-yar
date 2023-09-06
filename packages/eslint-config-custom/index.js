@@ -9,6 +9,11 @@ module.exports = {
         extraFileExtensions: ['.astro']
       },
       rules: {}
+    },
+    {
+      files: ['*.tsx'],
+      extends: ['plugin:react-hooks/recommended', 'plugin:react/recommended'],
+      plugins: ['react', 'react-hooks']
     }
   ]
 }
