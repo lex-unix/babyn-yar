@@ -1,0 +1,54 @@
+---
+import { allHolocaustDocuments } from '@/content'
+import MainLayout from '@/layouts/MainLayout.astro'
+import type { GetStaticPaths, Page } from 'astro'
+import type { HolocaustDocumentData } from 'content-schema'
+import { FloatImage, MediaListItem, Pagination } from 'ui'
+
+export const getStaticPaths = (({ paginate }) => {
+  const docs = allHolocaustDocuments.data.documents
+
+  return paginate(docs, { pageSize: 10 })
+}) satisfies GetStaticPaths
+
+interface Props {
+  page: Page<HolocaustDocumentData>
+}
+
+const { page } = Astro.props
+
+const docs = page.data
+---
+
+<MainLayout title="" description="">
+  <div class="not-prose">
+    <h1 class="mb-10 text-3xl font-bold">Документи</h1>
+    {
+      docs.map(doc => (
+        <MediaListItem href={doc.href}>
+          <div slot="header">
+            <h2 class="text-2xl font-bold">{doc.title}</h2>
+            <p class="text-base opacity-40">{doc.date}</p>
+          </div>
+          <FloatImage slot="left" src={doc.imgSrc} alt={doc.title} />
+          <p slot="right" class="text-base">
+            {doc.description}
+          </p>
+        </MediaListItem>
+      ))
+    }
+    {
+      page.lastPage > 1 && (
+        <div class="mt-10">
+          <Pagination
+            next={page.url.next}
+            prev={page.url.prev}
+            current={page.currentPage}
+            total={page.lastPage}
+            baseUrl="/holocaust/documents/"
+          />
+        </div>
+      )
+    }
+  </div>
+</MainLayout>

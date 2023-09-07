@@ -27,5 +27,14 @@ export const librarySchema = z.object({
   href: z.string()
 })
 
+export const holocaustDocumentsSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  date: z.string(),
+  imgSrc: z.string(),
+  href: z.string()
+})
+
 export type EventData = z.infer<typeof eventSchema>
 export type LibraryData = z.infer<typeof librarySchema>
+export type HolocaustDocumentData = z.infer<typeof holocaustDocumentsSchema>

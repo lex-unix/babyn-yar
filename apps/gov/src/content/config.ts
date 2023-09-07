@@ -2,7 +2,8 @@ import { defineCollection, z } from 'astro:content'
 import {
   siteCollectionSchema,
   eventSchema,
-  librarySchema
+  librarySchema,
+  holocaustDocumentsSchema
 } from 'content-schema'
 
 const siteColletion = defineCollection({
@@ -23,8 +24,16 @@ const libraryCollection = defineCollection({
   })
 })
 
+const holocaustDocumentsCollection = defineCollection({
+  type: 'data',
+  schema: z.object({
+    documents: z.array(holocaustDocumentsSchema)
+  })
+})
+
 export const collections = {
   site: siteColletion,
   events: eventsCollection,
-  library: libraryCollection
+  library: libraryCollection,
+  'holocaust-documents': holocaustDocumentsCollection
 }
