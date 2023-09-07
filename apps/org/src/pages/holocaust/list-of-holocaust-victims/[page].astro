@@ -2,7 +2,7 @@
 import type { GetStaticPaths, Page } from 'astro'
 import { victimsData } from 'shared'
 import { Pagination } from 'ui'
-import BaseLayout from '@/layouts/BaseLayout.astro'
+import MainLayout from '@/layouts/MainLayout.astro'
 
 export const getStaticPaths = (({ paginate }) => {
   return paginate(victimsData, {
@@ -18,7 +18,7 @@ const { page } = Astro.props
 const victims = page.data
 ---
 
-<BaseLayout
+<MainLayout
   title="List of Holocaust Victims"
   description="List of Holocaust Victims"
 >
@@ -61,4 +61,4 @@ const victims = page.data
       />
     </div>
   </div>
-</BaseLayout>
+</MainLayout>
