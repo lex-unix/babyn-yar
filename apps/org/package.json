@@ -19,24 +19,24 @@
     "@astrojs/tailwind": "^4.0.0",
     "@heroicons/react": "^2.0.18",
     "@radix-ui/react-popover": "^1.0.6",
-    "ui": "*",
-    "i18n": "*",
     "@types/react": "^18.2.18",
-    "shared": "*",
     "@types/react-dom": "^18.2.7",
-    "astro": "2.10.1",
+    "astro": "^2.7.0",
+    "content-schema": "*",
+    "i18n": "*",
     "lucide-react": "^0.263.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "shared": "*",
     "tailwindcss": "^3.0.24",
-    "content-schema": "*"
+    "ui": "*"
   },
   "devDependencies": {
-    "tsconfig": "*",
     "@tailwindcss/typography": "^0.5.9",
     "@vitest/coverage-v8": "^0.34.1",
     "@vitest/ui": "^0.34.1",
     "eslint-config-custom": "*",
+    "tsconfig": "*",
     "vitest": "^0.34.1"
   }
 }
