@@ -5,9 +5,11 @@ import mdx from '@astrojs/mdx'
 
 import sitemap from '@astrojs/sitemap'
 
+const isProd = import.meta.env.PROD
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://babynyar.org.ua',
-  publicDir: '../../public',
+  publicDir: isProd ? './public' : '../../public',
   integrations: [tailwind(), react(), mdx(), sitemap()]
 })
