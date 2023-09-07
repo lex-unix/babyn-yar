@@ -1,9 +1,9 @@
 ---
 import type { EventData } from 'content-schema'
 import type { GetStaticPathsOptions, Page } from 'astro'
-import BaseLayout from '@/layouts/BaseLayout.astro'
 import { Pagination, FloatImage, MediaListItem } from 'ui'
 import { allEvents } from '@/content'
+import MainLayout from '@/layouts/MainLayout.astro'
 
 export function getStaticPaths({ paginate }: GetStaticPathsOptions) {
   const events = allEvents.data.events
@@ -18,7 +18,7 @@ const { page } = Astro.props
 const events = page.data
 ---
 
-<BaseLayout title="Події" description="Переглянути всі події">
+<MainLayout title="Події" description="Переглянути всі події">
   <div class="not-prose">
     {
       events.map(({ title, description, slug, image, featured }) => (
@@ -55,4 +55,4 @@ const events = page.data
       />
     </div>
   </div>
-</BaseLayout>
+</MainLayout>

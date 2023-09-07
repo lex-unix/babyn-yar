@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content'
 import { allPages } from '@/content'
-import BaseLayout from '@/layouts/BaseLayout.astro'
+import LayoutSwitcher from '@/layouts/LayoutSwitcher.astro'
 
 export async function getStaticPaths() {
   return allPages.map(page => {
@@ -13,9 +13,9 @@ export async function getStaticPaths() {
 export type Props = CollectionEntry<'site'>
 const { data, render } = Astro.props
 const { Content } = await render()
-const { title, description } = data
+const { title, description, type } = data
 ---
 
-<BaseLayout {title} {description}>
+<LayoutSwitcher {title} {description} {type}>
   <Content />
-</BaseLayout>
+</LayoutSwitcher>
