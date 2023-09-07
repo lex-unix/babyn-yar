@@ -25,8 +25,10 @@ export default function MultiCarousel({ slides }: Props) {
     <div className="w-full max-w-4xl">
       <CarouselWithThumbs
         slides={slides}
-        onClick={() => setShow(true)}
-        onIndexSelect={handleIndexSelect}
+        onClick={snap => {
+          setShow(true)
+          setSelectedIndex(snap)
+        }}
       />
       {show && (
         <div

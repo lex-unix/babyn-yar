@@ -4,15 +4,10 @@ import CarouselThumb from './CarouselThumb'
 
 interface Props {
   slides: string[]
-  onClick: () => void
-  onIndexSelect: (snap: number) => void
+  onClick: (snap: number) => void
 }
 
-export default function CarouselWithThumbs({
-  slides,
-  onIndexSelect,
-  onClick
-}: Props) {
+export default function CarouselWithThumbs({ slides, onClick }: Props) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [emblaMainRef, emblaMainApi] = useEmblaCarousel()
   const [emblaThumbsRef, emblaThumbsApi] = useEmblaCarousel({
@@ -32,8 +27,7 @@ export default function CarouselWithThumbs({
     if (!emblaMainApi || !emblaThumbsApi) return
     setSelectedIndex(emblaMainApi.selectedScrollSnap())
     emblaThumbsApi.scrollTo(emblaMainApi.selectedScrollSnap())
-    onIndexSelect(emblaMainApi.selectedScrollSnap())
-  }, [emblaMainApi, emblaThumbsApi, onIndexSelect])
+  }, [emblaMainApi, emblaThumbsApi])
 
   useEffect(() => {
     if (!emblaMainApi) return
@@ -48,7 +42,7 @@ export default function CarouselWithThumbs({
         <div className="flex touch-pan-y">
           {slides.map(image => (
             <div key={image} className="relative flex-[0_0_100%]">
-              <button onClick={onClick} className="w-full">
+              <button onClick={() => onClick(selectedIndex)} className="w-full">
                 <img
                   className="block h-[600px] w-full object-cover"
                   src={image}

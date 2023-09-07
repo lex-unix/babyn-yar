@@ -29,9 +29,11 @@ const Carousel = forwardRef<HTMLDivElement, Props>(function Carousel(
     onIndexSelect(emblaApi.selectedScrollSnap())
   }, [emblaApi, onIndexSelect])
 
+  console.log(selectedIndex)
   useEffect(() => {
     if (!emblaApi) return
     emblaApi.on('select', onSelect)
+    emblaApi.scrollTo(selectedIndex)
   }, [emblaApi, onIndexSelect, onSelect, selectedIndex])
 
   return (
