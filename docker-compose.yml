@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  gov:
+    container_name: gov
+    build:
+      context: .
+      dockerfile: ./apps/gov/Dockerfile
+    restart: always
+    ports:
+      - 3000:80
+  org:
+    container_name: org
+    build:
+      context: .
+      dockerfile: ./apps/org/Dockerfile
+    restart: always
+    ports:
+      - 3001:80
