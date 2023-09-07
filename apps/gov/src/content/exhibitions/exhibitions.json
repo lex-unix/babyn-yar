@@ -1,0 +1,24 @@
+{
+  "exhibitions": [
+    {
+      "title": "Фотодокументальна виставка з нагоди Міжнародного дня  визволення в’язнів фашистських концтаборів.",
+      "href": "/education/exhibitions/fotodokumentalna-vystavka-z-nagody-konctaboriv",
+      "imgSrc": "/assets/exhibitions/1_9.jpg"
+    },
+    {
+      "title": " Куренівська трагедія (фотодокументальна виставка)",
+      "href": "/education/exhibitions/kurenivska-tragediya-fotodokumentalna-vystavka",
+      "imgSrc": "/assets/exhibitions/img_20210312_133659_1.jpg"
+    },
+    {
+      "title": "Фотовиставка моряки Пінської  військової флотилії ",
+      "href": "/education/exhibitions/fotovystavka-moryaky-pinskoyi-viyskovoyi-flotyliyi",
+      "imgSrc": "/assets/exhibitions/hqdefault.jpg"
+    },
+    {
+      "title": "Фотовиставка присвячена 70-й річниці Перемоги у Другій Світовій Війні (роботи військових художників,  студія М.Б. Грекова )",
+      "href": "/education/exhibitions/fotovistavka-prisvyachena-70-i-kh",
+      "imgSrc": "/assets/exhibitions/zagruzhennoe.jpg"
+    }
+  ]
+}
