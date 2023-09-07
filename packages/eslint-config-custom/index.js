@@ -1,5 +1,6 @@
 module.exports = {
   extends: ['plugin:astro/recommended'],
+  parser: '@typescript-eslint/parser',
   overrides: [
     {
       files: ['*.astro'],
@@ -11,8 +12,12 @@ module.exports = {
       rules: {}
     },
     {
-      files: ['*.tsx'],
-      extends: ['plugin:react-hooks/recommended', 'plugin:react/recommended'],
+      files: ['*.tsx', '*.jsx'],
+      extends: [
+        'plugin:react/recommended',
+        'plugin:react/jsx-runtime',
+        'plugin:react-hooks/recommended'
+      ],
       plugins: ['react', 'react-hooks']
     }
   ]
