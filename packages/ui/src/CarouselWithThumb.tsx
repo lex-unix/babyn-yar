@@ -60,9 +60,9 @@ export default function CarouselWithThumbs({
         </div>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-1">
         <div className="h-[100px] overflow-hidden" ref={emblaThumbsRef}>
-          <div className="flex">
+          <div className="-ml-2 flex">
             {slides.map((image, index) => (
               <CarouselThumb
                 onClick={() => onThumbClick(index)}

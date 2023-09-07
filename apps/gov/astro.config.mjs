@@ -7,7 +7,7 @@ import sitemap from '@astrojs/sitemap'
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://babynyar.org.ua',
+  site: 'https://babynyar.gov.ua',
   publicDir: '../../public',
   integrations: [tailwind(), react(), mdx(), sitemap()]
 })

@@ -3,8 +3,10 @@ import {
   HeaderSection,
   HeaderDropdownItem,
   HeaderLink,
-  HeaderDropdown
+  HeaderDropdown,
+  MobieleNavToggle
 } from 'ui'
+import MobileNavToggle from 'ui/src/Header/MobieleNavToggle'
 ---
 
 <header class="fixed top-0 z-10 w-full bg-white">
@@ -72,6 +74,7 @@ import {
       <HeaderSection>
         <HeaderLink href="/gallery">галерея</HeaderLink>
       </HeaderSection>
+      <MobileNavToggle client:load />
     </nav>
   </div>
 </header>

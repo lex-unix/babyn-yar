@@ -6,11 +6,8 @@ interface Props {
 const { href } = Astro.props
 ---
 
-<li class="">
-  <a
-    class="block w-full px-3 py-1 text-base text-black hover:opacity-50"
-    href={href}
-  >
+<li class="text-xl">
+  <a class="block w-full px-3 py-1 text-black hover:opacity-50" href={href}>
     <slot />
   </a>
 </li>

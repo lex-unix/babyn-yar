@@ -1,0 +1,85 @@
+---
+import { MobileNavContent } from 'ui'
+---
+
+<nav
+  id="mobile-nav"
+  class="fixed inset-x-0 bottom-0 top-28 z-20 hidden bg-white px-4 md:hidden"
+>
+  <ul
+    class="max-h-full space-y-8 overflow-y-auto overflow-x-visible overscroll-contain"
+  >
+    <li class="my-4 text-lg font-bold lowercase">
+      <a href="/events/1">події</a>
+    </li>
+    <MobileNavContent
+      group="голокост"
+      links={[
+        {
+          text: 'списки розстріляних',
+          href: `/holocaust/list-of-holocaust-victims/1`
+        },
+        {
+          text: 'документи',
+          href: `/holocaust/documents/1`
+        },
+        {
+          text: 'Списки праведників',
+          href: `/holocaust/list-of-righteous/`
+        },
+        {
+          text: 'свідчення очевидців трагедії',
+          href: `/holocaust/testimonies/1`
+        }
+      ]}
+    />
+    <MobileNavContent
+      group="освіта"
+      links={[
+        {
+          text: 'історія',
+          href: `/education/history`
+        },
+        {
+          text: 'мапа Голокосту',
+          href: `/education/map`
+        },
+        {
+          text: 'архів',
+          href: `/education/archive`
+        },
+        {
+          text: 'бібліоткеа',
+          href: `/education/library/1`
+        },
+        {
+          text: 'виставки',
+          href: `/education/exhibitions/1`
+        },
+        {
+          text: 'тематичні екскурсії',
+          href: `/education/topical-excursions`
+        }
+      ]}
+    />
+    <MobileNavContent
+      group="зв'язок"
+      links={[
+        { text: 'знайти нас', href: `/connect/find-us` },
+        { text: 'контакти', href: '/connect/contact' }
+      ]}
+    />
+    <MobileNavContent
+      group="підтримати"
+      links={[
+        {
+          text: 'партнерство',
+          href: `/support/partnership`
+        }
+      ]}
+    />
+    <li class="my-4 text-lg font-bold lowercase">
+      <a href="/gallery">галерея</a>
+    </li>
+  </ul>
+</nav>

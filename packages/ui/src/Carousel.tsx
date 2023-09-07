@@ -31,9 +31,8 @@ const Carousel = forwardRef<HTMLDivElement, Props>(function Carousel(
 
   useEffect(() => {
     if (!emblaApi) return
-    emblaApi.scrollTo(selectedIndex)
     emblaApi.on('select', onSelect)
-  }, [emblaApi, onSelect, selectedIndex])
+  }, [emblaApi, onIndexSelect, onSelect, selectedIndex])
 
   return (
     <div ref={emblaRef} className="overflow-hidden">
@@ -46,7 +45,7 @@ const Carousel = forwardRef<HTMLDivElement, Props>(function Carousel(
           >
             <div className="relative">
               <img
-                className="w-full cursor-grab active:cursor-grabbing"
+                className="w-full cursor-grab object-cover active:cursor-grabbing"
                 src={image}
                 alt=""
               />
