@@ -20,4 +20,12 @@ export const eventSchema = z.object({
   featured: z.boolean().default(false)
 })
 
+export const librarySchema = z.object({
+  title: z.string(),
+  date: z.string(),
+  imgSrc: z.string(),
+  href: z.string()
+})
+
 export type EventData = z.infer<typeof eventSchema>
+export type LibraryData = z.infer<typeof librarySchema>

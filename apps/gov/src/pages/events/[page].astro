@@ -18,7 +18,7 @@ const { page } = Astro.props
 const events = page.data
 ---
 
-<BaseLayout title="Події" , description="Переглянути всі події">
+<BaseLayout title="Події" description="Переглянути всі події">
   <div class="not-prose">
     {
       events.map(({ title, description, slug, image, featured }) => (
