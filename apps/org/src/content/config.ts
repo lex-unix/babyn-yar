@@ -2,6 +2,7 @@ import { defineCollection, z } from 'astro:content'
 import {
   siteCollectionSchema,
   eventSchema,
+  testimoniesSchema,
   librarySchema
 } from 'content-schema'
 
@@ -23,8 +24,16 @@ const libraryCollection = defineCollection({
   })
 })
 
+const testimoniesCollection = defineCollection({
+  type: 'data',
+  schema: z.object({
+    testimonies: z.array(testimoniesSchema)
+  })
+})
+
 export const collections = {
   site: siteCollection,
   events: eventsCollection,
+  testimonies: testimoniesCollection,
   library: libraryCollection
 }
