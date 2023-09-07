@@ -8,3 +8,7 @@ export const allHolocaustDocuments = await getEntry(
   'documents'
 )
 export const allTestimonies = await getEntry('testimonies', 'testimonies')
+export const allLegislativeBasis = await getEntry(
+  'legislative-basis',
+  'legislative-basis'
+)

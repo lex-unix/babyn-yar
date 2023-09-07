@@ -4,7 +4,8 @@ import {
   eventSchema,
   librarySchema,
   holocaustDocumentsSchema,
-  testimoniesSchema
+  testimoniesSchema,
+  legislativeBasisSchema
 } from 'content-schema'
 
 const siteColletion = defineCollection({
@@ -39,10 +40,18 @@ const testimoniesCollection = defineCollection({
   })
 })
 
+const legislativeBasisCollection = defineCollection({
+  type: 'data',
+  schema: z.object({
+    legislativeBasis: z.array(legislativeBasisSchema)
+  })
+})
+
 export const collections = {
   site: siteColletion,
   events: eventsCollection,
   library: libraryCollection,
   'holocaust-documents': holocaustDocumentsCollection,
-  testimonies: testimoniesCollection
+  testimonies: testimoniesCollection,
+  'legislative-basis': legislativeBasisCollection
 }

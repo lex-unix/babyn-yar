@@ -43,7 +43,14 @@ export const testimoniesSchema = z.object({
   href: z.string()
 })
 
+export const legislativeBasisSchema = z.object({
+  title: z.string(),
+  imgSrc: z.string(),
+  href: z.string()
+})
+
 export type EventData = z.infer<typeof eventSchema>
 export type LibraryData = z.infer<typeof librarySchema>
 export type HolocaustDocumentData = z.infer<typeof holocaustDocumentsSchema>
 export type TestimonyData = z.infer<typeof testimoniesSchema>
+export type LegislativeBasisData = z.infer<typeof legislativeBasisSchema>
