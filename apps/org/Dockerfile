@@ -25,5 +25,6 @@ RUN npx turbo run build --filter=org...
 FROM httpd:2.4 AS runtime
 
 COPY --from=installer /app/apps/org/dist /usr/local/apache2/htdocs/
+COPY  public/ /usr/local/apache2/htdocs
 
 EXPOSE 80

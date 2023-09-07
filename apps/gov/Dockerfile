@@ -25,5 +25,6 @@ RUN npx turbo run build --filter=gov...
 FROM httpd:2.4 AS runtime
 
 COPY --from=installer /app/apps/gov/dist /usr/local/apache2/htdocs/
+COPY  public/ /usr/local/apache2/htdocs
 
 EXPOSE 80
