@@ -3,6 +3,7 @@ import {
   siteCollectionSchema,
   eventSchema,
   testimoniesSchema,
+  legislativeBasisSchema,
   librarySchema
 } from 'content-schema'
 
@@ -31,9 +32,17 @@ const testimoniesCollection = defineCollection({
   })
 })
 
+const legislativeBasisCollection = defineCollection({
+  type: 'data',
+  schema: z.object({
+    legislativeBasis: z.array(legislativeBasisSchema)
+  })
+})
+
 export const collections = {
   site: siteCollection,
   events: eventsCollection,
+  'legislative-basis': legislativeBasisCollection,
   testimonies: testimoniesCollection,
   library: libraryCollection
 }
