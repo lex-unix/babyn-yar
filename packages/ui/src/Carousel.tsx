@@ -27,18 +27,20 @@ const Carousel = forwardRef<HTMLDivElement, Props>(function Carousel(
   const onSelect = useCallback(() => {
     if (!emblaApi) return
     onIndexSelect(emblaApi.selectedScrollSnap())
-  }, [emblaApi])
+  }, [emblaApi, onIndexSelect])
 
   useEffect(() => {
     if (!emblaApi) return
+    emblaApi.scrollTo(selectedIndex)
     emblaApi.on('select', onSelect)
-  }, [])
+  }, [emblaApi, onSelect, selectedIndex])
 
   return (
     <div ref={emblaRef} className="overflow-hidden">
       <div className="flex touch-pan-y">
         {slides.map((image, i) => (
           <div
+            key={image}
             ref={i === selectedIndex ? ref : undefined}
             className="relative min-w-0 flex-[0_0_100%]"
           >

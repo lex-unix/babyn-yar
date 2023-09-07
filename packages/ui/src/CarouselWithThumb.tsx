@@ -33,7 +33,7 @@ export default function CarouselWithThumbs({
     setSelectedIndex(emblaMainApi.selectedScrollSnap())
     emblaThumbsApi.scrollTo(emblaMainApi.selectedScrollSnap())
     onIndexSelect(emblaMainApi.selectedScrollSnap())
-  }, [emblaMainApi, emblaThumbsApi, setSelectedIndex])
+  }, [emblaMainApi, emblaThumbsApi, onIndexSelect])
 
   useEffect(() => {
     if (!emblaMainApi) return
