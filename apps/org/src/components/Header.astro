@@ -3,15 +3,15 @@ import {
   HeaderSection,
   HeaderDropdownItem,
   HeaderLink,
-  HeaderDropdown
   HeaderDropdown,
+  LanugagePicker,
   MobileNavToggle
 } from 'ui'
 ---
 
 <header class="fixed top-0 z-10 w-full bg-white">
   <div
-    class="mx-auto flex items-start justify-between px-4 pb-3 pt-8 md:justify-normal md:px-12"
+    class="mx-auto flex items-start justify-between px-4 pb-3 pt-8 md:justify-normal md:px-8 lg:px-12"
   >
     <a href="/" aria-label="Go to home page" class="mr-12">
       <img src="/logo-en.webp" alt="Site logo" class="w-44" />
@@ -70,6 +70,9 @@ import {
       <HeaderSection>
         <HeaderLink href="/gallery">gallery</HeaderLink>
       </HeaderSection>
+      <div class="md:border-l md:border-l-black">
+        <LanugagePicker client:load lang="en" />
+      </div>
       <MobileNavToggle client:load />
     </nav>
   </div>

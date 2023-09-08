@@ -6,7 +6,6 @@ import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 
 const isProd = import.meta.env.PROD
-console.log(isProd)
 
 // https://astro.build/config
 export default defineConfig({
