@@ -14,13 +14,8 @@ func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	err := app.writeJson(w, http.StatusOK, env, nil)
-	if err != nil {
-		message := "the server encountered a problem and could not process your request"
-		env := envelope{"error": message}
 
-		err := app.writeJson(w, http.StatusInternalServerError, env, nil)
-		if err != nil {
-			w.WriteHeader(500)
-		}
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
 	}
 }
