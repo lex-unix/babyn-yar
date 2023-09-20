@@ -11,5 +11,7 @@ func (app *application) routes() http.Handler {
 
 	router.Get("/v1/healthcheck", app.healthcheckHandler)
 
+	router.Get("/v1/victims", app.listVictimsHandler)
+
 	return router
 }
