@@ -89,30 +89,36 @@ const prev =
         >
       </form>
     </div>
-    <table class="w-full max-w-4xl table-auto border-collapse">
-      <thead>
-        <tr>
-          <th class="border-l border-t"></th>
-          <th class="border-t py-2 pl-3 text-left font-bold">ПІБ</th>
-          <th class="border-r border-t py-2 pl-3 text-left font-bold">Інфо</th>
-        </tr>
-      </thead>
-      <tbody>
-        {
-          victims.map((victim: Victim, i) => (
-            <tr class="text-base odd:bg-zinc-50 even:bg-white">
-              <td class="border-b border-l border-t pl-3">
-                {(metadata.currentPage - 1) * metadata.pageSize + i + 1}
-              </td>
-              <td class="border-b border-t py-2 pl-3">{victim.fullname}</td>
-              <td class="border-b border-r border-t py-2 pl-3">
-                {victim.info}
-              </td>
+    {
+      victims.length > 0 ? (
+        <table class="w-full max-w-4xl table-auto border-collapse">
+          <thead>
+            <tr>
+              <th class="border-l border-t" />
+              <th class="border-t py-2 pl-3 text-left font-bold">ПІБ</th>
+              <th class="border-r border-t py-2 pl-3 text-left font-bold">
+                Інфо
+              </th>
             </tr>
-          ))
-        }
-      </tbody>
-    </table>
+          </thead>
+          <tbody>
+            {victims.map((victim: Victim, i) => (
+              <tr class="text-base odd:bg-zinc-50 even:bg-white">
+                <td class="border-b border-l border-t pl-3">
+                  {(metadata.currentPage - 1) * metadata.pageSize + i + 1}
+                </td>
+                <td class="border-b border-t py-2 pl-3">{victim.fullname}</td>
+                <td class="border-b border-r border-t py-2 pl-3">
+                  {victim.info}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p>За вашим запитом не знайдено результатів</p>
+      )
+    }
     <div class="mt-10 max-w-4xl">
       <Pagination
         next={next}
