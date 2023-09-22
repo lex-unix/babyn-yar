@@ -1,0 +1,126 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro'
+import { Pagination } from 'ui'
+import type { Metadata, Victim } from '@/shared'
+import { objectKeys, addSearchParams, getParams } from 'shared'
+
+let metadata: Metadata
+let victims: Victim[]
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData()
+  const fullname = formData.get('fullname')
+  const info = formData.get('info')
+  const searchParams: Record<string, string> = {}
+
+  if (fullname && typeof fullname === 'string') {
+    searchParams.fullname = fullname
+  }
+  if (info && typeof info === 'string') {
+    searchParams.info = info
+  }
+  const redirectUrl = addSearchParams(new URL(Astro.url), searchParams)
+  return Astro.redirect(redirectUrl.toString())
+}
+
+const apiUrl = new URL(import.meta.env.API_URL + '/victims')
+
+const params = getParams(Astro.url, 'page', 'pagesize', 'fullname', 'info')
+for (const key of objectKeys(params)) {
+  const param = params[key]
+  if (param !== null) {
+    apiUrl.searchParams.set(key, param)
+  }
+}
+
+const res = await fetch(apiUrl)
+const json = await res.json()
+
+metadata = json.metadata
+victims = json.victims
+
+// TODO: figure out how keep other searchParams like 'fullname' or 'info'
+const next =
+  metadata.currentPage < metadata.lastPage
+    ? `/holocaust/list-of-holocaust-victims?page=${metadata.currentPage + 1}`
+    : undefined
+const prev =
+  metadata.currentPage > 1
+    ? `/holocaust/list-of-holocaust-victims?page=${metadata.currentPage - 1}`
+    : undefined
+---
+
+<MainLayout title="Списки розстріляних" description="Списки розстріляних">
+  <div class="not-prose mx-auto max-w-4xl">
+    <div class="mb-7">
+      <h1 class="text-3xl font-bold">Списки розстріляних</h1>
+      <p class="mt-2 text-sm italic">
+        Матеріали взяті з фонду "Пам’ять Бабиного Яру", голова І. М. Левітас
+      </p>
+    </div>
+    <div class="mb-10">
+      <form
+        method="POST"
+        class="rounded border border-stone-900/10 bg-stone-200 px-8 py-4 text-base"
+      >
+        <div class="grid grid-cols-1 gap-x-5 gap-y-5 md:grid-cols-2">
+          <label class="block w-full text-base">
+            ПІБ
+            <input
+              type="text"
+              name="fullname"
+              value={params?.fullname ?? ''}
+              class="block h-10 w-full rounded border border-stone-900/20 px-2 outline-none focus:ring-2 focus:ring-stone-400"
+            />
+          </label>
+          <label class="block text-base">
+            Інфо
+            <input
+              type="text"
+              name="info"
+              value={params?.info ?? ''}
+              class="block h-10 w-full rounded border border-stone-900/20 px-2 outline-none focus:ring-2 focus:ring-stone-400"
+            />
+          </label>
+        </div>
+        <button
+          class="mt-5 rounded bg-stone-600 px-4 py-2 text-stone-100 outline-none focus:ring-2 focus:ring-stone-200 focus:ring-offset-stone-950"
+          >Пошук</button
+        >
+      </form>
+    </div>
+    <table class="w-full max-w-4xl table-auto border-collapse">
+      <thead>
+        <tr>
+          <th class="border-l border-t"></th>
+          <th class="border-t py-2 pl-3 text-left font-bold">ПІБ</th>
+          <th class="border-r border-t py-2 pl-3 text-left font-bold">Інфо</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          victims.map((victim: Victim, i) => (
+            <tr class="text-base odd:bg-zinc-50 even:bg-white">
+              <td class="border-b border-l border-t pl-3">
+                {(metadata.currentPage - 1) * metadata.pageSize + i + 1}
+              </td>
+              <td class="border-b border-t py-2 pl-3">{victim.fullname}</td>
+              <td class="border-b border-r border-t py-2 pl-3">
+                {victim.info}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+    <div class="mt-10 max-w-4xl">
+      <Pagination
+        next={next}
+        prev={prev}
+        current={metadata.currentPage}
+        total={metadata.lastPage}
+        baseUrl="/holocaust/list-of-holocaust-victims?page="
+      />
+    </div>
+  </div>
+</MainLayout>
