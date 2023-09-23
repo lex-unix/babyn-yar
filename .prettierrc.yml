@@ -8,5 +8,10 @@ trailingComma: 'none'
 proseWrap: always
 plugins:
   - prettier-plugin-astro
+  - prettier-plugin-svelte
   - prettier-plugin-tailwindcss
 pluginSearchDirs: false
+overrides:
+  - files: '*.svelte'
+    options:
+      parser: 'svelte'
