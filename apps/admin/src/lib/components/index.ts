@@ -1,4 +1,8 @@
 export { default as Sidebar } from './Sidebar.svelte'
 export { default as SidebarLink } from './SidebarLink.svelte'
 export { default as SidebarLinkLabel } from './SidebarLinkLabel.svelte'
+export { default as Table } from './Table/Table.svelte'
+export { default as TableRow } from './Table/TableRow.svelte'
+export { default as TableHeader } from './Table/TableHeader.svelte'
+export { default as TableData } from './Table/TableData.svelte'
 export { default as Input } from './Input.svelte'
