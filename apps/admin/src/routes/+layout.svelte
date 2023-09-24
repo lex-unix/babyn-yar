@@ -19,5 +19,7 @@
       <SidebarLinkLabel>Налаштування</SidebarLinkLabel>
     </SidebarLink>
   </Sidebar>
-  <slot />
+  <div class="w-full overflow-hidden px-5 pt-10">
+    <slot />
+  </div>
 </div>
