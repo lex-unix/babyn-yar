@@ -3,7 +3,7 @@
 
   export let href: string
 
-  $: active = $page.url.pathname === href
+  $: active = $page.url.pathname.includes(href)
 </script>
 
 <li class="my-0.5 px-4">
