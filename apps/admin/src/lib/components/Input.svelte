@@ -5,6 +5,7 @@
   export let name: string
   export let label: string
   export let required: boolean = false
+  export let error: string | undefined
 
   const dispatch = createEventDispatcher()
 
@@ -20,6 +21,9 @@
 
 <label class="block text-gray-400">
   {label}
+  {#if error}
+    <p class="-mb-1.5 text-red-500">{error}</p>
+  {/if}
   <input
     {type}
     {name}
