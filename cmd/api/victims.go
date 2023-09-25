@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/lex-unix/babyn-yar/internal/data"
@@ -32,7 +31,6 @@ func (app *application) listVictimsHandler(w http.ResponseWriter, r *http.Reques
 
 	victims, metadata, err := app.models.Victims.GetAll(input.Fullname, input.Info, input.Filters)
 	if err != nil {
-		log.Println(err)
 		app.serverErrorResponse(w, r, err)
 		return
 	}
