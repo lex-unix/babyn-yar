@@ -16,6 +16,6 @@
     {required}
     type="text"
     bind:value
-    class="mt-1.5 block h-10 w-full rounded border px-2 text-base text-gray-900 outline-none hover:border-sky-400 focus:border-sky-400 focus:ring focus:ring-sky-100"
+    class="mt-1.5 block h-10 w-full rounded border px-2 text-base text-gray-900 outline-none hover:border-teal-400 focus:border-teal-400 focus:ring focus:ring-teal-100"
   />
 </label>

@@ -4,12 +4,14 @@
   import { PlusIcon } from 'lucide-svelte'
   import type { EventErrorResponse } from '$lib'
 
+  let loading = false
   let content: JSONContent
   let errors: EventErrorResponse | undefined
   let title = ''
   let description = ''
 
   async function submit() {
+    loading = true
     const body = JSON.stringify({
       title,
       description,
@@ -24,6 +26,7 @@
       console.log(json)
       errors = json.error
     }
+    loading = false
   }
 </script>
 
@@ -31,10 +34,17 @@
   <h1 class="text-2xl font-semibold">Нова подія</h1>
   <button
     form="create-event"
-    class="flex items-center gap-3 rounded-md border border-sky-700/10 bg-teal-500 px-4 py-2 text-sm font-medium text-white"
+    class="flex items-center gap-3 rounded-md border border-sky-700/10 bg-teal-500 px-4 py-2 text-sm font-medium text-white disabled:opacity-70"
+    disabled={loading}
   >
     <PlusIcon size={16} />
-    <span>Створити</span>
+    <span>
+      {#if loading}
+        Створення...
+      {:else}
+        Створити
+      {/if}
+    </span>
   </button>
 </div>
 

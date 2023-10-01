@@ -7,7 +7,7 @@ type BaseContent = {
   content: JSONContent
 }
 export type Event = BaseContent & {
-  createtAt: string
+  createdAt: string
   updatedAt: string
   version: number
 }
@@ -24,6 +24,13 @@ type BaseContentErrorResponse = {
   title?: string
   description?: string
   content?: string
+}
+
+export type Asset = {
+  id: number
+  createdAt: string
+  url: string
+  fileName: string
 }
 
 export type EventErrorResponse = BaseContentErrorResponse

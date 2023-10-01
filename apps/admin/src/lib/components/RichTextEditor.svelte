@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from 'svelte'
   import { Editor, type JSONContent } from '@tiptap/core'
   import { extensions } from '$lib'
+  import AssetDialog from './AssetDialog.svelte'
   import {
     BoldIcon,
     PilcrowIcon,
@@ -13,13 +14,20 @@
     UnderlineIcon,
     AlignCenterIcon,
     AlignLeftIcon,
-    AlignRightIcon
+    AlignRightIcon,
+    ImageIcon
   } from 'lucide-svelte'
 
   export let content: JSONContent
 
   let element: HTMLDivElement
   let editor: Editor
+  let assetDialog: AssetDialog
+
+  function selectImage(e: CustomEvent<{ url: string }>) {
+    assetDialog.closeDialog()
+    editor.commands.setImage({ src: e.detail.url })
+  }
 
   onMount(() => {
     editor = new Editor({
@@ -142,6 +150,14 @@
         >
           <AlignRightIcon size={16} />
         </button>
+        <div class="min-h-full w-[1px] self-stretch bg-gray-800/10" />
+        <button
+          type="button"
+          on:click={() => assetDialog.openDialog()}
+          class="rounded p-1.5 hover:bg-gray-600/10"
+        >
+          <ImageIcon size={16} />
+        </button>
       </div>
     </div>
   {/if}
@@ -149,7 +165,9 @@
   <div bind:this={element} />
 </div>
 
-<style>
+<AssetDialog bind:this={assetDialog} on:select={selectImage} />
+
+<style lang="postcss">
   .active {
     @apply bg-gray-600/10;
   }
