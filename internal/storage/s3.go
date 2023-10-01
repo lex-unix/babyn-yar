@@ -49,15 +49,10 @@ func NewS3Handler(cfg config.Config) (*S3Handler, error) {
 
 }
 
-func (handler S3Handler) Upload(file io.ReadSeeker, filename string) (string, error) {
-	contentType, err := detectContentType(file)
-	if err != nil {
-		return "", err
-	}
-
+func (handler S3Handler) Upload(file io.ReadSeeker, filename, contentType string) (string, error) {
 	uploader := manager.NewUploader(handler.client)
 
-	_, err = uploader.Upload(context.TODO(), &s3.PutObjectInput{
+	_, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
 		Body:        file,
 		Bucket:      aws.String(handler.bucket),
 		Key:         aws.String(filename),
