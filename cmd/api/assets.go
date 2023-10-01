@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/lex-unix/babyn-yar/internal/data"
@@ -81,10 +80,7 @@ func (app *application) listAssetsHandler(w http.ResponseWriter, r *http.Request
 	input.Filters.Sort = app.readString(qs, "sort", "-created_at")
 	input.Filters.SortSafelist = []string{"created_at", "file_name", "-created_at", "-file_name"}
 
-	log.Println(input.Filename)
-
 	if data.ValidateFilters(v, input.Filters); !v.Valid() {
-		log.Println(v.Errors)
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
