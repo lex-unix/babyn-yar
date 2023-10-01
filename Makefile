@@ -21,7 +21,11 @@ confirm:
 ## run/api: run cmd/api application
 .PHONY: run/api
 run/api:
-	@go run ./cmd/api -db-dsn=${DATABASE_URL} -port=${API_PORT}
+	@go run ./cmd/api  -db-dsn=${DATABASE_URL}  -port=${API_PORT} \
+		-storage-account-id=${STORAGE_ACCOUNT_ID} \
+		-storage-access-key-id=${STORAGE_ACCESS_KEY_ID} \
+		-storage-access-key-secret=${STORAGE_SECRET_ACCESS_KEY} \
+		-storage-bucket=${STORAGE_BUCKET_NAME}
 
 ## db/psql: connect to the database using psql
 .PHONY: db/psql
