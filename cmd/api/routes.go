@@ -25,8 +25,12 @@ func (app *application) routes() http.Handler {
 
 	// events
 	router.Get("/v1/events", app.listEventsHandler)
-	router.Post("/v1/events", app.createEventHandler)
 	router.Get("/v1/events/{id}", app.showEventHandler)
+	router.Post("/v1/events", app.createEventHandler)
+
+	// assets
+	router.Get("/v1/assets", app.listAssetsHandler)
+	router.Post("/v1/assets", app.createAssetsHandler)
 
 	return router
 }
