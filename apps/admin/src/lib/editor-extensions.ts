@@ -2,6 +2,7 @@ import Link from '@tiptap/extension-link'
 import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
+import Image from '@tiptap/extension-image'
 
 export const extensions = [
   StarterKit.configure({
@@ -34,6 +35,11 @@ export const extensions = [
   Link.configure({
     HTMLAttributes: {
       class: 'underline text-blue-500'
+    }
+  }),
+  Image.configure({
+    HTMLAttributes: {
+      class: 'max-w-[400px] object-contain min-h-[120px] w-full rounded-lg'
     }
   })
 ]
