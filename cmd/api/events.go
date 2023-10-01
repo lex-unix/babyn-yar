@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/lex-unix/babyn-yar/internal/data"
@@ -62,7 +63,11 @@ func (app *application) listEventsHandler(w http.ResponseWriter, r *http.Request
 	input.Filters.Page = app.readInt(qs, "page", 1, v)
 	input.Filters.PageSize = app.readInt(qs, "page_size", 10, v)
 
+	input.Filters.Sort = app.readString(qs, "sort", "-created_at")
+	input.Filters.SortSafelist = []string{"created_at", "-created_at"}
+
 	if data.ValidateFilters(v, input.Filters); !v.Valid() {
+		log.Println(v.Errors)
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
