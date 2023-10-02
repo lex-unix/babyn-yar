@@ -1,5 +1,4 @@
 export { extensions } from './editor-extensions'
 export { formatDate } from './format-date'
-export type { Metadata, Event, EventErrorResponse, Asset } from './types'
 export { fetchEvent, createEvent, updateEvent } from './events'
 export { fetchAssets, createAssets } from './assets'

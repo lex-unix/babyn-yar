@@ -2,7 +2,7 @@
   import { Table, TableData, TableHeader, TableRow } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
   import { formatDate } from '$lib'
-  import type { Event, Metadata } from '$lib'
+  import type { Event, Metadata } from '$lib/types'
 
   type EventResponse = {
     events: Event[]

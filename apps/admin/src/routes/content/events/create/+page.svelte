@@ -2,7 +2,7 @@
   import { Input, RichTextEditor } from '$components'
   import type { JSONContent } from '@tiptap/core'
   import { PlusIcon } from 'lucide-svelte'
-  import type { EventErrorResponse } from '$lib'
+  import type { EventErrorResponse } from '$lib/types'
 
   let loading = false
   let content: JSONContent

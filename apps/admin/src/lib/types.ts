@@ -31,6 +31,7 @@ export type Asset = {
   createdAt: string
   url: string
   fileName: string
+  contentType: string
 }
 
 export type EventErrorResponse = BaseContentErrorResponse
