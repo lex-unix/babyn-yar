@@ -17,14 +17,14 @@
     ImageIcon,
     VideoIcon
   } from 'lucide-svelte'
-  import { AssetsDialog, SearchBar } from '$components'
+  import { AssetDialog, SearchBar } from '$components'
 
   export let content: JSONContent
 
   let searchValue = ''
   let element: HTMLDivElement
   let editor: Editor
-  let assetsDialog: AssetsDialog
+  let assetsDialog: AssetDialog
 
   function selectAsset(e: CustomEvent<{ url: string }>) {
     assetsDialog.closeDialog()
@@ -173,11 +173,11 @@
   <div bind:this={element} />
 </div>
 
-<AssetsDialog bind:this={assetsDialog} on:select={selectAsset}>
+<AssetDialog bind:this={assetsDialog} on:select={selectAsset}>
   <svelte:fragment slot="title">Медіа файли</svelte:fragment>
   <svelte:fragment slot="description">Оберіть потрібний файл</svelte:fragment>
   <SearchBar bind:value={searchValue} slot="search" />
-</AssetsDialog>
+</AssetDialog>
 
 <style lang="postcss">
   .active {
