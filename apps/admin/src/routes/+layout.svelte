@@ -4,7 +4,7 @@
   import { Layers, Image, Cog } from 'lucide-svelte'
 </script>
 
-<div class="flex bg-gray-50 text-gray-900">
+<div class="flex h-screen bg-gray-50 text-gray-900">
   <Sidebar>
     <SidebarLink href="/content">
       <Layers size={20} class="min-w-[20px]" />
@@ -19,7 +19,7 @@
       <SidebarLinkLabel>Налаштування</SidebarLinkLabel>
     </SidebarLink>
   </Sidebar>
-  <div class="flex-1 overflow-hidden px-5 pt-10">
+  <div class="flex-1 overflow-y-auto overflow-x-hidden px-5 py-10">
     <slot />
   </div>
 </div>
