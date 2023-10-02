@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Input, RichTextEditor } from '$components'
+  import { createEvent } from '$lib'
   import type { JSONContent } from '@tiptap/core'
   import { PlusIcon } from 'lucide-svelte'
   import type { EventErrorResponse } from '$lib/types'
@@ -17,14 +18,9 @@
       description,
       content: JSON.stringify(content)
     })
-    const res = await fetch('http://localhost:8000/v1/events', {
-      method: 'POST',
-      body
-    })
-    if (!res.ok) {
-      const json = await res.json()
-      console.log(json)
-      errors = json.error
+    const response = await createEvent(body)
+    if (!response.ok) {
+      errors = response.errors
     }
     loading = false
   }

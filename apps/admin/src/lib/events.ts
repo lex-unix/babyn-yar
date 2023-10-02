@@ -1,9 +1,53 @@
-import { } from '$app/stores'
-import type { Event } from './types'
+import {} from '$app/stores'
+import type { Event, EventErrorResponse } from './types'
 
 export async function fetchEvent(id: string) {
   const res = await fetch('http://localhost:8000/v1/events/' + id)
   const { event } = (await res.json()) as { event: Event }
   event.content = JSON.parse(event.content as unknown as string)
   return event
+}
+
+export async function createEvent(body: string) {
+  try {
+    const response = await fetch('http://localhost:8000/v1/events', {
+      method: 'POST',
+      body
+    })
+    if (!response.ok) {
+      const json = await response.json()
+      if (response.status === 442) {
+        const errors: EventErrorResponse = json.error
+        return { ok: false as const, errors }
+      } else {
+        return { ok: false as const }
+      }
+    }
+    return { ok: true as const }
+  } catch (e) {
+    console.log(e)
+    return { ok: false as const }
+  }
+}
+
+export async function updateEvent(id: string, body: string) {
+  try {
+    const response = await fetch('http://localhost:8000/v1/events/' + id, {
+      method: 'PATCH',
+      body
+    })
+    if (!response.ok) {
+      const json = await response.json()
+      if (response.status === 442) {
+        const errors: EventErrorResponse = json.error
+        return { ok: false as const, errors }
+      } else {
+        return { ok: false as const }
+      }
+    }
+    return { ok: true as const }
+  } catch (e) {
+    console.log(e)
+    return { ok: false as const }
+  }
 }
