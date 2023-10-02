@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { SearchBar } from '$components'
   import { fetchAssets } from '$lib/assets'
   import type { Asset } from '$lib/types'
   import { createDialog, melt } from '@melt-ui/svelte'
@@ -9,10 +10,23 @@
     open.set(true)
     const res = await fetchAssets(type)
     assets = res.assets
+    contentType = type
   }
 
   export function closeDialog() {
     open.set(false)
+  }
+
+  let timeoutId: ReturnType<typeof setTimeout>
+  let contentType: string
+
+  async function search(e: CustomEvent<{ search: string }>) {
+    console.log(e.detail.search)
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(async () => {
+      const res = await fetchAssets(contentType, { filename: e.detail.search })
+      assets = res.assets
+    }, 1000)
   }
 
   const dispatch = createEventDispatcher<{
@@ -43,11 +57,10 @@
 <div use:melt={$portalled}>
   {#if $open}
     <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" />
-    <div
-      class="fixed inset-0 z-50 overflow-y-auto overflow-x-hidden p-10"
-      use:melt={$content}
-    >
-      <div class="relative h-full rounded-xl bg-gray-50 p-6 shadow-xl">
+    <div class="fixed inset-0 z-50 p-10" use:melt={$content}>
+      <div
+        class="relative h-full overflow-y-auto overflow-x-hidden rounded-xl bg-gray-50 p-6 shadow-xl"
+      >
         <h2 use:melt={$title} class="m-0 text-xl font-semibold text-gray-900">
           <slot name="title" />
         </h2>
@@ -58,7 +71,7 @@
           <slot name="description" />
         </p>
         <div class="mb-10">
-          <slot name="search" />
+          <SearchBar on:search={search} />
         </div>
 
         <ul class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">

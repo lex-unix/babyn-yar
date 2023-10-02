@@ -2,8 +2,6 @@
   import { SearchIcon } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
 
-  export let value: string
-
   const dispatch = createEventDispatcher()
 
   function search(
@@ -11,7 +9,7 @@
       currentTarget: EventTarget & HTMLInputElement
     }
   ) {
-    dispatch('search', { value: e.currentTarget.value })
+    dispatch('search', { search: e.currentTarget.value })
   }
 </script>
 
@@ -22,9 +20,8 @@
     <div class="relative w-full">
       <input
         type="search"
-        bind:value
         placeholder="Пошук файлів..."
-        on:change={search}
+        on:input={search}
         class="w-full border-none bg-transparent py-3.5 pl-10 outline-none placeholder:text-gray-400"
       />
       <SearchIcon
