@@ -1,11 +1,12 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { Trash2Icon } from 'lucide-svelte'
+  import { Trash2Icon, FileVideo2Icon, FileTextIcon } from 'lucide-svelte'
 
   export let src: string
   export let fileName: string
   export let extension: string
   export let index: number
+  export let type: string
 
   const dispatch = createEventDispatcher<{ remove: { index: number } }>()
 
@@ -24,12 +25,20 @@
   >
     <Trash2Icon size={16} />
   </button>
-  <div class="flex h-[160px] overflow-hidden rounded-lg bg-gray-200">
-    <img
-      {src}
-      alt="Файл для завантаження"
-      class="max-h-full w-full object-cover"
-    />
+  <div
+    class="flex h-[160px] items-center justify-center overflow-hidden rounded-lg bg-gray-200"
+  >
+    {#if type.startsWith('image')}
+      <img
+        {src}
+        alt="Файл для завантаження"
+        class="max-h-full w-full object-cover"
+      />
+    {:else if type.startsWith('video')}
+      <FileVideo2Icon class="h-20 w-20 text-amber-400" />
+    {:else}
+      <FileTextIcon class="h-20 w-20 text-blue-400" />
+    {/if}
   </div>
   <div class="w-full">
     <div class="mb-2">

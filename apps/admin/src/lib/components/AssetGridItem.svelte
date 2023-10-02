@@ -1,26 +1,14 @@
 <script lang="ts">
-  import { FileIcon } from 'lucide-svelte'
+  import { FileVideo2Icon, FileTextIcon } from 'lucide-svelte'
 
   export let selected: string[]
   export let id: number
   export let src: string
   export let alt: string
   export let fileName: string
+  export let contentType: string
 
   $: checked = selected.includes(id.toString())
-
-  function getFileType(fileName: string) {
-    if (
-      fileName.endsWith('.jpg') ||
-      fileName.endsWith('.png') ||
-      fileName.endsWith('.jpeg') ||
-      fileName.endsWith('.webp')
-    ) {
-      return 'image'
-    } else {
-      return 'file'
-    }
-  }
 
   function handleChange(
     e: Event & { currentTarget: EventTarget & HTMLInputElement }
@@ -32,8 +20,6 @@
       selected = selected.filter(item => item !== value)
     }
   }
-
-  const fileType = getFileType(fileName)
 </script>
 
 <li class="p-2.5">
@@ -43,10 +29,14 @@
     >
       <div class="h-full w-full">
         <div class="flex h-[140px] items-center justify-center text-gray-500">
-          {#if fileType === 'image'}
+          {#if contentType.startsWith('image')}
             <img {src} {alt} class="max-h-full max-w-full" />
+          {:else if contentType.startsWith('video')}
+            <div>
+              <FileVideo2Icon class="h-20 w-20 text-amber-400" />
+            </div>
           {:else}
-            <FileIcon />
+            <FileTextIcon class="h-20 w-20 text-blue-400" />
           {/if}
         </div>
       </div>

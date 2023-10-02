@@ -2,6 +2,7 @@
   import { createDialog, melt } from '@melt-ui/svelte'
   import { UploadCloudIcon, XIcon } from 'lucide-svelte'
   import FileListItem from './FileListItem.svelte'
+  import { createAssets } from '$lib/assets'
 
   export function openDialog() {
     open.set(true)
@@ -51,13 +52,9 @@
       formData.append('assets', file, fileName + '.' + extension)
     })
 
-    const res = await fetch('http://localhost:8000/v1/assets', {
-      method: 'POST',
-      body: formData
-    })
-
-    if (res.ok) {
-      console.log('ggggg')
+    const response = await createAssets(formData)
+    if (!response.ok) {
+      console.log(response.error)
     }
 
     isSubmitting = false
@@ -102,6 +99,7 @@
                   {index}
                   {extension}
                   src={URL.createObjectURL(file)}
+                  type={file.type}
                   bind:fileName
                   on:remove={removeFile}
                 />
