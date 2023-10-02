@@ -2,7 +2,7 @@
   import { fetchAssets } from '$lib/assets'
   import type { Asset } from '$lib/types'
   import { createDialog, melt } from '@melt-ui/svelte'
-  import { X } from 'lucide-svelte'
+  import { FileText, FileVideo2, X } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
 
   export async function openDialog(type: string) {
@@ -67,11 +67,17 @@
                     <div
                       class="flex h-[140px] items-center justify-center text-gray-500"
                     >
-                      <img
-                        src={asset.url}
-                        alt={asset.fileName}
-                        class="max-h-full max-w-full"
-                      />
+                      {#if asset.contentType.startsWith('image')}
+                        <img
+                          src={asset.url}
+                          alt={asset.fileName}
+                          class="max-h-full max-w-full"
+                        />
+                      {:else if asset.contentType.startsWith('video')}
+                        <FileVideo2 class="h-20 w-20 text-amber-400" />
+                      {:else}
+                        <FileText class="h-20 w-20 text-blue-400" />
+                      {/if}
                     </div>
                   </div>
                 </div>
