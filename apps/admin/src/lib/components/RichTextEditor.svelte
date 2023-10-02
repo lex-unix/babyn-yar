@@ -2,7 +2,6 @@
   import { onMount, onDestroy } from 'svelte'
   import { Editor, type JSONContent } from '@tiptap/core'
   import { extensions } from '$lib'
-  import AssetDialog from './AssetDialog.svelte'
   import {
     BoldIcon,
     PilcrowIcon,
@@ -15,17 +14,20 @@
     AlignCenterIcon,
     AlignLeftIcon,
     AlignRightIcon,
-    ImageIcon
+    ImageIcon,
+    VideoIcon
   } from 'lucide-svelte'
+  import { AssetsDialog, SearchBar } from '$components'
 
   export let content: JSONContent
 
+  let searchValue = ''
   let element: HTMLDivElement
   let editor: Editor
-  let assetDialog: AssetDialog
+  let assetsDialog: AssetsDialog
 
-  function selectImage(e: CustomEvent<{ url: string }>) {
-    assetDialog.closeDialog()
+  function selectAsset(e: CustomEvent<{ url: string }>) {
+    assetsDialog.closeDialog()
     editor.commands.setImage({ src: e.detail.url })
   }
 
@@ -153,19 +155,29 @@
         <div class="min-h-full w-[1px] self-stretch bg-gray-800/10" />
         <button
           type="button"
-          on:click={() => assetDialog.openDialog()}
+          on:click={() => assetsDialog.openDialog('image')}
           class="rounded p-1.5 hover:bg-gray-600/10"
         >
           <ImageIcon size={16} />
         </button>
+        <button
+          type="button"
+          on:click={() => assetsDialog.openDialog('video')}
+          class="rounded p-1.5 hover:bg-gray-600/10"
+        >
+          <VideoIcon size={16} />
+        </button>
       </div>
     </div>
   {/if}
-
   <div bind:this={element} />
 </div>
 
-<AssetDialog bind:this={assetDialog} on:select={selectImage} />
+<AssetsDialog bind:this={assetsDialog} on:select={selectAsset}>
+  <svelte:fragment slot="title">Медіа файли</svelte:fragment>
+  <svelte:fragment slot="description">Оберіть потрібний файл</svelte:fragment>
+  <SearchBar bind:value={searchValue} slot="search" />
+</AssetsDialog>
 
 <style lang="postcss">
   .active {

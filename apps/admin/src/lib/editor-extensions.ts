@@ -3,6 +3,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
+import { Video } from './video-extension'
 
 export const extensions = [
   StarterKit.configure({
@@ -41,5 +42,6 @@ export const extensions = [
     HTMLAttributes: {
       class: 'max-w-[400px] object-contain min-h-[120px] w-full rounded-lg'
     }
-  })
+  }),
+  Video
 ]
