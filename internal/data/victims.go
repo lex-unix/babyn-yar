@@ -20,12 +20,15 @@ type VictimModel struct {
 }
 
 func (m VictimModel) GetAll(fullname string, info string, filters Filters) ([]*Victim, Metadata, error) {
+	// sorting by id here because of mixed langauge in full_name column
+	// full_name ordering gives unexpected results
+	// because this table probably won't change this is okay
 	query := `
 		SELECT count(*) OVER(), id, full_name, info, version
 		FROM victims
 		WHERE (to_tsvector('simple', full_name) @@ plainto_tsquery('simple', $1) OR $1 = '')
 		AND (to_tsvector('simple', info) @@ plainto_tsquery('simple', $2) OR $2 = '')
-		ORDER BY full_name
+		ORDER BY id
 		LIMIT $3 OFFSET $4`
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 
@@ -54,4 +57,3 @@ func (m VictimModel) GetAll(fullname string, info string, filters Filters) ([]*V
 
 	return victims, metadata, nil
 }
-
