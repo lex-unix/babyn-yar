@@ -1,0 +1,2 @@
+ALTER TABLE assets ADD COLUMN content_type TEXT NOT NULL DEFAULT 'image';
+ALTER TABLE assets ALTER COLUMN content_type DROP DEFAULT;

@@ -46,8 +46,9 @@ func (app *application) createAssetsHandler(w http.ResponseWriter, r *http.Reque
 		}
 
 		asset := data.Asset{
-			URL:      url,
-			Filename: fileHeader.Filename,
+			URL:         url,
+			Filename:    fileHeader.Filename,
+			ContentType: contentType,
 		}
 		err = app.models.Assets.Insert(&asset)
 		if err != nil {
@@ -64,7 +65,8 @@ func (app *application) createAssetsHandler(w http.ResponseWriter, r *http.Reque
 
 func (app *application) listAssetsHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Filename string
+		Filename    string
+		ContentType string
 		data.Filters
 	}
 
@@ -73,6 +75,7 @@ func (app *application) listAssetsHandler(w http.ResponseWriter, r *http.Request
 	qs := r.URL.Query()
 
 	input.Filename = app.readString(qs, "filename", "")
+	input.ContentType = app.readString(qs, "content_type", "")
 
 	input.Filters.Page = app.readInt(qs, "page", 1, v)
 	input.Filters.PageSize = app.readInt(qs, "pagesize", 20, v)
@@ -85,7 +88,7 @@ func (app *application) listAssetsHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	assets, metadata, err := app.models.Assets.GetAll(input.Filename, input.Filters)
+	assets, metadata, err := app.models.Assets.GetAll(input.Filename, input.ContentType, input.Filters)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
