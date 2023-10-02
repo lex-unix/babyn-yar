@@ -24,6 +24,9 @@ func (app *application) listVictimsHandler(w http.ResponseWriter, r *http.Reques
 	input.Filters.Page = app.readInt(qs, "page", 1, v)
 	input.Filters.PageSize = app.readInt(qs, "pagesize", 100, v)
 
+	input.Filters.Sort = app.readString(qs, "sort", "-fullname")
+	input.Filters.SortSafelist = []string{"fullname", "-fullname"}
+
 	if data.ValidateFilters(v, input.Filters); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
 		return
