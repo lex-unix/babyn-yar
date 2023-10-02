@@ -26,9 +26,14 @@
   let editor: Editor
   let assetsDialog: AssetDialog
 
-  function selectAsset(e: CustomEvent<{ url: string }>) {
+  function selectAsset(e: CustomEvent<{ url: string; type: string }>) {
+    const { url, type } = e.detail
     assetsDialog.closeDialog()
-    editor.commands.setImage({ src: e.detail.url })
+    if (type === 'image') {
+      editor.commands.setImage({ src: url })
+    } else {
+      editor.commands.setVideo(url)
+    }
   }
 
   onMount(() => {

@@ -43,5 +43,9 @@ export const extensions = [
       class: 'max-w-[400px] object-contain min-h-[120px] w-full rounded-lg'
     }
   }),
-  Video
+  Video.configure({
+    HTMLAttributes: {
+      class: 'max-w-[400px] min-h-[120px] w-full'
+    }
+  })
 ]

@@ -49,7 +49,12 @@ export const Video = Node.create({
   renderHTML({ HTMLAttributes }) {
     return [
       'video',
-      { controls: 'true', style: 'width: 100%', ...HTMLAttributes },
+      {
+        controls: 'true',
+        style: 'width: 100%',
+        class: 'max-w-[400px] rounded-lg min-h-[120px] w-full',
+        ...HTMLAttributes
+      },
       ['source', HTMLAttributes]
     ]
   },
@@ -58,15 +63,13 @@ export const Video = Node.create({
     return {
       setVideo:
         (src: string) =>
-          ({ commands }) =>
-            commands.insertContent(
-              `<video controls="true" style="width: 100%" src="${src}" />`
-            ),
+        ({ commands }) =>
+          commands.insertContent(`<video controls="true" src="${src}" />`),
 
       toggleVideo:
         () =>
-          ({ commands }) =>
-            commands.toggleNode(this.name, 'paragraph')
+        ({ commands }) =>
+          commands.toggleNode(this.name, 'paragraph')
     }
   },
 

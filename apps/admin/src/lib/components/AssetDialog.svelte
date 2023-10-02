@@ -15,10 +15,18 @@
     open.set(false)
   }
 
-  const dispatch = createEventDispatcher<{ select: { url: string } }>()
+  const dispatch = createEventDispatcher<{
+    select: { url: string; type: string }
+  }>()
 
-  function selectAsset(url: string) {
-    dispatch('select', { url })
+  function selectAsset(url: string, contentType: string) {
+    let type = ''
+    if (contentType.startsWith('image')) {
+      type = 'image'
+    } else if (contentType.startsWith('video')) {
+      contentType = 'video'
+    }
+    dispatch('select', { url, type })
   }
 
   let assets: Asset[] = []
@@ -58,7 +66,7 @@
             <li class="p-2.5">
               <button
                 class="group relative w-full"
-                on:click={() => selectAsset(asset.url)}
+                on:click={() => selectAsset(asset.url, asset.contentType)}
               >
                 <div
                   class="h-[140px] max-h-[140px] w-full min-w-[220px] overflow-x-hidden rounded-lg bg-gray-200"
