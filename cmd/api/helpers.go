@@ -114,7 +114,6 @@ func (app *application) readIDParam(r *http.Request) (int64, error) {
 }
 
 func (app *application) detectContentType(file io.ReadSeeker) (string, error) {
-
 	buffer := make([]byte, 512)
 	n, err := file.Read(buffer)
 	if err != nil {

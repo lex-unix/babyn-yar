@@ -114,3 +114,33 @@ func (m EventModel) Get(id int64) (*Event, error) {
 
 	return &event, nil
 }
+
+func (m EventModel) Update(event *Event) error {
+	query := `
+		UPDATE events
+		SET title = $1, description = $2, content = $3, updated_at = now(), version = version + 1
+		WHERE id = $4 AND version = $5
+		RETURNING version`
+
+	args := []interface{}{
+		event.Title,
+		event.Description,
+		event.Content,
+		event.ID,
+		event.Version,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err := m.DB.QueryRow(ctx, query, args...).Scan(&event.Version)
+	if err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return ErrEditConflict
+		default:
+			return err
+		}
+	}
+	return nil
+}
