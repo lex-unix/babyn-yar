@@ -5,6 +5,7 @@
   import { fetchEvent, updateEvent } from '$lib'
   import type { EventErrorResponse } from '$lib/types'
   import { onMount } from 'svelte'
+  import { addToast } from '$components/Toaster.svelte'
 
   let loading = false
   let event: Event
@@ -25,6 +26,14 @@
     const res = await updateEvent($page.params.slug, body)
     if (!res.ok) {
       errors = errors
+    } else {
+      addToast({
+        data: {
+          title: 'Чудово!',
+          description: 'Ваші зміни було збережено',
+          color: 'bg-emerald-500'
+        }
+      })
     }
     loading = false
   }

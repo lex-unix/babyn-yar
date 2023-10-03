@@ -1,6 +1,6 @@
 <script>
   import '../app.css'
-  import { Sidebar, SidebarLink, SidebarLinkLabel } from '$components'
+  import { Sidebar, Toaster, SidebarLink, SidebarLinkLabel } from '$components'
   import { Layers, Image, Cog } from 'lucide-svelte'
 </script>
 
@@ -23,3 +23,5 @@
     <slot />
   </div>
 </div>
+
+<Toaster />

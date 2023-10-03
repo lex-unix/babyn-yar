@@ -12,6 +12,10 @@ type Filters = {
   sort?: string
 }
 
+type Error422 = {
+  error: Record<string, string>
+}
+
 const baseUrl = PUBLIC_API_URL + '/assets'
 
 export function fetchAssetsWrapper() {
@@ -65,13 +69,18 @@ export async function createAssets(formData: FormData) {
       body: formData
     })
     if (!response.ok) {
-      const { error } = await response.json()
+      const json = await response.json()
+      if (response.status === 422) {
+        console.log(Object.keys(json.error))
+        let error = 'Файли вже існують: '
+        error += Object.keys(json.error as Error422).join(', ')
+        return { ok: false as const, error }
+      }
+      const error = json.error as string
       return { ok: false as const, error }
-    } else {
-      return { ok: true as const }
     }
   } catch (e) {
     console.log(e)
-    return { ok: false as const }
+    return { ok: false as const, error: 'Спробуйте ще раз' }
   }
 }

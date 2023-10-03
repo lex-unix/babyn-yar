@@ -3,7 +3,9 @@
   import { createEvent } from '$lib'
   import type { JSONContent } from '@tiptap/core'
   import { PlusIcon } from 'lucide-svelte'
+  import { addToast } from '$components/Toaster.svelte'
   import type { EventErrorResponse } from '$lib/types'
+  import { goto } from '$app/navigation'
 
   let loading = false
   let content: JSONContent
@@ -21,6 +23,15 @@
     const response = await createEvent(body)
     if (!response.ok) {
       errors = response.errors
+    } else {
+      addToast({
+        data: {
+          title: 'Чудово!',
+          description: 'Новий запис було успішно створено',
+          color: 'bg-emerald-500'
+        }
+      })
+      goto('/content/events')
     }
     loading = false
   }

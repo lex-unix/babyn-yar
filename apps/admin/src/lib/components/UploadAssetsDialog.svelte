@@ -3,6 +3,7 @@
   import { UploadCloudIcon, XIcon } from 'lucide-svelte'
   import FileListItem from './FileListItem.svelte'
   import { createAssets } from '$lib/assets'
+  import { addToast } from '$components/Toaster.svelte'
 
   export function openDialog() {
     open.set(true)
@@ -54,9 +55,14 @@
 
     const response = await createAssets(formData)
     if (!response.ok) {
-      console.log(response.error)
+      addToast({
+        data: {
+          title: 'Помилка',
+          description: response.error,
+          color: 'bg-red-500'
+        }
+      })
     }
-
     isSubmitting = false
   }
 
