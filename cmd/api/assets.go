@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/lex-unix/babyn-yar/internal/data"
@@ -13,6 +14,7 @@ func (app *application) createAssetsHandler(w http.ResponseWriter, r *http.Reque
 
 	files := r.MultipartForm.File["assets"]
 
+	v := validator.New()
 	for _, fileHeader := range files {
 		file, err := fileHeader.Open()
 		if err != nil {
@@ -28,8 +30,9 @@ func (app *application) createAssetsHandler(w http.ResponseWriter, r *http.Reque
 		}
 
 		if exists {
-			app.writeJson(w, http.StatusConflict, envelope{"error": "file already exists"}, nil)
-			return
+			v.AddError(fileHeader.Filename, "already exists")
+			// app.failedValidationResponse(w, r, map[string]string{"file": message})
+			continue
 		}
 
 		contentType, err := app.detectContentType(file)
@@ -55,6 +58,11 @@ func (app *application) createAssetsHandler(w http.ResponseWriter, r *http.Reque
 			app.serverErrorResponse(w, r, err)
 			return
 		}
+	}
+
+	if !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
 	}
 
 	err := app.writeJson(w, http.StatusCreated, envelope{"status": "ok"}, nil)
@@ -98,5 +106,30 @@ func (app *application) listAssetsHandler(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
+	}
+}
+
+func (app *application) deleteAssetHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFoundResponse(w, r)
+		return
+	}
+
+	err = app.models.Assets.Delete(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+
+	}
+
+	err = app.writeJson(w, http.StatusOK, envelope{"message": "asset deleted"}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
 	}
 }
