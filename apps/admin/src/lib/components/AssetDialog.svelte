@@ -1,14 +1,16 @@
 <script lang="ts">
-  import { SearchBar } from '$components'
-  import { fetchAssets } from '$lib/assets'
+  import { SearchBar, AssetSortMenu } from '$components'
+  import { fetchAssetsWrapper } from '$lib'
   import type { Asset } from '$lib/types'
   import { createDialog, melt } from '@melt-ui/svelte'
   import { FileText, FileVideo2, X } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
 
+  const fetchAssets = fetchAssetsWrapper()
+
   export async function openDialog(type: string) {
     open.set(true)
-    const res = await fetchAssets(type)
+    const res = await fetchAssets({ contentType: type })
     assets = res.assets
     contentType = type
   }
@@ -17,14 +19,18 @@
     open.set(false)
   }
 
+  async function sort(e: CustomEvent<string>) {
+    const res = await fetchAssets({ sort: e.detail })
+    assets = res.assets
+  }
+
   let timeoutId: ReturnType<typeof setTimeout>
   let contentType: string
 
   async function search(e: CustomEvent<{ search: string }>) {
-    console.log(e.detail.search)
     clearTimeout(timeoutId)
     timeoutId = setTimeout(async () => {
-      const res = await fetchAssets(contentType, { filename: e.detail.search })
+      const res = await fetchAssets({ contentType, filename: e.detail.search })
       assets = res.assets
     }, 1000)
   }
@@ -59,7 +65,7 @@
     <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" />
     <div class="fixed inset-0 z-50 p-10" use:melt={$content}>
       <div
-        class="relative h-full overflow-y-auto overflow-x-hidden rounded-xl bg-gray-50 p-6 shadow-xl"
+        class="relative h-full overflow-y-auto overflow-x-hidden rounded-xl bg-gray-50 p-9 shadow-xl"
       >
         <h2 use:melt={$title} class="m-0 text-xl font-semibold text-gray-900">
           <slot name="title" />
@@ -71,7 +77,11 @@
           <slot name="description" />
         </p>
         <div class="mb-10">
-          <SearchBar on:search={search} />
+          <SearchBar on:search={search}>
+            <svelte:fragment slot="filters">
+              <AssetSortMenu on:select={sort} />
+            </svelte:fragment>
+          </SearchBar>
         </div>
 
         <ul class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
@@ -114,11 +124,10 @@
             </li>
           {/each}
         </ul>
-
         <button
           use:melt={$close}
           aria-label="close"
-          class="text-magnum-800 hover:bg-magnum-100 focus:shadow-magnum-400 absolute right-4 top-4 inline-flex h-6 w-6 appearance-none items-center justify-center rounded-full p-1"
+          class="absolute right-9 top-9 inline-flex h-7 w-7 appearance-none items-center justify-center rounded-full p-1 text-gray-800 outline-none hover:bg-gray-100 focus:ring focus:ring-teal-300"
         >
           <X class="square-4" />
         </button>

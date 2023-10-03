@@ -3,34 +3,62 @@
   import {
     AssetGridItem,
     AssetGridItemSkeleton,
-    UploadAssetsDialog
+    UploadAssetsDialog,
+    SearchBar,
+    AssetSortMenu
   } from '$components'
   import { TrashIcon } from 'lucide-svelte'
+  import { fetchAssetsWrapper } from '$lib'
+  import { onMount } from 'svelte'
 
+  let loading = false
   let assets: Asset[] = []
   let selected: string[] = []
   let assetDialog: UploadAssetsDialog
+  let timeoutId: ReturnType<typeof setTimeout>
+
+  const fetchAssets = fetchAssetsWrapper()
+
+  onMount(async () => {
+    loading = true
+    const res = await fetchAssets()
+    assets = res.assets
+    loading = false
+  })
 
   function clear() {
     selected = []
   }
 
+  async function sort(e: CustomEvent<string>) {
+    const res = await fetchAssets({ sort: e.detail })
+    assets = res.assets
+  }
+
+  function search(e: CustomEvent<{ search: string }>) {
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(async () => {
+      const res = await fetchAssets({ filename: e.detail.search })
+      assets = res.assets
+    }, 500)
+  }
+
   function selectAll() {
     selected = assets.map(asset => asset.id.toString())
   }
-
-  const assetsPromise: Promise<Asset[]> = fetch(
-    'http://localhost:8000/v1/assets'
-  )
-    .then(res => res.json())
-    .then(json => json.assets)
-
-  $: console.log(selected)
 </script>
 
 <div class="flex items-center justify-between">
   <h1 class="text-2xl font-semibold">Медіа файли</h1>
   <UploadAssetsDialog bind:this={assetDialog} />
+</div>
+
+<div class="mb-10 mt-6">
+  <SearchBar on:search={search}>
+    <svelte:fragment slot="filters">
+      <AssetSortMenu on:select={sort} />
+    </svelte:fragment>
+  </SearchBar>
 </div>
 
 {#if selected.length > 0}
@@ -58,14 +86,14 @@
 {/if}
 
 <ul class="mt-10 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-  {#await assetsPromise}
+  {#if loading && assets.length === 0}
     <AssetGridItemSkeleton />
     <AssetGridItemSkeleton />
     <AssetGridItemSkeleton />
     <AssetGridItemSkeleton />
     <AssetGridItemSkeleton />
     <AssetGridItemSkeleton />
-  {:then assets}
+  {:else}
     {#each assets as asset}
       <AssetGridItem
         src={asset.url}
@@ -76,5 +104,5 @@
         bind:selected
       />
     {/each}
-  {/await}
+  {/if}
 </ul>

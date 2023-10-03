@@ -30,10 +30,8 @@
       />
     </div>
   </div>
-  <div class="flex flex-[1_1_40%] items-center justify-end gap-4">
-    <button class="text-gray-400 transition-colors hover:text-gray-900">
-      Сортувати: за замовчуванням
-    </button>
+  <div class="flex flex-[0_1_40%] items-center justify-end gap-4">
+    <slot name="filters" />
   </div>
 </div>
 

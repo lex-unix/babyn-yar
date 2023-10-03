@@ -1,3 +1,4 @@
+import { PUBLIC_API_URL } from '$env/static/public'
 import type { Asset, Metadata } from './types'
 
 type GetAssetsRespone = {
@@ -6,25 +7,50 @@ type GetAssetsRespone = {
 }
 
 type Filters = {
+  contentType?: string
   filename?: string
   sort?: string
 }
 
+const baseUrl = PUBLIC_API_URL + '/assets'
+
+export function fetchAssetsWrapper() {
+  const searchParams = new URLSearchParams()
+
+  return async (filters?: Filters) => {
+    const url = new URL(baseUrl)
+
+    if (filters?.contentType !== undefined) {
+      searchParams.set('content_type', filters.contentType)
+    }
+
+    if (filters?.filename !== undefined) {
+      searchParams.set('filename', filters.filename)
+    }
+
+    if (filters?.sort !== undefined) {
+      searchParams.set('sort', filters.sort)
+    }
+
+    url.search = searchParams.toString()
+
+    const response = await fetch(url)
+    const json: GetAssetsRespone = await response.json()
+    return json
+  }
+}
+
 export async function fetchAssets(contentType: string, filters?: Filters) {
-  const url = new URL('http://localhost:8000/v1/assets')
+  const url = new URL(baseUrl)
 
   url.searchParams.set('content_type', contentType)
 
-  if (filters?.filename) {
+  if (filters?.filename !== undefined) {
     url.searchParams.set('filename', filters.filename)
-  } else {
-    url.searchParams.delete('filename')
   }
 
-  if (filters?.sort) {
+  if (filters?.sort !== undefined) {
     url.searchParams.set('sort', filters.sort)
-  } else {
-    url.searchParams.delete('sort')
   }
 
   const response = await fetch(url)
@@ -33,7 +59,6 @@ export async function fetchAssets(contentType: string, filters?: Filters) {
 }
 
 export async function createAssets(formData: FormData) {
-  const baseUrl = 'http://localhost:8000/v1/assets'
   try {
     const response = await fetch(baseUrl, {
       method: 'POST',
