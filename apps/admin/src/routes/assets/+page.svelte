@@ -1,11 +1,11 @@
 <script lang="ts">
   import type { Asset } from '$lib/types'
   import {
-    AssetGridItem,
     AssetGridItemSkeleton,
     UploadAssetsDialog,
     SearchBar,
-    AssetSortMenu
+    AssetSortMenu,
+    AssetItem
   } from '$components'
   import { TrashIcon } from 'lucide-svelte'
   import { fetchAssetsWrapper } from '$lib'
@@ -13,7 +13,7 @@
 
   let loading = false
   let assets: Asset[] = []
-  let selected: string[] = []
+  let selectedAssets: number[] = []
   let assetDialog: UploadAssetsDialog
   let timeoutId: ReturnType<typeof setTimeout>
 
@@ -25,10 +25,6 @@
     assets = res.assets
     loading = false
   })
-
-  function clear() {
-    selected = []
-  }
 
   async function sort(e: CustomEvent<string>) {
     const res = await fetchAssets({ sort: e.detail })
@@ -43,8 +39,16 @@
     }, 500)
   }
 
+  function clear() {
+    selectedAssets = []
+  }
+
   function selectAll() {
-    selected = assets.map(asset => asset.id.toString())
+    selectedAssets = assets.map(asset => asset.id)
+  }
+
+  function select(id: number) {
+    selectedAssets = [...selectedAssets, id]
   }
 </script>
 
@@ -61,25 +65,30 @@
   </SearchBar>
 </div>
 
-{#if selected.length > 0}
-  <div class="w-full rounded bg-slate-800 font-normal text-gray-100">
-    <div class="px-5 py-3">
-      <div class="flex items-center justify-center gap-4">
-        <p>Обрано {selected.length}</p>
-        <button
-          on:click={selectAll}
-          class="rounded-md px-3 py-2 hover:bg-white/10">Обрати всі</button
-        >
-        <button on:click={clear} class="rounded-md px-3 py-2 hover:bg-white/10">
-          Очистити
-        </button>
-      </div>
-      <div class="flex items-center justify-center gap-4">
-        <button
-          class="inline-flex items-center justify-center rounded-md p-2 hover:bg-white/20"
-        >
-          <TrashIcon size={16} />
-        </button>
+{#if selectedAssets.length > 0}
+  <div class="w-full rounded-md bg-gray-800 font-normal text-gray-100">
+    <div class="px-3 py-2">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <p>Обрано {selectedAssets.length}</p>
+          <button
+            on:click={selectAll}
+            class="rounded-md px-3 py-2 hover:bg-white/10">Обрати всі</button
+          >
+          <button
+            on:click={clear}
+            class="rounded-md px-3 py-2 hover:bg-white/10"
+          >
+            Очистити
+          </button>
+        </div>
+        <div class="flex items-center justify-center gap-4">
+          <button
+            class="inline-flex items-center justify-center rounded-md p-2 hover:bg-white/20"
+          >
+            <TrashIcon size={16} />
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -95,14 +104,37 @@
     <AssetGridItemSkeleton />
   {:else}
     {#each assets as asset}
-      <AssetGridItem
-        src={asset.url}
-        id={asset.id}
-        fileName={asset.fileName}
-        alt={asset.fileName}
-        contentType={asset.contentType}
-        bind:selected
-      />
+      {@const selected = selectedAssets.includes(asset.id)}
+      <li class="p-2.5">
+        <div class="group relative">
+          <AssetItem
+            src={asset.url}
+            fileName={asset.fileName}
+            contentType={asset.contentType}
+          />
+          <div
+            class="absolute left-2 top-2 z-10 hidden overflow-hidden group-hover:block"
+            class:selected
+          >
+            <div
+              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-300 p-3 accent-teal-300"
+            >
+              <input
+                id="id-{asset.id}"
+                type="checkbox"
+                checked={selected}
+                on:change={() => select(asset.id)}
+              />
+            </div>
+          </div>
+        </div>
+      </li>
     {/each}
   {/if}
 </ul>
+
+<style lang="postcss">
+  .selected {
+    @apply block;
+  }
+</style>

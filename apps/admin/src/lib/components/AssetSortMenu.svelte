@@ -69,10 +69,10 @@
       <div
         use:melt={$item}
         on:m-click={() => select(menuItem)}
-        class="relative z-20 flex h-10 min-h-[24px] select-none items-center gap-1 rounded py-2 pl-6 pr-1 text-sm leading-none outline-none data-[highlighted]:bg-gray-100"
+        class="relative z-20 flex h-10 min-h-[24px] select-none items-center gap-1 rounded py-2 pl-6 pr-1 text-sm leading-none text-gray-600 outline-none data-[highlighted]:bg-gray-100"
         class:active={selected.value === menuItem.value}
       >
-        <span class="text-gray-600">
+        <span>
           {menuItem.name}
         </span>
         <svelte:component
@@ -87,6 +87,6 @@
 
 <style lang="postcss">
   .active {
-    @apply text-teal-400;
+    @apply text-teal-500;
   }
 </style>

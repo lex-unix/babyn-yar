@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { SearchBar, AssetSortMenu } from '$components'
+  import { SearchBar, AssetSortMenu, AssetItem } from '$components'
   import { fetchAssetsWrapper } from '$lib'
   import type { Asset } from '$lib/types'
   import { createDialog, melt } from '@melt-ui/svelte'
-  import { FileText, FileVideo2, X } from 'lucide-svelte'
+  import { X } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
 
   const fetchAssets = fetchAssetsWrapper()
@@ -24,6 +24,7 @@
     assets = res.assets
   }
 
+  let assets: Asset[] = []
   let timeoutId: ReturnType<typeof setTimeout>
   let contentType: string
 
@@ -48,8 +49,6 @@
     }
     dispatch('select', { url, type })
   }
-
-  let assets: Asset[] = []
 
   const {
     elements: { overlay, content, title, description, close, portalled },
@@ -91,27 +90,11 @@
                 class="group relative w-full"
                 on:click={() => selectAsset(asset.url, asset.contentType)}
               >
-                <div
-                  class="h-[140px] max-h-[140px] w-full min-w-[220px] overflow-x-hidden rounded-lg bg-gray-200"
-                >
-                  <div class="h-full w-full">
-                    <div
-                      class="flex h-[140px] items-center justify-center text-gray-500"
-                    >
-                      {#if asset.contentType.startsWith('image')}
-                        <img
-                          src={asset.url}
-                          alt={asset.fileName}
-                          class="max-h-full max-w-full"
-                        />
-                      {:else if asset.contentType.startsWith('video')}
-                        <FileVideo2 class="h-20 w-20 text-amber-400" />
-                      {:else}
-                        <FileText class="h-20 w-20 text-blue-400" />
-                      {/if}
-                    </div>
-                  </div>
-                </div>
+                <AssetItem
+                  src={asset.url}
+                  fileName={asset.fileName}
+                  contentType={asset.contentType}
+                />
                 <div
                   class="absolute left-0 top-0 z-10 m-2 hidden rounded bg-gray-200 p-1.5 group-hover:block"
                 />
