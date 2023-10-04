@@ -1,3 +1,10 @@
+/**
+ * This file includes code retrieved and adapted from:
+ * https://github.com/sereneinserenade/tiptap-extension-video
+ * Original author: Jeet Mandaliya/sereneinserenade
+ * License: 'MIT'
+ */
+
 import { Node, nodeInputRule } from '@tiptap/core'
 
 export interface VideoOptions {
