@@ -36,7 +36,8 @@ export const extensions = [
   Link.configure({
     HTMLAttributes: {
       class: 'underline text-blue-500'
-    }
+    },
+    openOnClick: false
   }),
   Image.configure({
     HTMLAttributes: {

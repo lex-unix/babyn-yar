@@ -15,15 +15,18 @@
     AlignLeftIcon,
     AlignRightIcon,
     ImageIcon,
-    VideoIcon
+    VideoIcon,
+    LinkIcon,
+    UnlinkIcon
   } from 'lucide-svelte'
-  import { AssetDialog } from '$components'
+  import { AssetDialog, LinkDialog } from '$components'
 
   export let content: JSONContent
 
   let element: HTMLDivElement
   let editor: Editor
   let assetsDialog: AssetDialog
+  let linkDialog: LinkDialog
 
   function selectAsset(e: CustomEvent<{ url: string; type: string }>) {
     const { url, type } = e.detail
@@ -33,6 +36,30 @@
     } else {
       editor.commands.setVideo(url)
     }
+  }
+
+  type LinkProps = Parameters<typeof editor.commands.setLink>[0]
+
+  function addLink(
+    e: CustomEvent<{ type: 'email' | 'internal' | 'external'; value: string }>
+  ) {
+    linkDialog.closeDialog()
+    const { value, type } = e.detail
+    if (!value) return
+
+    const linkProps: LinkProps = { href: '' }
+
+    if (type === 'email') {
+      linkProps.href = 'mailto:' + value
+    } else if (type === 'external') {
+      linkProps.href = value
+      linkProps.target = '_blank'
+    } else {
+      linkProps.href = value
+      linkProps.target = null
+    }
+
+    editor.chain().focus().setLink(linkProps).run()
   }
 
   onMount(() => {
@@ -85,6 +112,23 @@
         >
           <PilcrowIcon size={16} />
         </button>
+        <button
+          type="button"
+          on:click={() => linkDialog.openDialog()}
+          class:active={editor.isActive('link')}
+          class="rounded p-1.5 hover:bg-gray-600/10"
+        >
+          <LinkIcon size={16} />
+        </button>
+        {#if editor.isActive('link')}
+          <button
+            type="button"
+            on:click={() => editor.chain().focus().unsetLink().run()}
+            class="rounded p-1.5 hover:bg-gray-600/10"
+          >
+            <UnlinkIcon size={16} />
+          </button>
+        {/if}
         <button
           type="button"
           on:click={() => editor.chain().focus().toggleBulletList().run()}
@@ -181,6 +225,8 @@
   <svelte:fragment slot="title">Медіа файли</svelte:fragment>
   <svelte:fragment slot="description">Оберіть потрібний файл</svelte:fragment>
 </AssetDialog>
+
+<LinkDialog bind:this={linkDialog} on:done={addLink} />
 
 <style lang="postcss">
   .active {
