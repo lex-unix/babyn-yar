@@ -78,6 +78,8 @@ export async function createAssets(formData: FormData) {
       }
       const error = json.error as string
       return { ok: false as const, error }
+    } else {
+      return { ok: true as const }
     }
   } catch (e) {
     console.log(e)
