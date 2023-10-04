@@ -9,7 +9,7 @@ export const extensions = [
   StarterKit.configure({
     heading: {
       HTMLAttributes: {
-        class: 'text-2xl font-semibold mb-5'
+        class: 'text-2xl font-semibold my-5'
       },
       levels: [1, 2]
     },
@@ -21,6 +21,11 @@ export const extensions = [
     orderedList: {
       HTMLAttributes: {
         class: 'list-decimal pl-6 my-2'
+      }
+    },
+    paragraph: {
+      HTMLAttributes: {
+        class: 'my-4'
       }
     }
   }),
@@ -41,12 +46,12 @@ export const extensions = [
   }),
   Image.configure({
     HTMLAttributes: {
-      class: 'max-w-[400px] object-contain min-h-[120px] w-full rounded-lg'
+      class: 'max-w-[400px] object-contain my-6 min-h-[120px] w-full rounded-lg'
     }
   }),
   Video.configure({
     HTMLAttributes: {
-      class: 'max-w-[400px] min-h-[120px] w-full'
+      class: 'max-w-[400px] min-h-[120px] w-full my-6'
     }
   })
 ]
