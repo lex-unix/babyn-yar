@@ -25,7 +25,9 @@ run/api:
 		-storage-account-id=${STORAGE_ACCOUNT_ID} \
 		-storage-access-key-id=${STORAGE_ACCESS_KEY_ID} \
 		-storage-access-key-secret=${STORAGE_SECRET_ACCESS_KEY} \
-		-storage-bucket=${STORAGE_BUCKET_NAME}
+		-storage-bucket=${STORAGE_BUCKET_NAME} \
+		-session-store-dsn=${REDIS_URL} \
+		-session-store-secret=${SESSION_SECRET}
 
 ## db/psql: connect to the database using psql
 .PHONY: db/psql

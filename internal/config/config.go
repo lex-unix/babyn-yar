@@ -16,6 +16,12 @@ type Config struct {
 		AccessKeySecret string
 		Bucket          string
 	}
+	SessionStore struct {
+		DSN          string
+		Secret       string
+		MaxIdleConns int
+		Password     string
+	}
 }
 
 func NewConfig() Config {
@@ -33,6 +39,12 @@ func NewConfig() Config {
 	flag.StringVar(&cfg.Storage.AccessKeyID, "storage-access-key-id", "", "Storage access key ID")
 	flag.StringVar(&cfg.Storage.AccessKeySecret, "storage-access-key-secret", "", "Storage access key secret")
 	flag.StringVar(&cfg.Storage.Bucket, "storage-bucket", "", "Storage bucket name")
+
+	// redis store
+	flag.StringVar(&cfg.SessionStore.DSN, "session-store-dsn", "", "Redis DSN")
+	flag.StringVar(&cfg.SessionStore.Secret, "session-store-secret", "", "Session secret")
+	flag.IntVar(&cfg.SessionStore.MaxIdleConns, "session-store-max-idle-conns", 10, "Redis max idle connections")
+	flag.StringVar(&cfg.SessionStore.Password, "session-store-password", "", "Redis password")
 
 	flag.Parse()
 
