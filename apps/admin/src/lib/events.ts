@@ -1,8 +1,10 @@
-import {} from '$app/stores'
 import type { Event, EventErrorResponse } from './types'
+import { PUBLIC_API_URL } from '$env/static/public'
+
+const baseUrl = PUBLIC_API_URL + '/events'
 
 export async function fetchEvent(id: string) {
-  const res = await fetch('http://localhost:8000/v1/events/' + id)
+  const res = await fetch(`${baseUrl}/${id}`)
   const { event } = (await res.json()) as { event: Event }
   event.content = JSON.parse(event.content as unknown as string)
   return event
@@ -10,7 +12,7 @@ export async function fetchEvent(id: string) {
 
 export async function createEvent(body: string) {
   try {
-    const response = await fetch('http://localhost:8000/v1/events', {
+    const response = await fetch(baseUrl, {
       method: 'POST',
       body
     })
@@ -32,7 +34,7 @@ export async function createEvent(body: string) {
 
 export async function updateEvent(id: string, body: string) {
   try {
-    const response = await fetch('http://localhost:8000/v1/events/' + id, {
+    const response = await fetch(`${baseUrl}/${id}`, {
       method: 'PATCH',
       body
     })
