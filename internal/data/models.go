@@ -15,6 +15,7 @@ type Models struct {
 	Victims VictimModel
 	Events  EventModel
 	Assets  AssetModel
+	Users   UserModel
 }
 
 func NewModels(db *pgxpool.Pool) Models {
@@ -22,5 +23,6 @@ func NewModels(db *pgxpool.Pool) Models {
 		Victims: VictimModel{DB: db},
 		Events:  EventModel{DB: db},
 		Assets:  AssetModel{DB: db},
+		Users:   UserModel{DB: db},
 	}
 }
