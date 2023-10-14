@@ -15,7 +15,7 @@ func (app *application) routes() http.Handler {
 		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
+		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
@@ -32,6 +32,9 @@ func (app *application) routes() http.Handler {
 	// assets
 	router.Get("/v1/assets", app.listAssetsHandler)
 	router.Post("/v1/assets", app.createAssetsHandler)
+
+	router.Post("/v1/users/register", app.registerUserHandler)
+	router.Post("/v1/users/login", app.loginUserHandler)
 
 	return router
 }
