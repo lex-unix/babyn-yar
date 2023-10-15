@@ -114,7 +114,7 @@ func (app *application) meHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := app.sessionStore.Get(r, sessionName)
 	userID, ok := session.Values["userId"].(int64)
 	if !ok {
-		app.serverErrorResponse(w, r, nil)
+		app.authenticationRequireResponse(w, r)
 		return
 	}
 
