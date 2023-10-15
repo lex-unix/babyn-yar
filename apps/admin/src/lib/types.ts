@@ -10,6 +10,7 @@ export type Event = BaseContent & {
   createdAt: string
   updatedAt: string
   version: number
+  user: User
 }
 
 export type Metadata = {
