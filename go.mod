@@ -9,6 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.40.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/jackc/pgx/v5 v5.4.3
+	gopkg.in/boj/redistore.v1 v1.0.0-20160128113310-fc113767cd6b
 )
 
 require (
@@ -27,11 +28,9 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.22.0 // indirect
 	github.com/aws/smithy-go v1.14.2 // indirect
 	github.com/garyburd/redigo v1.6.4 // indirect
-	github.com/gomodule/redigo v1.8.9 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/sessions v1.2.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
-	gopkg.in/boj/redistore.v1 v1.0.0-20160128113310-fc113767cd6b // indirect
 )
 
 require (
@@ -40,7 +39,7 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
-	golang.org/x/crypto v0.14.0 // indirect
+	golang.org/x/crypto v0.14.0
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 )
