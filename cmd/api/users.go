@@ -52,7 +52,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	session, _ := app.sessionStore.Get(r, sessionName)
-	session.Values["userId"] = user.ID
+	session.Values["userID"] = user.ID
 	if err = session.Save(r, w); err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -98,7 +98,7 @@ func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	session, _ := app.sessionStore.Get(r, sessionName)
-	session.Values["userId"] = user.ID
+	session.Values["userID"] = user.ID
 	if err = session.Save(r, w); err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
@@ -112,7 +112,7 @@ func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request)
 
 func (app *application) meHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := app.sessionStore.Get(r, sessionName)
-	userID, ok := session.Values["userId"].(int64)
+	userID, ok := session.Values["userID"].(int64)
 	if !ok {
 		app.authenticationRequireResponse(w, r)
 		return

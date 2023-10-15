@@ -18,6 +18,8 @@ type Event struct {
 	Description string    `json:"description"`
 	Content     string    `json:"content"`
 	Version     int32     `json:"version"`
+	UserID      int64     `json:"-"`
+	User        *User     `json:"user"`
 }
 
 type EventModel struct {
@@ -32,11 +34,11 @@ func ValidateEvent(v *validator.Validator, event *Event) {
 
 func (m EventModel) Insert(event *Event) error {
 	query := `
-		INSERT INTO events (title, description, content)
-		VALUES ($1, $2, $3)
+		INSERT INTO events (title, description, content, user_id)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id, version`
 
-	args := []interface{}{event.Title, event.Description, event.Content}
+	args := []interface{}{event.Title, event.Description, event.Content, event.UserID}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -46,9 +48,10 @@ func (m EventModel) Insert(event *Event) error {
 
 func (m EventModel) GetAll(filters Filters) ([]*Event, Metadata, error) {
 	query := `
-		SELECT count(*) OVER(), id, created_at, updated_at, title, description, content, version
-		FROM events
-		ORDER BY created_at DESC`
+		SELECT count(*) OVER(), e.id, e.created_at, e.updated_at, e.title, e.description, e.content, e.version, u.full_name
+		FROM events e
+		INNER JOIN users u ON e.user_id = u.id
+		ORDER BY e.created_at DESC`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -61,6 +64,7 @@ func (m EventModel) GetAll(filters Filters) ([]*Event, Metadata, error) {
 	totalRecords := 0
 	events, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (*Event, error) {
 		var event Event
+		var user User
 		err := row.Scan(&totalRecords,
 			&event.ID,
 			&event.CreatedAt,
@@ -69,7 +73,9 @@ func (m EventModel) GetAll(filters Filters) ([]*Event, Metadata, error) {
 			&event.Description,
 			&event.Content,
 			&event.Version,
+			&user.FullName,
 		)
+		event.User = &user
 		return &event, err
 	})
 
@@ -88,8 +94,8 @@ func (m EventModel) Get(id int64) (*Event, error) {
 	}
 
 	query := `
-		SELECT id, title, description, content, version
-		FROM events
+		SELECT e.id, e.title, e.description, e.content, e.version
+		FROM events e
 		WHERE id = $1`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
