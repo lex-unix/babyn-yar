@@ -1,6 +1,13 @@
 <script>
+  import { goto } from '$app/navigation'
   import { Sidebar, Toaster, SidebarLink, SidebarLinkLabel } from '$components'
+  import { user } from '$lib/stores'
   import { Layers, Image, Cog } from 'lucide-svelte'
+  import { onMount } from 'svelte'
+
+  onMount(() => {
+    !$user && goto('/login')
+  })
 </script>
 
 <div class="flex h-screen bg-gray-50 text-gray-900">

@@ -38,7 +38,7 @@ export function fetchAssetsWrapper() {
 
     url.search = searchParams.toString()
 
-    const response = await fetch(url)
+    const response = await fetch(url, { credentials: 'include' })
     const json: GetAssetsRespone = await response.json()
     return json
   }
@@ -66,7 +66,8 @@ export async function createAssets(formData: FormData) {
   try {
     const response = await fetch(baseUrl, {
       method: 'POST',
-      body: formData
+      body: formData,
+      credentials: 'include'
     })
     if (!response.ok) {
       const json = await response.json()

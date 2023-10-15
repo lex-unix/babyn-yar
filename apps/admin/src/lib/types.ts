@@ -34,4 +34,12 @@ export type Asset = {
   contentType: string
 }
 
+export type User = {
+  id: number
+  createdAt: string
+  updatedAt: string
+  fullName: string
+  email: string
+}
+
 export type EventErrorResponse = BaseContentErrorResponse

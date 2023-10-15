@@ -14,7 +14,8 @@ export async function createEvent(body: string) {
   try {
     const response = await fetch(baseUrl, {
       method: 'POST',
-      body
+      body,
+      credentials: 'include'
     })
     if (!response.ok) {
       const json = await response.json()
@@ -36,7 +37,8 @@ export async function updateEvent(id: string, body: string) {
   try {
     const response = await fetch(`${baseUrl}/${id}`, {
       method: 'PATCH',
-      body
+      body,
+      credentials: 'include'
     })
     if (!response.ok) {
       const json = await response.json()
