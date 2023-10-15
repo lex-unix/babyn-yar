@@ -47,8 +47,12 @@
     selectedAssets = assets.map(asset => asset.id)
   }
 
-  function select(id: number) {
-    selectedAssets = [...selectedAssets, id]
+  function toggleSelect(id: number) {
+    if (selectedAssets.includes(id)) {
+      selectedAssets = selectedAssets.filter(a => a !== id)
+    } else {
+      selectedAssets = [...selectedAssets, id]
+    }
   }
 </script>
 
@@ -123,7 +127,7 @@
                 id="id-{asset.id}"
                 type="checkbox"
                 checked={selected}
-                on:change={() => select(asset.id)}
+                on:change={() => toggleSelect(asset.id)}
               />
             </div>
           </div>
