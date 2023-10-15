@@ -33,8 +33,10 @@ func (app *application) routes() http.Handler {
 	router.Get("/v1/assets", app.listAssetsHandler)
 	router.Post("/v1/assets", app.createAssetsHandler)
 
+	// users
 	router.Post("/v1/users/register", app.registerUserHandler)
 	router.Post("/v1/users/login", app.loginUserHandler)
+	router.Get("/v1/users/me", app.meHandler)
 
 	return router
 }

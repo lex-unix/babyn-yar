@@ -109,3 +109,28 @@ func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request)
 		app.serverErrorResponse(w, r, err)
 	}
 }
+
+func (app *application) meHandler(w http.ResponseWriter, r *http.Request) {
+	session, _ := app.sessionStore.Get(r, sessionName)
+	userID, ok := session.Values["userId"].(int64)
+	if !ok {
+		app.serverErrorResponse(w, r, nil)
+		return
+	}
+
+	user, err := app.models.Users.GetByID(userID)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJson(w, http.StatusOK, envelope{"user": user}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
