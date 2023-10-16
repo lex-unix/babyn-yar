@@ -10,6 +10,7 @@ func (app *application) routes() http.Handler {
 	router := chi.NewRouter()
 
 	router.Use(app.enableCORS())
+	router.Use(app.authenticate)
 
 	router.Get("/v1/healthcheck", app.healthcheckHandler)
 
@@ -26,9 +27,11 @@ func (app *application) routes() http.Handler {
 	router.Post("/v1/assets", app.requireAuthenticatedUser(app.createAssetsHandler))
 
 	// users
-	router.Post("/v1/users/register", app.registerUserHandler)
+	router.Post("/v1/users/register", app.requirePermission("admin", app.registerUserHandler))
 	router.Post("/v1/users/login", app.loginUserHandler)
 	router.Get("/v1/users/me", app.requireAuthenticatedUser(app.meHandler))
+	router.Get("/v1/users", app.requirePermission("admin", app.listUsersHandler))
+	router.Patch("/v1/users", app.requireAuthenticatedUser(app.updateUserHandler))
 
 	return router
 }
