@@ -14,16 +14,18 @@ import (
 
 var (
 	ErrDuplicateEmail = errors.New("duplicate email")
+	AnonymousUser     = &User{}
 )
 
 type User struct {
-	ID        int64     `json:"id"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	FullName  string    `json:"fullName"`
-	Email     string    `json:"email"`
-	Password  password  `json:"-"`
-	Version   int       `json:"-"`
+	ID          int64       `json:"id"`
+	CreatedAt   time.Time   `json:"createdAt"`
+	UpdatedAt   time.Time   `json:"updatedAt"`
+	FullName    string      `json:"fullName"`
+	Email       string      `json:"email"`
+	Password    password    `json:"-"`
+	Version     int         `json:"-"`
+	Permissions Permissions `json:"permissions"`
 }
 
 type password struct {
@@ -33,6 +35,10 @@ type password struct {
 
 type UserModel struct {
 	DB *pgxpool.Pool
+}
+
+func (u *User) IsAnonymous() bool {
+	return u == AnonymousUser
 }
 
 func (p *password) Set(plaintextPassword string) error {
