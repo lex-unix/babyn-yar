@@ -12,17 +12,19 @@ var (
 )
 
 type Models struct {
-	Victims VictimModel
-	Events  EventModel
-	Assets  AssetModel
-	Users   UserModel
+	Victims     VictimModel
+	Events      EventModel
+	Assets      AssetModel
+	Users       UserModel
+	Permissions PermissionModel
 }
 
 func NewModels(db *pgxpool.Pool) Models {
 	return Models{
-		Victims: VictimModel{DB: db},
-		Events:  EventModel{DB: db},
-		Assets:  AssetModel{DB: db},
-		Users:   UserModel{DB: db},
+		Victims:     VictimModel{DB: db},
+		Events:      EventModel{DB: db},
+		Assets:      AssetModel{DB: db},
+		Users:       UserModel{DB: db},
+		Permissions: PermissionModel{DB: db},
 	}
 }
