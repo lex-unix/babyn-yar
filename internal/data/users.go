@@ -121,9 +121,12 @@ func (m UserModel) Insert(user *User) error {
 
 func (m UserModel) GetByEmail(email string) (*User, error) {
 	query := `
-		SELECT id, created_at, updated_at, full_name, email, password_hash, version
-		FROM users
-		WHERE email = $1`
+		SELECT u.id, u.created_at, u.updated_at, u.full_name, u.email, u.password_hash, u.version, array_agg(p.name) as permissions
+		FROM users u
+		INNER JOIN users_permissions up ON u.id = up.user_id
+		INNER JOIN permissions p ON up.permission_id = p.id
+		WHERE u.email = $1
+		GROUP BY u.id`
 
 	var user User
 
@@ -138,6 +141,7 @@ func (m UserModel) GetByEmail(email string) (*User, error) {
 		&user.Email,
 		&user.Password.hash,
 		&user.Version,
+		&user.Permissions,
 	)
 
 	if err != nil {
@@ -158,15 +162,17 @@ func (m UserModel) GetByID(id int64) (*User, error) {
 	}
 
 	query := `
-		SELECT id, created_at, updated_at, full_name, email, password_hash, version
-		FROM users
-		WHERE id = $1`
-
-	var user User
+		SELECT u.id, u.created_at, u.updated_at, u.full_name, u.email, u.password_hash, u.version, array_agg(p.name) as permissions
+		FROM users u
+		INNER JOIN users_permissions up ON u.id = up.user_id
+		INNER JOIN permissions p ON up.permission_id = p.id
+		WHERE u.id = $1
+		GROUP BY u.id`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
+	var user User
 	err := m.DB.QueryRow(ctx, query, id).Scan(
 		&user.ID,
 		&user.CreatedAt,
@@ -175,6 +181,7 @@ func (m UserModel) GetByID(id int64) (*User, error) {
 		&user.Email,
 		&user.Password.hash,
 		&user.Version,
+		&user.Permissions,
 	)
 
 	if err != nil {
@@ -187,4 +194,75 @@ func (m UserModel) GetByID(id int64) (*User, error) {
 	}
 
 	return &user, nil
+}
+
+func (m UserModel) GetAll() ([]*User, error) {
+	query := `
+		SELECT u.id, u.created_at, u.updated_at, u.full_name, u.email, array_agg(p.name) as permissions
+		FROM users u
+		INNER JOIN users_permissions up ON u.id = up.user_id
+		INNER JOIN permissions p ON up.permission_id = p.id
+		GROUP BY u.id`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	rows, err := m.DB.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	users, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (*User, error) {
+		var user User
+		err := row.Scan(
+			&user.ID,
+			&user.CreatedAt,
+			&user.UpdatedAt,
+			&user.FullName,
+			&user.Email,
+			&user.Permissions,
+		)
+		return &user, err
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (m UserModel) Update(user *User) error {
+	query := `
+		UPDATE users
+		SET full_name = $1, email = $2, password_hash = $3, updated_at = now(), version = version + 1
+		WHERE id = $4 AND version = $5
+		RETURNING version`
+
+	args := []interface{}{
+		user.FullName,
+		user.Email,
+		user.Password.hash,
+		user.ID,
+		user.Version,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err := m.DB.QueryRow(ctx, query, args...).Scan(&user.Version)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return ErrDuplicateEmail
+		}
+
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return ErrEditConflict
+		default:
+			return err
+		}
+	}
+	return nil
 }
