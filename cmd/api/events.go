@@ -22,14 +22,13 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	session, _ := app.sessionStore.Get(r, sessionName)
-	userID := session.Values["userID"].(int64)
+	user := app.contextGetUser(r)
 
 	event := &data.Event{
 		Title:       input.Title,
 		Description: input.Description,
 		Content:     input.Content,
-		UserID:      userID,
+		UserID:      user.ID,
 	}
 
 	v := validator.New()
