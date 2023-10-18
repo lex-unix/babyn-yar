@@ -59,7 +59,7 @@
               <a href={`/content/events/${event.id}`}>{event.title}</a>
             </TableData>
             <TableData>{formatDate(event.updatedAt)}</TableData>
-            <TableData>Олексій Міїн</TableData>
+            <TableData>{event.user.fullName}</TableData>
           </TableRow>
         {/each}
       {/await}
