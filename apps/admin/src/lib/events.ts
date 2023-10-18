@@ -1,4 +1,4 @@
-import type { Event, EventErrorResponse } from './types'
+import type { Event, EventErrorResponse, Metadata } from './types'
 import { PUBLIC_API_URL } from '$env/static/public'
 
 const baseUrl = PUBLIC_API_URL + '/events'
@@ -54,4 +54,18 @@ export async function updateEvent(id: string, body: string) {
     console.log(e)
     return { ok: false as const }
   }
+}
+
+type EventResponse = {
+  events: Event[]
+  metadata: Metadata
+}
+
+export async function fetchEvents(page: number = 1) {
+  const url = new URL(baseUrl)
+  url.searchParams.set('page', `${page}`)
+  const response = await fetch(url)
+  const json = await response.json()
+
+  return json as EventResponse
 }
