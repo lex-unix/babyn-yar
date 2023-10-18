@@ -85,6 +85,35 @@ func (app *application) listEventsHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
+func (app *application) deleteEventsHandler(w http.ResponseWriter, r *http.Request) {
+	v := validator.New()
+
+	qs := r.URL.Query()
+
+	ids := app.readIntList(qs, "ids", v)
+
+	if !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	err := app.models.Events.DeleteMultiple(ids)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJson(w, http.StatusOK, envelope{"message": "events successfully deleted"}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
 func (app *application) showEventHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {

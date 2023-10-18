@@ -21,6 +21,7 @@ func (app *application) routes() http.Handler {
 	router.Get("/v1/events/{id}", app.showEventHandler)
 	router.Post("/v1/events", app.requireAuthenticatedUser(app.createEventHandler))
 	router.Patch("/v1/events/{id}", app.requireAuthenticatedUser(app.updateEventHandler))
+	router.Delete("/v1/events", app.requireAuthenticatedUser(app.deleteEventsHandler))
 
 	// assets
 	router.Get("/v1/assets", app.requireAuthenticatedUser(app.listAssetsHandler))

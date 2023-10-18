@@ -103,6 +103,26 @@ func (app *application) readInt(qs url.Values, key string, defaultValue int, v *
 	return i
 }
 
+func (app *application) readIntList(qs url.Values, key string, v *validator.Validator) []int64 {
+	s := qs.Get(key)
+	if s == "" {
+		return []int64{}
+	}
+	strs := strings.Split(s, ",")
+	ids := make([]int64, 0, len(strs))
+	for _, str := range strs {
+		i, err := strconv.ParseInt(str, 10, 64)
+
+		if err != nil {
+			v.AddError(key, "must be a comma-separated list of integer values")
+			continue
+		}
+		ids = append(ids, i)
+	}
+
+	return ids
+}
+
 func (app *application) readIDParam(r *http.Request) (int64, error) {
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 
