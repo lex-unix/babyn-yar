@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -12,7 +11,10 @@ func (app *application) serve() error {
 		Handler: app.routes(),
 	}
 
-	log.Println("starting server")
+	app.logger.PrintInfo("starting server", map[string]string{
+		"addr": srv.Addr,
+		"env":  app.config.Env,
+	})
 
 	err := srv.ListenAndServe()
 	if err != nil {

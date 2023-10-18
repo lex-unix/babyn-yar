@@ -4,11 +4,13 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/lex-unix/babyn-yar/internal/config"
 	"github.com/lex-unix/babyn-yar/internal/data"
+	"github.com/lex-unix/babyn-yar/internal/jsonlog"
 	"github.com/lex-unix/babyn-yar/internal/storage"
 	"gopkg.in/boj/redistore.v1"
 )
@@ -23,19 +25,22 @@ type application struct {
 	models       data.Models
 	storage      *storage.S3Handler
 	sessionStore *redistore.RediStore
+	logger       *jsonlog.Logger
 }
 
 func main() {
 	cfg := config.NewConfig()
 
+	logger := jsonlog.New(os.Stdout, jsonlog.LevelInfo)
+
 	db, err := openDB(cfg)
 	if err != nil {
-		log.Fatal(err)
+		logger.PrintFatal(err, nil)
 	}
 
 	defer db.Close()
 
-	log.Println("database connection pool established")
+	logger.PrintInfo("database connection pool established", nil)
 
 	store, err := newSessionStore(cfg)
 	if err != nil {
@@ -43,25 +48,26 @@ func main() {
 	}
 	defer store.Close()
 
-	log.Println("redis store initialized")
+	logger.PrintInfo("redis store initialized", nil)
 
 	storageHandler, err := storage.NewS3Handler(cfg)
 	if err != nil {
-		log.Fatal(err)
+		logger.PrintFatal(err, nil)
 	}
 
-	log.Println("storage handler initialized")
+	logger.PrintInfo("storage handler initialized", nil)
 
 	app := &application{
 		config:       cfg,
 		models:       data.NewModels(db),
 		storage:      storageHandler,
 		sessionStore: store,
+		logger:       logger,
 	}
 
 	err = app.serve()
 	if err != nil {
-		log.Fatal(err)
+		logger.PrintFatal(err, nil)
 	}
 }
 
