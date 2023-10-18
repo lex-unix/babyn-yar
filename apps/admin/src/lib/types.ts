@@ -41,6 +41,7 @@ export type User = {
   updatedAt: string
   fullName: string
   email: string
+  permissions: string[]
 }
 
 export type EventErrorResponse = BaseContentErrorResponse
