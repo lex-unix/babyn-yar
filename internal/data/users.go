@@ -266,3 +266,25 @@ func (m UserModel) Update(user *User) error {
 	}
 	return nil
 }
+
+func (m UserModel) DeleteMultiple(ids []int64) error {
+	query := `
+		DELETE FROM users
+		WHERE id = ANY($1)`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	result, err := m.DB.Exec(ctx, query, ids)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected := result.RowsAffected()
+
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
+	return nil
+}
