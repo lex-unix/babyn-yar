@@ -51,10 +51,9 @@
         </div>
         <button
           use:melt={$close(id)}
-          class="text-magnum-500 square-6 hover:bg-magnum-900/50 absolute right-4 top-4 grid place-items-center
-      rounded-full"
+          class="square-6 absolute right-4 top-4 grid place-items-center rounded-full text-neutral-500"
         >
-          <X class="square-4" />
+          <X class="h-4 w-4" />
         </button>
       </div>
     </div>
