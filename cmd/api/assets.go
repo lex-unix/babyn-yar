@@ -15,6 +15,9 @@ func (app *application) createAssetsHandler(w http.ResponseWriter, r *http.Reque
 	files := r.MultipartForm.File["assets"]
 
 	v := validator.New()
+
+	rows := make([][]interface{}, 0, len(files))
+
 	for _, fileHeader := range files {
 		file, err := fileHeader.Open()
 		if err != nil {
@@ -31,7 +34,6 @@ func (app *application) createAssetsHandler(w http.ResponseWriter, r *http.Reque
 
 		if exists {
 			v.AddError(fileHeader.Filename, "already exists")
-			// app.failedValidationResponse(w, r, map[string]string{"file": message})
 			continue
 		}
 
@@ -47,17 +49,8 @@ func (app *application) createAssetsHandler(w http.ResponseWriter, r *http.Reque
 			app.serverErrorResponse(w, r, err)
 			return
 		}
-
-		asset := data.Asset{
-			URL:         url,
-			Filename:    fileHeader.Filename,
-			ContentType: contentType,
-		}
-		err = app.models.Assets.Insert(&asset)
-		if err != nil {
-			app.serverErrorResponse(w, r, err)
-			return
-		}
+		row := []interface{}{url, fileHeader.Filename, contentType}
+		rows = append(rows, row)
 	}
 
 	if !v.Valid() {
@@ -65,7 +58,13 @@ func (app *application) createAssetsHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err := app.writeJson(w, http.StatusCreated, envelope{"status": "ok"}, nil)
+	err := app.models.Assets.InsertBulk(rows)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	err = app.writeJson(w, http.StatusCreated, envelope{"status": "ok"}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

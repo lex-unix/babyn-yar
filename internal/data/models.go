@@ -9,6 +9,7 @@ import (
 var (
 	ErrRecordNotFound = errors.New("record not found")
 	ErrEditConflict   = errors.New("edit conflict")
+	ErrIncompleteCopy = errors.New("not all records were added")
 )
 
 type Models struct {

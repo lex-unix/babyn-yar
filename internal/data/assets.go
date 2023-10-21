@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -33,6 +34,28 @@ func (m AssetModel) Insert(asset *Asset) error {
 	args := []interface{}{asset.URL, asset.Filename, asset.ContentType}
 
 	return m.DB.QueryRow(ctx, query, args...).Scan(&asset.ID)
+}
+
+func (m AssetModel) InsertBulk(assets [][]interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	copyCount, err := m.DB.CopyFrom(
+		ctx,
+		pgx.Identifier{"assets"},
+		[]string{"url", "file_name", "content_type"},
+		pgx.CopyFromRows(assets),
+	)
+
+	if copyCount != int64(len(assets)) {
+		return ErrIncompleteCopy
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 func (m AssetModel) GetAll(filename, contentType string, filters Filters) ([]*Asset, Metadata, error) {
