@@ -49,6 +49,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Події</title>
+</svelte:head>
+
 <div class="flex items-center justify-between">
   <h1 class="text-2xl font-semibold">Події</h1>
   <a

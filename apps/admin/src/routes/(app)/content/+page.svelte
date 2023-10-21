@@ -3,6 +3,10 @@
   import { Table, TableData, TableHeader, TableRow } from '$components'
 </script>
 
+<svelte:head>
+  <title>Контент</title>
+</svelte:head>
+
 <div>
   <h1>Content page</h1>
 

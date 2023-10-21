@@ -56,6 +56,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Медіа файли</title>
+</svelte:head>
+
 <div class="flex items-center justify-between">
   <h1 class="text-2xl font-semibold">Медіа файли</h1>
   <UploadAssetsDialog bind:this={assetDialog} />

@@ -37,6 +37,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Створити нову подію</title>
+</svelte:head>
+
 <div class="flex items-center justify-between">
   <h1 class="text-2xl font-semibold">Нова подія</h1>
   <button
