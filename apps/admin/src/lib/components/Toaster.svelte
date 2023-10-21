@@ -51,7 +51,7 @@
         </div>
         <button
           use:melt={$close(id)}
-          class="square-6 absolute right-4 top-4 grid place-items-center rounded-full text-neutral-500"
+          class="absolute right-4 top-4 grid h-6 w-6 place-items-center rounded-full text-white"
         >
           <X class="h-4 w-4" />
         </button>
