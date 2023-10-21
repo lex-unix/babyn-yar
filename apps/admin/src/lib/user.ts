@@ -20,3 +20,10 @@ export async function login(email: string, password: string) {
     return { ok: false as const, error }
   }
 }
+
+export async function deleteUsers(ids: number[]) {
+  const url = new URL(baseUrl)
+  url.searchParams.set('ids', ids.join(','))
+  const res = await fetch(url, { method: 'DELETE', credentials: 'include' })
+  return { ok: res.ok }
+}
