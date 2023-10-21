@@ -74,7 +74,7 @@
 </div>
 
 {#if selectedAssets.length > 0}
-  <div class="w-full rounded-md bg-gray-800 font-normal text-gray-100">
+  <div class="w-full rounded-md bg-gray-800 text-sm font-normal text-gray-100">
     <div class="px-3 py-2">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">

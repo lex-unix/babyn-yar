@@ -21,3 +21,4 @@
     </div>
   </div>
 </div>
+<p class="line-clamp-1 text-center text-sm text-gray-400">{fileName}</p>
