@@ -71,17 +71,16 @@
 </script>
 
 <svelte:head>
-  <title>Налаштування</title>
+  <title>Управління користувачами</title>
 </svelte:head>
-
-<div class="flex w-full items-center justify-between">
-  <h1 class="text-2xl font-semibold">Управління користувачами</h1>
-  {#if $admin}
-    <RegisterUserDialog on:register={addUser} />
-  {/if}
-</div>
-
 {#if $admin}
+  <div class="flex w-full items-center justify-between">
+    <h1 class="text-2xl font-semibold">Управління користувачами</h1>
+    {#if $admin}
+      <RegisterUserDialog on:register={addUser} />
+    {/if}
+  </div>
+
   {#if selectedUsers.length > 0}
     <div class="-mb-4 mt-6">
       <div
@@ -151,6 +150,13 @@
       </Table>
     </div>
   {/if}
-{/if}
 
-<DeleteAlertDialog bind:this={alertDialog} on:confirm={deleteSelected} />
+  <DeleteAlertDialog bind:this={alertDialog} on:confirm={deleteSelected} />
+{:else}
+  <div class="flex h-full flex-col items-center justify-center text-center">
+    <h1 class="text-xl font-semibold">У вас не має доступа до цієї сторінки</h1>
+    <p class="mt-2 text-gray-400">
+      Для доступа до цієї сторіни потрібно мати права адміністратора
+    </p>
+  </div>
+{/if}
