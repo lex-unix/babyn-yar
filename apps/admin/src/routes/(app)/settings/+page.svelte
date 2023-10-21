@@ -55,7 +55,7 @@
   <Input
     bind:value={password}
     type="password"
-    label="Пароль"
+    label="Новий пароль"
     name="password"
     error={errors?.password}
   />
