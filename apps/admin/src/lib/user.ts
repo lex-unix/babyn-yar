@@ -27,3 +27,45 @@ export async function deleteUsers(ids: number[]) {
   const res = await fetch(url, { method: 'DELETE', credentials: 'include' })
   return { ok: res.ok }
 }
+
+export async function updateUser(
+  fullName?: string,
+  email?: string,
+  password?: string
+) {
+  const body: Record<string, string> = {}
+
+  if (fullName) {
+    body.fullName = fullName
+  }
+
+  if (email) {
+    body.email = email
+  }
+
+  if (password) {
+    body.password = password
+  }
+
+  try {
+    const res = await fetch(baseUrl, {
+      method: 'PATCH',
+      credentials: 'include',
+      body: JSON.stringify(body)
+    })
+
+    if (res.ok) {
+      const { user } = (await res.json()) as { user: User }
+      return { user, ok: true as const }
+    } else {
+      const { error } = await res.json()
+      return { error, status: res.status, ok: false as const }
+    }
+  } catch (e) {
+    console.log(e)
+    return {
+      error: 'Something went wrong. Try again later.',
+      ok: false as const
+    }
+  }
+}

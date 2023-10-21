@@ -45,3 +45,9 @@ export type User = {
 }
 
 export type EventErrorResponse = BaseContentErrorResponse
+
+export type UserErrorResponse = {
+  fullName?: string
+  email?: string
+  password?: string
+}
