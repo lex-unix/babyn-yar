@@ -1,14 +1,22 @@
 <script lang="ts">
-  import { Table, TableData, TableHeader, TableRow } from '$components'
+  import {
+    Table,
+    TableData,
+    TableHeader,
+    TableRow,
+    DeleteAlertDialog
+  } from '$components'
   import { File, Plus, History, User, Trash } from 'lucide-svelte'
   import { formatDate } from '$lib'
   import type { Event } from '$lib/types'
   import { onMount } from 'svelte'
   import { PUBLIC_API_URL } from '$env/static/public'
   import { fetchEvents } from '$lib'
+  import { addToast } from '$components/Toaster.svelte'
 
   let events: Event[] = []
   let selected: number[] = []
+  let alertDialog: DeleteAlertDialog
 
   onMount(async () => {
     const json = await fetchEvents()
@@ -45,6 +53,14 @@
     if (response.ok) {
       events = events.filter(e => selected.includes(e.id))
       selected = []
+      alertDialog.closeAlertDialog()
+      addToast({
+        data: {
+          title: 'Операція успішна',
+          description: 'Елементи було видалено',
+          color: 'bg-emerald-500'
+        }
+      })
     }
   }
 </script>
@@ -82,7 +98,7 @@
           </div>
           <div class="flex items-center justify-center gap-4">
             <button
-              on:click={deleteSelected}
+              on:click={() => alertDialog.openAlertDialog()}
               class="inline-flex items-center justify-center rounded-md p-2 hover:bg-white/20"
             >
               <Trash size={16} />
@@ -145,3 +161,5 @@
     </tbody>
   </Table>
 </div>
+
+<DeleteAlertDialog bind:this={alertDialog} on:confirm={deleteSelected} />
