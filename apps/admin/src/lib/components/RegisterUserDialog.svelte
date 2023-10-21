@@ -112,8 +112,15 @@
             bind:value={fullName}
             required
           />
-          <Input label="Email" name="email" bind:value={email} required />
           <Input
+            type="email"
+            label="Email"
+            name="email"
+            bind:value={email}
+            required
+          />
+          <Input
+            type="password"
             label="Пароль"
             name="password"
             bind:value={password}
