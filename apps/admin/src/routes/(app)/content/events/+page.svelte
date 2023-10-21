@@ -51,7 +51,7 @@
       credentials: 'include'
     })
     if (response.ok) {
-      events = events.filter(e => selected.includes(e.id))
+      events = events.filter(e => !selected.includes(e.id))
       selected = []
       alertDialog.closeAlertDialog()
       addToast({
@@ -117,7 +117,7 @@
         <TableHeader>
           <input
             type="checkbox"
-            checked={selected.length > 0}
+            checked={selected.length === events.length && selected.length > 0}
             on:input={toggleSelectAll}
           />
         </TableHeader>
