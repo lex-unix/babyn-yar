@@ -8,15 +8,24 @@
   export let index: number
   export let type: string
 
-  const dispatch = createEventDispatcher<{ remove: { index: number } }>()
+  const dispatch = createEventDispatcher<{
+    remove: { index: number }
+    change: { i: number; fileName: string }
+  }>()
 
   function remove() {
     dispatch('remove', { index })
   }
+
+  function change(
+    e: Event & { currentTarget: EventTarget & HTMLInputElement }
+  ) {
+    dispatch('change', { i: index, fileName: e.currentTarget.value })
+  }
 </script>
 
 <li
-  class="group relative grid w-full grid-cols-[230px_auto] gap-5 rounded-md p-4 hover:bg-gray-100"
+  class="group relative grid w-full grid-cols-[230px_auto] gap-5 rounded-md p-4 hover:bg-gray-300/20"
 >
   <button
     on:click={remove}
@@ -51,7 +60,8 @@
       <input
         id={`asset-name-${index}`}
         type="text"
-        bind:value={fileName}
+        value={fileName}
+        on:input={change}
         class="w-full rounded-bl-md rounded-tl-md border px-4 py-3 text-sm outline-none hover:border-teal-400"
       />
       <span

@@ -66,11 +66,17 @@
     isSubmitting = false
   }
 
+  function changeFileName(e: CustomEvent<{ i: number; fileName: string }>) {
+    const { i, fileName } = e.detail
+    files[i].fileName = fileName
+    files = files
+  }
+
   const {
     elements: { trigger, overlay, content, title, close, portalled },
     states: { open }
   } = createDialog({
-    forceVisible: true
+    closeOnOutsideClick: true
   })
 </script>
 
@@ -86,11 +92,11 @@
   {#if $open}
     <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" />
     <div
-      class="fixed inset-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden p-6 shadow-lg"
-      use:melt={$content}
+      class="fixed inset-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden p-6"
     >
       <div
-        class="relative m-auto min-w-[720px] max-w-[800px] rounded-lg bg-white p-9"
+        class="relative m-auto min-w-[720px] max-w-[800px] rounded-lg bg-white p-9 shadow-lg"
+        use:melt={$content}
       >
         <div class="mb-5">
           <h2 use:melt={$title} class="text-xl font-semibold text-gray-900">
@@ -104,10 +110,11 @@
                 <FileListItem
                   {index}
                   {extension}
+                  {fileName}
                   src={URL.createObjectURL(file)}
                   type={file.type}
-                  bind:fileName
                   on:remove={removeFile}
+                  on:change={changeFileName}
                 />
               {/each}
             </ul>
