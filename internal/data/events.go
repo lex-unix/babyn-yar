@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -47,16 +48,19 @@ func (m EventModel) Insert(event *Event) error {
 }
 
 func (m EventModel) GetAll(filters Filters) ([]*Event, Metadata, error) {
-	query := `
+	query := fmt.Sprintf(`
 		SELECT count(*) OVER(), e.id, e.created_at, e.updated_at, e.title, e.description, e.content, e.version, u.full_name
 		FROM events e
 		INNER JOIN users u ON e.user_id = u.id
-		ORDER BY e.created_at DESC`
+		ORDER BY %s %s, id ASC
+		LIMIT $1 OFFSET $2`, filters.sortColumn(), filters.sortDirection())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	rows, err := m.DB.Query(ctx, query)
+	args := []interface{}{filters.limit(), filters.offset()}
+
+	rows, err := m.DB.Query(ctx, query, args...)
 	if err != nil {
 		return nil, Metadata{}, err
 	}
@@ -65,7 +69,8 @@ func (m EventModel) GetAll(filters Filters) ([]*Event, Metadata, error) {
 	events, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (*Event, error) {
 		var event Event
 		var user User
-		err := row.Scan(&totalRecords,
+		err := row.Scan(
+			&totalRecords,
 			&event.ID,
 			&event.CreatedAt,
 			&event.UpdatedAt,
