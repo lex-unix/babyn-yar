@@ -45,7 +45,7 @@
     if (contentType.startsWith('image')) {
       type = 'image'
     } else if (contentType.startsWith('video')) {
-      contentType = 'video'
+      type = 'video'
     }
     dispatch('select', { url, type })
   }
