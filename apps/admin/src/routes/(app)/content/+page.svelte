@@ -58,7 +58,9 @@
         </TableRow>
         <TableRow>
           <TableData>
-            <a href="/content/testimonies">Свідчення очевидців трагедії</a>
+            <a href="/content/victim-testimonies"
+              >Свідчення очевидців трагедії</a
+            >
           </TableData>
           <TableData>04/27/2023 7:36 AM</TableData>
           <TableData>Олексій Міїн</TableData>

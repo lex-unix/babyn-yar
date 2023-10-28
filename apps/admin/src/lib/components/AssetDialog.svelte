@@ -37,17 +37,17 @@
   }
 
   const dispatch = createEventDispatcher<{
-    select: { url: string; type: string }
+    select: { url: string; type: string; fileName: string }
   }>()
 
-  function selectAsset(url: string, contentType: string) {
+  function selectAsset(url: string, contentType: string, fileName: string) {
     let type = ''
     if (contentType.startsWith('image')) {
       type = 'image'
     } else if (contentType.startsWith('video')) {
       type = 'video'
     }
-    dispatch('select', { url, type })
+    dispatch('select', { url, type, fileName })
   }
 
   const {
@@ -89,7 +89,8 @@
             <li class="p-2.5">
               <button
                 class="group relative w-full"
-                on:click={() => selectAsset(asset.url, asset.contentType)}
+                on:click={() =>
+                  selectAsset(asset.url, asset.contentType, asset.fileName)}
               >
                 <AssetItem
                   src={asset.url}

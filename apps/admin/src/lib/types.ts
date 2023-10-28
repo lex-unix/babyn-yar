@@ -2,16 +2,22 @@ import type { JSONContent } from '@tiptap/core'
 
 type BaseContent = {
   id: number
+  createdAt: string
+  updatedAt: string
   title: string
   description: string
   content: JSONContent
   cover: string
   lang: string
 }
+
 export type Event = BaseContent & {
-  createdAt: string
-  updatedAt: string
   version: number
+  user: User
+}
+
+export type VictimTestimony = BaseContent & {
+  documents: string[]
   user: User
 }
 
@@ -47,6 +53,7 @@ export type User = {
 }
 
 export type EventErrorResponse = BaseContentErrorResponse
+export type TestimonyErrorResponse = BaseContentErrorResponse
 
 export type UserErrorResponse = {
   fullName?: string
