@@ -62,8 +62,9 @@
 <div use:melt={$portalled}>
   {#if $open}
     <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" />
-    <div class="fixed inset-0 z-50 p-10" use:melt={$content}>
+    <div class="fixed inset-0 z-50 p-10">
       <div
+        use:melt={$content}
         class="relative h-full overflow-y-auto overflow-x-hidden rounded-xl bg-gray-50 p-9 shadow-xl"
       >
         <h2 use:melt={$title} class="m-0 text-xl font-semibold text-gray-900">
@@ -95,14 +96,6 @@
                   fileName={asset.fileName}
                   contentType={asset.contentType}
                 />
-                <div
-                  class="absolute left-0 top-0 z-10 m-2 hidden rounded bg-gray-200 p-1.5 group-hover:block"
-                />
-                <div class="mt-2 w-full">
-                  <p class="line-clamp-1 text-sm text-gray-500">
-                    {asset.fileName}
-                  </p>
-                </div>
               </button>
             </li>
           {/each}
