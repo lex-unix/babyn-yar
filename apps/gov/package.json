@@ -9,13 +9,12 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test:unit": "vitest",
     "format": "prettier --write ."
   },
   "dependencies": {
     "@astrojs/mdx": "^1.1.0",
     "@astrojs/node": "^6.0.0",
-    "@astrojs/react": "^3.0.2",
+    "@astrojs/react": "^3.0.3",
     "@astrojs/sitemap": "^3.0.0",
     "@astrojs/tailwind": "^5.0.0",
     "@heroicons/react": "^2.0.18",
@@ -29,15 +28,14 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "shared": "*",
+    "shared-types": "*",
     "tailwindcss": "^3.0.24",
+    "tip-tap-utils": "*",
     "ui": "*"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.9",
-    "@vitest/coverage-v8": "^0.34.1",
-    "@vitest/ui": "^0.34.1",
     "eslint-config-custom": "*",
-    "tsconfig": "*",
-    "vitest": "^0.34.1"
+    "tsconfig": "*"
   }
 }
