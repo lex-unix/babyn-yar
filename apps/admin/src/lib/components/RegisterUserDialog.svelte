@@ -99,7 +99,7 @@
           <h2 use:melt={$title} class="text-xl font-semibold text-gray-700">
             Додати нового користувача
           </h2>
-          <p use:melt={$description} class="mt-2 text-gray-400">
+          <p use:melt={$description} class="mt-2 text-gray-500">
             Зареєструйте нового користувача, вказавши ім'я, адресу електронної
             пошти, пароль та роль. Користувач зможе потім змінити пароль у
             налаштуваннях.
