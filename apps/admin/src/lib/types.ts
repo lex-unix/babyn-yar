@@ -5,6 +5,8 @@ type BaseContent = {
   title: string
   description: string
   content: JSONContent
+  cover: string
+  lang: string
 }
 export type Event = BaseContent & {
   createdAt: string

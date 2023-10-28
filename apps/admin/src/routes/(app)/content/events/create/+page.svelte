@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Input, RichTextEditor } from '$components'
+  import { Input, RichTextEditor, LangSelect, CoverSelect } from '$components'
   import { createEvent } from '$lib'
   import type { JSONContent } from '@tiptap/core'
   import { PlusIcon } from 'lucide-svelte'
@@ -12,12 +12,16 @@
   let errors: EventErrorResponse | undefined
   let title = ''
   let description = ''
+  let lang = ''
+  let cover = ''
 
   async function submit() {
     loading = true
     const body = JSON.stringify({
       title,
       description,
+      lang,
+      cover,
       content: JSON.stringify(content)
     })
     const response = await createEvent(body)
@@ -61,6 +65,8 @@
 
 <div class="pt-10">
   <form id="create-event" on:submit|preventDefault={submit} class="space-y-5">
+    <LangSelect bind:lang />
+    <CoverSelect bind:cover />
     <Input
       name="title"
       label="Назва"

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  import { Input, RichTextEditor } from '$components'
+  import { Input, LangSelect, CoverSelect, RichTextEditor } from '$components'
   import type { Event } from '$lib/types'
   import { fetchEvent, updateEvent } from '$lib'
   import type { EventErrorResponse } from '$lib/types'
@@ -21,6 +21,8 @@
     const body = JSON.stringify({
       title: event.title,
       description: event.description,
+      lang: event.lang,
+      cover: event.cover,
       content: JSON.stringify(event.content)
     })
     const res = await updateEvent($page.params.slug, body)
@@ -63,6 +65,8 @@
 <div>
   {#if event}
     <form on:submit|preventDefault={submit} id="edit-event" class="space-y-5">
+      <LangSelect bind:lang={event.lang} />
+      <CoverSelect bind:cover={event.cover} />
       <Input
         bind:value={event.title}
         name="title"
