@@ -18,6 +18,8 @@ type Event struct {
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Content     string    `json:"content"`
+	Cover       string    `json:"cover"`
+	Lang        string    `json:"lang"`
 	Version     int32     `json:"version"`
 	UserID      int64     `json:"-"`
 	User        *User     `json:"user"`
@@ -31,15 +33,25 @@ func ValidateEvent(v *validator.Validator, event *Event) {
 	v.Check(event.Title != "", "title", "must no be empty")
 	v.Check(event.Description != "", "description", "must no be empty")
 	v.Check(event.Content != "", "content", "must no be empty")
+	v.Check(event.Lang != "", "lang", "must not be empty")
+	v.Check(validator.In(event.Lang, "ua", "en"), "lang", "must be either ua or en")
+	v.Check(event.Cover != "", "cover", "must not be empty")
 }
 
 func (m EventModel) Insert(event *Event) error {
 	query := `
-		INSERT INTO events (title, description, content, user_id)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO events (title, description, content, lang, cover, user_id)
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id, version`
 
-	args := []interface{}{event.Title, event.Description, event.Content, event.UserID}
+	args := []interface{}{
+		event.Title,
+		event.Description,
+		event.Content,
+		event.Lang,
+		event.Cover,
+		event.UserID,
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -47,18 +59,19 @@ func (m EventModel) Insert(event *Event) error {
 	return m.DB.QueryRow(ctx, query, args...).Scan(&event.ID, &event.Version)
 }
 
-func (m EventModel) GetAll(filters Filters) ([]*Event, Metadata, error) {
+func (m EventModel) GetAll(lang string, filters Filters) ([]*Event, Metadata, error) {
 	query := fmt.Sprintf(`
-		SELECT count(*) OVER(), e.id, e.created_at, e.updated_at, e.title, e.description, e.content, e.version, u.full_name
+		SELECT count(*) OVER(), e.id, e.created_at, e.updated_at, e.title, e.description, e.cover, e.content, e.version, u.full_name
 		FROM events e
 		INNER JOIN users u ON e.user_id = u.id
+		WHERE (e.lang = $1 OR $1 = '')
 		ORDER BY %s %s, id ASC
-		LIMIT $1 OFFSET $2`, filters.sortColumn(), filters.sortDirection())
+		LIMIT $2 OFFSET $3`, filters.sortColumn(), filters.sortDirection())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	args := []interface{}{filters.limit(), filters.offset()}
+	args := []interface{}{lang, filters.limit(), filters.offset()}
 
 	rows, err := m.DB.Query(ctx, query, args...)
 	if err != nil {
@@ -76,6 +89,7 @@ func (m EventModel) GetAll(filters Filters) ([]*Event, Metadata, error) {
 			&event.UpdatedAt,
 			&event.Title,
 			&event.Description,
+			&event.Cover,
 			&event.Content,
 			&event.Version,
 			&user.FullName,
@@ -99,7 +113,7 @@ func (m EventModel) Get(id int64) (*Event, error) {
 	}
 
 	query := `
-		SELECT e.id, e.title, e.description, e.content, e.version
+		SELECT e.id, e.title, e.description, e.content, e.lang, e.cover, e.version
 		FROM events e
 		WHERE id = $1`
 
@@ -112,6 +126,8 @@ func (m EventModel) Get(id int64) (*Event, error) {
 		&event.Title,
 		&event.Description,
 		&event.Content,
+		&event.Lang,
+		&event.Cover,
 		&event.Version,
 	)
 	if err != nil {
@@ -129,14 +145,16 @@ func (m EventModel) Get(id int64) (*Event, error) {
 func (m EventModel) Update(event *Event) error {
 	query := `
 		UPDATE events
-		SET title = $1, description = $2, content = $3, updated_at = now(), version = version + 1
-		WHERE id = $4 AND version = $5
+		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, updated_at = now(), version = version + 1
+		WHERE id = $6 AND version = $7
 		RETURNING version`
 
 	args := []interface{}{
 		event.Title,
 		event.Description,
 		event.Content,
+		event.Lang,
+		event.Cover,
 		event.ID,
 		event.Version,
 	}

@@ -14,6 +14,8 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 		Title       string `json:"title"`
 		Description string `json:"description"`
 		Content     string `json:"content"`
+		Lang        string `json:"lang"`
+		Cover       string `json:"cover"`
 	}
 
 	err := app.readJson(w, r, &input)
@@ -28,6 +30,8 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 		Title:       input.Title,
 		Description: input.Description,
 		Content:     input.Content,
+		Lang:        input.Lang,
+		Cover:       input.Cover,
 		UserID:      user.ID,
 	}
 
@@ -55,12 +59,15 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 
 func (app *application) listEventsHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
+		Lang string
 		data.Filters
 	}
 
 	v := validator.New()
 
 	qs := r.URL.Query()
+
+	input.Lang = app.readString(qs, "lang", "")
 
 	input.Filters.Page = app.readInt(qs, "page", 1, v)
 	input.Filters.PageSize = app.readInt(qs, "page_size", 10, v)
@@ -73,7 +80,7 @@ func (app *application) listEventsHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	events, metadata, err := app.models.Events.GetAll(input.Filters)
+	events, metadata, err := app.models.Events.GetAll(input.Lang, input.Filters)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
@@ -160,6 +167,8 @@ func (app *application) updateEventHandler(w http.ResponseWriter, r *http.Reques
 		Title       *string `json:"title"`
 		Description *string `json:"description"`
 		Content     *string `json:"content"`
+		Lang        *string `json:"lang"`
+		Cover       *string `json:"cover"`
 	}
 
 	err = app.readJson(w, r, &input)
@@ -178,6 +187,14 @@ func (app *application) updateEventHandler(w http.ResponseWriter, r *http.Reques
 
 	if input.Content != nil {
 		event.Content = *input.Content
+	}
+
+	if input.Lang != nil {
+		event.Lang = *input.Lang
+	}
+
+	if input.Cover != nil {
+		event.Cover = *input.Cover
 	}
 
 	v := validator.New()
