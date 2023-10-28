@@ -1,5 +1,6 @@
 <script lang="ts">
   import { melt, createSelect } from '@melt-ui/svelte'
+  import { ChevronDown } from 'lucide-svelte'
 
   export let lang: string
 
@@ -40,6 +41,7 @@
     class="flex min-w-[220px] items-center justify-between rounded border bg-white px-3 py-2 leading-none outline-none hover:border-teal-400 focus:border-teal-400 focus:ring focus:ring-teal-100"
   >
     {$selectedLabel || 'Обрати мову'}
+    <ChevronDown class="h-5 w-5" />
   </button>
 </div>
 
