@@ -9,7 +9,7 @@ export const extensions = [
   StarterKit.configure({
     heading: {
       HTMLAttributes: {
-        class: 'text-2xl font-semibold my-5'
+        class: 'text-2xl my-5'
       },
       levels: [1, 2]
     },
