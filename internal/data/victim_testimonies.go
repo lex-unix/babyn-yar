@@ -135,3 +135,36 @@ func (m VictimTestimonyModel) Get(id int64) (*VictimTestimony, error) {
 
 	return &testimony, nil
 }
+
+func (m VictimTestimonyModel) Update(testimony *VictimTestimony) error {
+	query := `
+		UPDATE victim_testimonies
+		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, documents = $6, updated_at = now(), version = version + 1
+		WHERE id = $7 AND version = $8
+		RETURNING version`
+
+	args := []interface{}{
+		testimony.Title,
+		testimony.Description,
+		testimony.Content,
+		testimony.Lang,
+		testimony.Cover,
+		testimony.Documents,
+		testimony.ID,
+		testimony.Version,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err := m.DB.QueryRow(ctx, query, args...).Scan(&testimony.Version)
+	if err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return ErrEditConflict
+		default:
+			return err
+		}
+	}
+	return nil
+}

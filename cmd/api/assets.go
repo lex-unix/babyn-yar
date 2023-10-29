@@ -108,14 +108,18 @@ func (app *application) listAssetsHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
-func (app *application) deleteAssetHandler(w http.ResponseWriter, r *http.Request) {
-	id, err := app.readIDParam(r)
-	if err != nil {
-		app.notFoundResponse(w, r)
-		return
+func (app *application) deleteAssetsHandler(w http.ResponseWriter, r *http.Request) {
+	v := validator.New()
+
+	qs := r.URL.Query()
+
+	ids := app.readIntList(qs, "ids", v)
+
+	if !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
 	}
 
-	err = app.models.Assets.Delete(id)
+	err := app.models.Assets.DeleteMultiple(ids)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
@@ -124,10 +128,9 @@ func (app *application) deleteAssetHandler(w http.ResponseWriter, r *http.Reques
 			app.serverErrorResponse(w, r, err)
 		}
 		return
-
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"message": "asset deleted"}, nil)
+	err = app.writeJson(w, http.StatusOK, envelope{"message": "assets successfully deleted"}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

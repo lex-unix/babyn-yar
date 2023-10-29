@@ -124,3 +124,84 @@ func (app *application) showTestimonyHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 }
+
+func (app *application) updateTestimonyHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFoundResponse(w, r)
+		return
+	}
+
+	testimony, err := app.models.Testimonies.Get(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	var input struct {
+		Title       *string  `json:"title"`
+		Description *string  `json:"description"`
+		Content     *string  `json:"content"`
+		Lang        *string  `json:"lang"`
+		Cover       *string  `json:"cover"`
+		Documents   []string `json:"documents"`
+	}
+
+	err = app.readJson(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	if input.Title != nil {
+		testimony.Title = *input.Title
+	}
+
+	if input.Description != nil {
+		testimony.Description = *input.Description
+	}
+
+	if input.Content != nil {
+		testimony.Content = *input.Content
+	}
+
+	if input.Lang != nil {
+		testimony.Lang = *input.Lang
+	}
+
+	if input.Cover != nil {
+		testimony.Cover = *input.Cover
+	}
+
+	if input.Documents != nil {
+		testimony.Documents = input.Documents
+	}
+
+	v := validator.New()
+
+	if data.ValidateTestimony(v, testimony); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	err = app.models.Testimonies.Update(testimony)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrEditConflict):
+			app.editConflictResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJson(w, http.StatusOK, envelope{"testimony": testimony}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}

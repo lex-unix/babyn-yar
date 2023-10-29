@@ -39,6 +39,7 @@ func (app *application) routes() http.Handler {
 	router.Post("/v1/victim-testimonies", app.requirePermission("admin", app.createTestimonyHandler))
 	router.Get("/v1/victim-testimonies", app.listTestimoniesHandler)
 	router.Get("/v1/victim-testimonies/{id}", app.showTestimonyHandler)
+	router.Patch("/v1/victim-testimonies/{id}", app.requireAuthenticatedUser(app.updateTestimonyHandler))
 
 	return router
 }
