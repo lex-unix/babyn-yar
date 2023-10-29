@@ -2,12 +2,12 @@
   import { PlusIcon, XIcon } from 'lucide-svelte'
   import { AssetDialog } from '$components'
 
-  export let documents: Array<{ url: string; fileName: string }>
+  export let documents: string[]
 
   let assetDialog: AssetDialog
 
   function select(e: CustomEvent<{ url: string; fileName: string }>) {
-    documents = [...documents, e.detail]
+    documents = [...documents, e.detail.url]
     assetDialog.closeDialog()
   }
 
@@ -27,7 +27,7 @@
         <div
           class="flex items-center gap-2 rounded bg-orange-100 px-2 py-1 text-orange-900"
         >
-          <span>{doc.fileName}</span>
+          <span>{doc.split('/').at(-1)}</span>
           <button
             type="button"
             on:click={() => remove(i)}

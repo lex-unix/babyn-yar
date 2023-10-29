@@ -20,20 +20,16 @@
   let description = ''
   let lang = ''
   let cover = ''
-  let documents: Array<{ url: string; fileName: string }> = []
+  let documents: string[] = []
 
   async function submit() {
     loading = true
-    let documentsUrls: string[] = []
-    if (documents.length > 0) {
-      documentsUrls = documents.map(d => d.url)
-    }
     const body = JSON.stringify({
       title,
       description,
       lang,
       cover,
-      documents: documentsUrls,
+      documents,
       content: JSON.stringify(content)
     })
     const response = await createTestimony(body)
