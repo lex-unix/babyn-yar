@@ -4,7 +4,8 @@
     RichTextEditor,
     LangSelect,
     CoverSelect,
-    DocumentsSelect
+    DocumentsSelect,
+    Button
   } from '$components'
   import { createTestimony } from '$lib'
   import type { JSONContent } from '@tiptap/core'
@@ -55,20 +56,10 @@
 
 <div class="flex items-center justify-between">
   <h1 class="text-2xl font-semibold">Новий запис</h1>
-  <button
-    form="create-event"
-    class="flex items-center gap-3 rounded-md border border-sky-700/10 bg-teal-500 px-4 py-2 text-sm font-medium text-white disabled:opacity-70"
-    disabled={loading}
-  >
-    <PlusIcon size={16} />
-    <span>
-      {#if loading}
-        Створення...
-      {:else}
-        Створити
-      {/if}
-    </span>
-  </button>
+  <Button isLoading={loading} loadingText="Створення..." form="create-event">
+    <PlusIcon size={16} slot="icon" />
+    Створити
+  </Button>
 </div>
 
 <div class="pt-10">
