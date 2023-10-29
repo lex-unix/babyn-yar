@@ -205,3 +205,32 @@ func (app *application) updateTestimonyHandler(w http.ResponseWriter, r *http.Re
 		app.serverErrorResponse(w, r, err)
 	}
 }
+
+func (app *application) deleteTestimoniesHandler(w http.ResponseWriter, r *http.Request) {
+	v := validator.New()
+
+	qs := r.URL.Query()
+
+	ids := app.readIntList(qs, "ids", v)
+
+	if !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	err := app.models.Testimonies.DeleteMultiple(ids)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJson(w, http.StatusOK, envelope{"message": "testimonies successfully deleted"}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}

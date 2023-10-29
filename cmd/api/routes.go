@@ -40,6 +40,7 @@ func (app *application) routes() http.Handler {
 	router.Get("/v1/victim-testimonies", app.listTestimoniesHandler)
 	router.Get("/v1/victim-testimonies/{id}", app.showTestimonyHandler)
 	router.Patch("/v1/victim-testimonies/{id}", app.requireAuthenticatedUser(app.updateTestimonyHandler))
+	router.Delete("/v1/victim-testimonies", app.requireAuthenticatedUser(app.deleteTestimoniesHandler))
 
 	return router
 }
