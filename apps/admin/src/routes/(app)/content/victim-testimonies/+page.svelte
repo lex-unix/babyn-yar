@@ -2,11 +2,11 @@
   import { Table, TableData, TableHeader, TableRow } from '$components'
   import { File, Plus, History, User, Trash } from 'lucide-svelte'
   import { formatDate } from '$lib'
-  import type { Event } from '$lib/types'
+  import type { VictimTestimony } from '$lib/types'
   import { onMount } from 'svelte'
   import { fetchTestimonies } from '$lib'
 
-  let testimonies: Event[] = []
+  let testimonies: VictimTestimony[] = []
   let selected: number[] = []
 
   onMount(async () => {
