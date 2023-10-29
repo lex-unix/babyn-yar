@@ -10,8 +10,7 @@
   import { formatDate } from '$lib'
   import type { Event } from '$lib/types'
   import { onMount } from 'svelte'
-  import { PUBLIC_API_URL } from '$env/static/public'
-  import { fetchEvents } from '$lib'
+  import { fetchEvents, deleteEvents } from '$lib'
   import { addToast } from '$components/Toaster.svelte'
 
   let events: Event[] = []
@@ -44,24 +43,27 @@
   }
 
   async function deleteSelected() {
-    const url = new URL(PUBLIC_API_URL + '/events')
-    url.searchParams.append('ids', selected.join(','))
-    const response = await fetch(url, {
-      method: 'DELETE',
-      credentials: 'include'
-    })
-    if (response.ok) {
-      events = events.filter(e => !selected.includes(e.id))
-      selected = []
-      alertDialog.closeAlertDialog()
+    const ok = await deleteEvents(selected)
+    if (!ok) {
       addToast({
         data: {
-          title: 'Операція успішна',
-          description: 'Елементи було видалено',
+          title: 'Щось пішло не так',
+          description: 'Спробуйте ще раз',
           color: 'bg-emerald-500'
         }
       })
+      return
     }
+    events = events.filter(e => !selected.includes(e.id))
+    selected = []
+    alertDialog.closeAlertDialog()
+    addToast({
+      data: {
+        title: 'Операція успішна',
+        description: 'Елементи було видалено',
+        color: 'bg-emerald-500'
+      }
+    })
   }
 </script>
 

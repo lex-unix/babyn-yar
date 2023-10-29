@@ -69,3 +69,13 @@ export async function fetchEvents(page: number = 1) {
 
   return json as EventResponse
 }
+
+export async function deleteEvents(ids: number[]) {
+  const url = new URL(baseUrl)
+  url.searchParams.append('ids', ids.join(','))
+  const response = await fetch(url, {
+    method: 'DELETE',
+    credentials: 'include'
+  })
+  return response.ok
+}
