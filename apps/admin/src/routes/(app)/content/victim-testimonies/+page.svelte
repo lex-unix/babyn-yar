@@ -1,13 +1,21 @@
 <script lang="ts">
-  import { Table, TableData, TableHeader, TableRow } from '$components'
+  import {
+    DeleteAlertDialog,
+    Table,
+    TableData,
+    TableHeader,
+    TableRow
+  } from '$components'
   import { File, Plus, History, User, Trash } from 'lucide-svelte'
   import { formatDate } from '$lib'
   import type { VictimTestimony } from '$lib/types'
   import { onMount } from 'svelte'
-  import { fetchTestimonies } from '$lib'
+  import { fetchTestimonies, deleteTestimonies } from '$lib'
+  import { addToast } from '$components/Toaster.svelte'
 
   let testimonies: VictimTestimony[] = []
   let selected: number[] = []
+  let alertDialog: DeleteAlertDialog
 
   onMount(async () => {
     const json = await fetchTestimonies()
@@ -32,6 +40,30 @@
 
   function clear() {
     selected = []
+  }
+
+  async function deleteSelected() {
+    const ok = await deleteTestimonies(selected)
+    if (!ok) {
+      addToast({
+        data: {
+          title: 'Щось пішло не так',
+          description: 'Спробуйте ще раз',
+          color: 'bg-emerald-500'
+        }
+      })
+      return
+    }
+    testimonies = testimonies.filter(t => !selected.includes(t.id))
+    selected = []
+    alertDialog.closeAlertDialog()
+    addToast({
+      data: {
+        title: 'Операція успішна',
+        description: 'Елементи було видалено',
+        color: 'bg-emerald-500'
+      }
+    })
   }
 </script>
 
@@ -68,6 +100,7 @@
           </div>
           <div class="flex items-center justify-center gap-4">
             <button
+              on:click={() => alertDialog.openAlertDialog()}
               class="inline-flex items-center justify-center rounded-md p-2 hover:bg-white/20"
             >
               <Trash size={16} />
@@ -135,3 +168,5 @@
     </tbody>
   </Table>
 </div>
+
+<DeleteAlertDialog bind:this={alertDialog} on:confirm={deleteSelected} />

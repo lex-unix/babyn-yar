@@ -69,3 +69,13 @@ export async function updateTestimony(id: string, body: string) {
     return { ok: false as const }
   }
 }
+
+export async function deleteTestimonies(ids: number[]) {
+  const url = new URL(baseUrl)
+  url.searchParams.set('ids', ids.join(','))
+  const response = await fetch(url, {
+    method: 'DELETE',
+    credentials: 'include'
+  })
+  return response.ok
+}

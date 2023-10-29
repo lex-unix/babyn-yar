@@ -7,5 +7,6 @@ export {
   fetchTestimonies,
   fetchTestimony,
   createTestimony,
-  updateTestimony
+  updateTestimony,
+  deleteTestimonies
 } from './testimonies'
