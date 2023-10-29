@@ -39,3 +39,33 @@ export async function fetchTestimonies(page: number = 1) {
 
   return json as TestimonyResponse
 }
+
+export async function fetchTestimony(id: string) {
+  const res = await fetch(`${baseUrl}/${id}`)
+  const { testimony } = (await res.json()) as { testimony: VictimTestimony }
+  testimony.content = JSON.parse(testimony.content as unknown as string)
+  return testimony
+}
+
+export async function updateTestimony(id: string, body: string) {
+  try {
+    const response = await fetch(`${baseUrl}/${id}`, {
+      method: 'PATCH',
+      body,
+      credentials: 'include'
+    })
+    if (!response.ok) {
+      const json = await response.json()
+      if (response.status === 442) {
+        const errors: TestimonyErrorResponse = json.error
+        return { ok: false as const, errors }
+      } else {
+        return { ok: false as const }
+      }
+    }
+    return { ok: true as const }
+  } catch (e) {
+    console.log(e)
+    return { ok: false as const }
+  }
+}
