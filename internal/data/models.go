@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/lex-unix/babyn-yar/internal/validator"
 )
 
 var (
@@ -20,15 +19,6 @@ type Models struct {
 	Users       UserModel
 	Permissions PermissionModel
 	Testimonies VictimTestimonyModel
-}
-
-func ValidateTestimony(v *validator.Validator, testimony *VictimTestimony) {
-	v.Check(testimony.Title != "", "title", "must no be empty")
-	v.Check(testimony.Description != "", "description", "must no be empty")
-	v.Check(testimony.Content != "", "content", "must no be empty")
-	v.Check(testimony.Cover != "", "cover", "must not be empty")
-	v.Check(testimony.Lang != "", "lang", "must not be empty")
-	v.Check(validator.In(testimony.Lang, "ua", "en"), "lang", "must be either ua or en")
 }
 
 func NewModels(db *pgxpool.Pool) Models {
