@@ -42,5 +42,12 @@ func (app *application) routes() http.Handler {
 	router.Patch("/v1/victim-testimonies/{id}", app.requireAuthenticatedUser(app.updateTestimonyHandler))
 	router.Delete("/v1/victim-testimonies", app.requireAuthenticatedUser(app.deleteTestimoniesHandler))
 
+	// books
+	router.Get("/v1/books", app.listBooksHandler)
+	router.Get("/v1/books/{id}", app.showBookHandler)
+	router.Post("/v1/books", app.requireAuthenticatedUser(app.createBookHandler))
+	router.Patch("/v1/books/{id}", app.requireAuthenticatedUser(app.updateBookHandler))
+	router.Delete("/v1/books", app.requireAuthenticatedUser(app.deleteBooksHandler))
+
 	return router
 }
