@@ -21,6 +21,11 @@ export type VictimTestimony = BaseContent & {
   user: User
 }
 
+export type Book = BaseContent & {
+  documents: string[]
+  user: User
+}
+
 export type Metadata = {
   currentPage: number
   firstPage: number
@@ -33,6 +38,8 @@ type BaseContentErrorResponse = {
   title?: string
   description?: string
   content?: string
+  lang?: string
+  cover?: string
 }
 
 export type Asset = {
@@ -53,7 +60,14 @@ export type User = {
 }
 
 export type EventErrorResponse = BaseContentErrorResponse
-export type TestimonyErrorResponse = BaseContentErrorResponse
+
+export type TestimonyErrorResponse = BaseContentErrorResponse & {
+  documents?: string
+}
+
+export type BookErrorResponse = BaseContentErrorResponse & {
+  documents?: string
+}
 
 export type UserErrorResponse = {
   fullName?: string

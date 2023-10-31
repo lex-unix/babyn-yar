@@ -3,6 +3,7 @@
   import { ChevronDown } from 'lucide-svelte'
 
   export let lang: string
+  export let error: string | undefined = undefined
 
   const langOptions = [
     { value: 'ua', label: 'Українська' },
@@ -34,6 +35,9 @@
 
 <div>
   <label for="select-lang" class="mb-1.5 block text-gray-400">Мова</label>
+  {#if error}
+    <p class="-mt-1.5 mb-1.5 text-red-500">{Error}</p>
+  {/if}
   <button
     use:melt={$trigger}
     id="select-lang"

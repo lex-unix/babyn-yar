@@ -16,3 +16,11 @@ export {
   updateTestimony,
   deleteTestimonies
 } from './testimonies'
+
+export {
+  createBook,
+  updateBook,
+  deleteBooks,
+  fetchBooks,
+  fetchBook
+} from './books'

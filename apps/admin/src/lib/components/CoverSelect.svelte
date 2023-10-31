@@ -3,6 +3,7 @@
   import { ImageIcon, PlusIcon } from 'lucide-svelte'
 
   export let cover: string
+  export let error: string | undefined = undefined
 
   let assetDialog: AssetDialog
 
@@ -17,6 +18,9 @@
   <label for="select-cover" class="mb-1.5 block text-gray-400">
     Обкладинка
   </label>
+  {#if error}
+    <p class="-mt-1.5 mb-1.5 text-red-500">{error}</p>
+  {/if}
   <button
     on:click={() => assetDialog.openDialog('image')}
     id="select-cover"
