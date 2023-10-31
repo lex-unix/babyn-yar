@@ -19,6 +19,7 @@ type Models struct {
 	Users       UserModel
 	Permissions PermissionModel
 	Testimonies VictimTestimonyModel
+	Books       BookModel
 }
 
 func NewModels(db *pgxpool.Pool) Models {
@@ -29,5 +30,6 @@ func NewModels(db *pgxpool.Pool) Models {
 		Users:       UserModel{DB: db},
 		Permissions: PermissionModel{DB: db},
 		Testimonies: VictimTestimonyModel{DB: db},
+		Books:       BookModel{DB: db},
 	}
 }
