@@ -20,7 +20,7 @@
   }
 </script>
 
-<div class="min-h-screen bg-gray-50 pt-10 text-gray-900">
+<div class="min-h-screen bg-gray-50 px-3 pt-10 text-gray-900">
   <form on:submit|preventDefault={submit} class="mx-auto max-w-md space-y-3">
     <label class="block text-gray-400">
       Email
