@@ -61,7 +61,7 @@
     }
     books = books.filter(t => !selected.includes(t.id))
     selected = []
-    alertDialog.closeAlertDialog()
+    alertDialog.dismiss()
     addToast({
       data: {
         title: 'Операція успішна',
@@ -85,10 +85,7 @@
 </PageHeader>
 
 <Container title="Події">
-  <RecordActionBar
-    bind:selected
-    on:delete={() => alertDialog.openAlertDialog()}
-  />
+  <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
 
   {#if isError}
     <ErrorMessage>

@@ -56,7 +56,7 @@
     }
     testimonies = testimonies.filter(t => !selected.includes(t.id))
     selected = []
-    alertDialog.closeAlertDialog()
+    alertDialog.dismiss()
     addToast({
       data: {
         title: 'Операція успішна',
@@ -76,10 +76,7 @@
 </PageHeader>
 
 <Container title="Свідчення очевидців трагедії">
-  <RecordActionBar
-    bind:selected
-    on:delete={() => alertDialog.openAlertDialog()}
-  />
+  <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
   <Table>
     <thead>
       <tr>

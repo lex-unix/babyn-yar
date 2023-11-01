@@ -64,6 +64,7 @@
           color: 'bg-emerald-400'
         }
       })
+      alertDialog.dismiss()
     }
   }
 </script>
@@ -77,7 +78,7 @@
   <Container title="Управління користувачами">
     <RecordActionBar
       bind:selected={selectedUsers}
-      on:delete={() => alertDialog.openAlertDialog()}
+      on:delete={() => alertDialog.show()}
     />
 
     {#if users.length > 0}

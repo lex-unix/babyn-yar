@@ -3,12 +3,12 @@
   import { X } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
 
-  export function closeAlertDialog() {
-    open.set(false)
+  export function show() {
+    $open = true
   }
 
-  export function openAlertDialog() {
-    open.set(true)
+  export function dismiss() {
+    $open = false
   }
 
   function confirm() {
