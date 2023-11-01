@@ -9,18 +9,18 @@ export const extensions = [
   StarterKit.configure({
     heading: {
       HTMLAttributes: {
-        class: 'text-2xl my-5'
+        class: 'text-2xl my-5 font-semibold'
       },
       levels: [1, 2]
     },
     bulletList: {
       HTMLAttributes: {
-        class: 'list-disc pl-6 my-2'
+        class: 'list-disc pl-6 space-y-1 [&_p]:m-0'
       }
     },
     orderedList: {
       HTMLAttributes: {
-        class: 'list-decimal pl-6 my-2'
+        class: 'list-decimal pl-6 space-y-1 [&_p]:m-0'
       }
     },
     paragraph: {
