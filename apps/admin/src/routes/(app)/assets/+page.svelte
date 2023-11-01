@@ -5,7 +5,9 @@
     UploadAssetsDialog,
     SearchBar,
     AssetSortMenu,
-    AssetItem
+    AssetItem,
+    PageHeader,
+    Container
   } from '$components'
   import { TrashIcon } from 'lucide-svelte'
   import { fetchAssetsWrapper } from '$lib'
@@ -56,90 +58,90 @@
   }
 </script>
 
-<svelte:head>
-  <title>Медіа файли</title>
-</svelte:head>
+<PageHeader>
+  <svelte:fragment slot="heading">Медіа файли</svelte:fragment>
+  <UploadAssetsDialog slot="right-items" bind:this={assetDialog} />
+</PageHeader>
 
-<div class="flex items-center justify-between">
-  <h1 class="text-2xl font-semibold">Медіа файли</h1>
-  <UploadAssetsDialog bind:this={assetDialog} />
-</div>
+<Container title="Медіа файли">
+  <div class="mb-10 mt-6">
+    <SearchBar on:search={search}>
+      <svelte:fragment slot="filters">
+        <AssetSortMenu on:select={sort} />
+      </svelte:fragment>
+    </SearchBar>
+  </div>
 
-<div class="mb-10 mt-6">
-  <SearchBar on:search={search}>
-    <svelte:fragment slot="filters">
-      <AssetSortMenu on:select={sort} />
-    </svelte:fragment>
-  </SearchBar>
-</div>
-
-{#if selectedAssets.length > 0}
-  <div class="w-full rounded-md bg-gray-800 text-sm font-normal text-gray-100">
-    <div class="px-3 py-2">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <p>Обрано {selectedAssets.length}</p>
-          <button
-            on:click={selectAll}
-            class="rounded-md px-3 py-2 hover:bg-white/10">Обрати всі</button
-          >
-          <button
-            on:click={clear}
-            class="rounded-md px-3 py-2 hover:bg-white/10"
-          >
-            Очистити
-          </button>
-        </div>
-        <div class="flex items-center justify-center gap-4">
-          <button
-            class="inline-flex items-center justify-center rounded-md p-2 hover:bg-white/20"
-          >
-            <TrashIcon size={16} />
-          </button>
+  {#if selectedAssets.length > 0}
+    <div
+      class="w-full rounded-md bg-gray-800 text-sm font-normal text-gray-100"
+    >
+      <div class="px-3 py-2">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <p>Обрано {selectedAssets.length}</p>
+            <button
+              on:click={selectAll}
+              class="rounded-md px-3 py-2 hover:bg-white/10">Обрати всі</button
+            >
+            <button
+              on:click={clear}
+              class="rounded-md px-3 py-2 hover:bg-white/10"
+            >
+              Очистити
+            </button>
+          </div>
+          <div class="flex items-center justify-center gap-4">
+            <button
+              class="inline-flex items-center justify-center rounded-md p-2 hover:bg-white/20"
+            >
+              <TrashIcon size={16} />
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-{/if}
+  {/if}
 
-<ul class="mt-10 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-  {#if loading && assets.length === 0}
-    <AssetGridItemSkeleton />
-    <AssetGridItemSkeleton />
-    <AssetGridItemSkeleton />
-    <AssetGridItemSkeleton />
-    <AssetGridItemSkeleton />
-    <AssetGridItemSkeleton />
-  {:else}
-    {#each assets as asset}
-      {@const selected = selectedAssets.includes(asset.id)}
-      <li class="p-2.5">
-        <div class="group relative">
-          <AssetItem
-            src={asset.url}
-            fileName={asset.fileName}
-            contentType={asset.contentType}
-          />
-          <div
-            class="absolute left-2 top-2 z-10 hidden overflow-hidden group-hover:block"
-            class:selected
-          >
+  <ul class="mt-10 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+    {#if loading && assets.length === 0}
+      <AssetGridItemSkeleton />
+      <AssetGridItemSkeleton />
+      <AssetGridItemSkeleton />
+      <AssetGridItemSkeleton />
+      <AssetGridItemSkeleton />
+      <AssetGridItemSkeleton />
+    {:else}
+      {#each assets as asset}
+        {@const selected = selectedAssets.includes(asset.id)}
+        <li class="p-2.5">
+          <div class="group relative">
+            <AssetItem
+              src={asset.url}
+              fileName={asset.fileName}
+              contentType={asset.contentType}
+            />
             <div
-              class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-300 p-3 accent-teal-300"
+              class="absolute left-2 top-2 z-10 hidden overflow-hidden group-hover:block"
+              class:selected
             >
-              <input
-                id="id-{asset.id}"
-                type="checkbox"
-                checked={selected}
-                on:change={() => toggleSelect(asset.id)}
-              />
+              <div
+                class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-300 p-3 accent-teal-300"
+              >
+                <input
+                  id="id-{asset.id}"
+                  type="checkbox"
+                  checked={selected}
+                  on:change={() => toggleSelect(asset.id)}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </li>
-    {/each}
-  {/if}
-</ul>
+        </li>
+      {/each}
+    {/if}
+  </ul>
+</Container>
 
 <style lang="postcss">
   .selected {

@@ -1,5 +1,13 @@
 <script lang="ts">
-  import { Input, RichTextEditor, LangSelect, CoverSelect } from '$components'
+  import {
+    Input,
+    RichTextEditor,
+    LangSelect,
+    CoverSelect,
+    PageHeader,
+    Container,
+    Button
+  } from '$components'
   import { createEvent } from '$lib'
   import type { JSONContent } from '@tiptap/core'
   import { PlusIcon } from 'lucide-svelte'
@@ -7,7 +15,7 @@
   import type { EventErrorResponse } from '$lib/types'
   import { goto } from '$app/navigation'
 
-  let loading = false
+  let isSubmitting = false
   let content: JSONContent
   let errors: EventErrorResponse | undefined
   let title = ''
@@ -16,7 +24,7 @@
   let cover = ''
 
   async function submit() {
-    loading = true
+    isSubmitting = true
     const body = JSON.stringify({
       title,
       description,
@@ -37,34 +45,25 @@
       })
       goto('/content/events')
     }
-    loading = false
+    isSubmitting = false
   }
 </script>
 
-<svelte:head>
-  <title>Створити нову подію</title>
-</svelte:head>
-
-<div class="flex items-center justify-between">
-  <h1 class="text-2xl font-semibold">Нова подія</h1>
-  <button
-    form="create-event"
-    class="flex items-center gap-3 rounded-md border border-sky-700/10 bg-teal-500 px-4 py-2 text-sm font-medium text-white disabled:opacity-70"
-    disabled={loading}
+<PageHeader>
+  <svelte:fragment slot="heading">Новий запис</svelte:fragment>
+  <Button
+    slot="right-items"
+    isLoading={isSubmitting}
+    loadingText="Створення..."
+    form="create-record"
   >
-    <PlusIcon size={16} />
-    <span>
-      {#if loading}
-        Створення...
-      {:else}
-        Створити
-      {/if}
-    </span>
-  </button>
-</div>
+    <PlusIcon slot="icon" size={16} />
+    Створити
+  </Button>
+</PageHeader>
 
-<div class="pt-10">
-  <form id="create-event" on:submit|preventDefault={submit} class="space-y-5">
+<Container title="Створити запис">
+  <form id="create-record" on:submit|preventDefault={submit} class="space-y-5">
     <LangSelect bind:lang />
     <CoverSelect bind:cover />
     <Input
@@ -89,4 +88,4 @@
       <RichTextEditor bind:content />
     </div>
   </form>
-</div>
+</Container>

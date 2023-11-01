@@ -6,7 +6,9 @@
     CoverSelect,
     RichTextEditor,
     DocumentsSelect,
-    Button
+    Button,
+    PageHeader,
+    Container
   } from '$components'
   import type { Book } from '$lib/types'
   import { fetchBook, updateBook } from '$lib'
@@ -52,21 +54,15 @@
   }
 </script>
 
-<svelte:head>
-  <title>Редагувати запис</title>
-</svelte:head>
+<PageHeader>
+  <svelte:fragment slot="heading">Редагувати запис</svelte:fragment>
+  <Button slot="right-items" {isLoading} form="edit-record">
+    <SaveIcon size={16} slot="icon" />
+    Зберегти зміни
+  </Button>
+</PageHeader>
 
-<div class="mb-10">
-  <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-semibold">Редагування запису</h1>
-    <Button {isLoading} form="edit-record">
-      <SaveIcon size={16} slot="icon" />
-      Зберегти зміни
-    </Button>
-  </div>
-</div>
-
-<div>
+<Container title="Редагувати запис">
   {#if book}
     <form on:submit|preventDefault={submit} id="edit-record" class="space-y-5">
       <LangSelect bind:lang={book.lang} />
@@ -92,4 +88,4 @@
       </div>
     </form>
   {/if}
-</div>
+</Container>

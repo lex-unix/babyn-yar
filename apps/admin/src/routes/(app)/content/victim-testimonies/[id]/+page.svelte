@@ -6,7 +6,9 @@
     CoverSelect,
     RichTextEditor,
     DocumentsSelect,
-    Button
+    Button,
+    PageHeader,
+    Container
   } from '$components'
   import type { VictimTestimony } from '$lib/types'
   import { fetchTestimony, updateTestimony } from '$lib'
@@ -15,7 +17,7 @@
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'
 
-  let isLoading = false
+  let isSubmitting = false
   let testimony: VictimTestimony
   let errors: TestimonyErrorResponse | undefined
 
@@ -24,7 +26,7 @@
   })
 
   async function submit() {
-    isLoading = true
+    isSubmitting = true
     const body = JSON.stringify({
       title: testimony.title,
       description: testimony.description,
@@ -45,25 +47,24 @@
         }
       })
     }
-    isLoading = false
+    isSubmitting = false
   }
 </script>
 
-<svelte:head>
-  <title>Редагувати подію</title>
-</svelte:head>
+<PageHeader>
+  <svelte:fragment slot="heading">Редагування запису</svelte:fragment>
+  <Button
+    slot="right-items"
+    isLoading={isSubmitting}
+    loadingText="Збереження..."
+    form="edit-record"
+  >
+    <SaveIcon size={16} slot="icon" />
+    Зберегти зміни
+  </Button>
+</PageHeader>
 
-<div class="mb-10">
-  <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-semibold">Редагування запису</h1>
-    <Button {isLoading} form="edit-record">
-      <SaveIcon size={16} slot="icon" />
-      Зберегти зміни
-    </Button>
-  </div>
-</div>
-
-<div>
+<Container title="Редагування запису">
   {#if testimony}
     <form on:submit|preventDefault={submit} id="edit-record" class="space-y-5">
       <LangSelect bind:lang={testimony.lang} />
@@ -89,4 +90,4 @@
       </div>
     </form>
   {/if}
-</div>
+</Container>

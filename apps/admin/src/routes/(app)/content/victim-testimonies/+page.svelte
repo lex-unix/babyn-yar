@@ -4,9 +4,13 @@
     Table,
     TableData,
     TableHeader,
-    TableRow
+    TableRow,
+    LinkButton,
+    PageHeader,
+    Container,
+    RecordActionBar
   } from '$components'
-  import { File, Plus, History, User, Trash } from 'lucide-svelte'
+  import { File, Plus, History, User } from 'lucide-svelte'
   import { formatDate } from '$lib'
   import type { VictimTestimony } from '$lib/types'
   import { onMount } from 'svelte'
@@ -38,10 +42,6 @@
     }
   }
 
-  function clear() {
-    selected = []
-  }
-
   async function deleteSelected() {
     const ok = await deleteTestimonies(selected)
     if (!ok) {
@@ -67,52 +67,19 @@
   }
 </script>
 
-<svelte:head>
-  <title>Події</title>
-</svelte:head>
+<PageHeader>
+  <svelte:fragment slot="heading">Свідчення очевидців трагедії</svelte:fragment>
+  <LinkButton slot="right-items" href="/content/victim-testimonies/create">
+    <Plus slot="icon" size={16} />
+    Cтворити
+  </LinkButton>
+</PageHeader>
 
-<div class="flex items-center justify-between">
-  <h1 class="text-2xl font-semibold">Свідчення очевидців трагедії</h1>
-  <a
-    href="/content/victim-testimonies/create"
-    class="flex items-center gap-3 rounded-md border border-sky-700/10 bg-teal-500 px-4 py-2 text-sm font-medium text-white"
-  >
-    <Plus size={16} />
-    <span> Cтворити </span>
-  </a>
-</div>
-
-{#if selected.length > 0}
-  <div class="-mb-4 mt-6">
-    <div
-      class="w-full rounded-md bg-gray-800 text-sm font-normal text-gray-100"
-    >
-      <div class="px-3 py-2">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <p>Обрано {selected.length}</p>
-            <button
-              on:click={clear}
-              class="rounded-md px-3 py-2 hover:bg-white/10"
-            >
-              Очистити
-            </button>
-          </div>
-          <div class="flex items-center justify-center gap-4">
-            <button
-              on:click={() => alertDialog.openAlertDialog()}
-              class="inline-flex items-center justify-center rounded-md p-2 hover:bg-white/20"
-            >
-              <Trash size={16} />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-{/if}
-
-<div class="pt-10">
+<Container title="Свідчення очевидців трагедії">
+  <RecordActionBar
+    bind:selected
+    on:delete={() => alertDialog.openAlertDialog()}
+  />
   <Table>
     <thead>
       <tr>
@@ -167,6 +134,5 @@
       {/each}
     </tbody>
   </Table>
-</div>
-
+</Container>
 <DeleteAlertDialog bind:this={alertDialog} on:confirm={deleteSelected} />

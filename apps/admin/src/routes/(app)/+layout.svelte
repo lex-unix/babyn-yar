@@ -32,7 +32,7 @@
       </SidebarLink>
     {/if}
   </Sidebar>
-  <div class="flex-1 overflow-y-auto overflow-x-hidden px-5 py-10">
+  <div class="flex-1 overflow-y-auto overflow-x-hidden">
     <slot />
   </div>
 </div>

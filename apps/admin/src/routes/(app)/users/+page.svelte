@@ -5,14 +5,15 @@
     TableRow,
     TableData,
     DeleteAlertDialog,
-    RegisterUserDialog
+    RegisterUserDialog,
+    PageHeader,
+    Container,
+    RecordActionBar
   } from '$components'
   import type { User } from '$lib/types'
   import { admin } from '$lib/stores'
   import { onMount } from 'svelte'
-  import { formatDate } from '$lib'
-  import { Trash } from 'lucide-svelte'
-  import { deleteUsers } from '$lib'
+  import { deleteUsers, formatDate } from '$lib'
   import { addToast } from '$components/Toaster.svelte'
 
   let users: User[] = []
@@ -50,10 +51,6 @@
     }
   }
 
-  function clear() {
-    selectedUsers = []
-  }
-
   async function deleteSelected() {
     const { ok } = await deleteUsers(selectedUsers)
     if (ok) {
@@ -70,49 +67,19 @@
   }
 </script>
 
-<svelte:head>
-  <title>Управління користувачами</title>
-</svelte:head>
 {#if $admin}
-  <div class="flex w-full items-center justify-between">
-    <h1 class="text-2xl font-semibold">Управління користувачами</h1>
-    {#if $admin}
-      <RegisterUserDialog on:register={addUser} />
-    {/if}
-  </div>
+  <PageHeader>
+    <svelte:fragment slot="heading">Управління користувачами</svelte:fragment>
+    <RegisterUserDialog slot="right-items" on:register={addUser} />
+  </PageHeader>
 
-  {#if selectedUsers.length > 0}
-    <div class="-mb-4 mt-6">
-      <div
-        class="w-full rounded-md bg-gray-800 text-sm font-normal text-gray-100"
-      >
-        <div class="px-3 py-2">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-4">
-              <p>Обрано {selectedUsers.length}</p>
-              <button
-                on:click={clear}
-                class="rounded-md px-3 py-2 hover:bg-white/10"
-              >
-                Очистити
-              </button>
-            </div>
-            <div class="flex items-center justify-center gap-4">
-              <button
-                on:click={() => alertDialog.openAlertDialog()}
-                class="inline-flex items-center justify-center rounded-md p-2 hover:bg-white/20"
-              >
-                <Trash size={16} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  {/if}
+  <Container title="Управління користувачами">
+    <RecordActionBar
+      bind:selected={selectedUsers}
+      on:delete={() => alertDialog.openAlertDialog()}
+    />
 
-  {#if users.length > 0}
-    <div class="mt-10">
+    {#if users.length > 0}
       <Table>
         <thead>
           <tr>
@@ -148,8 +115,8 @@
           {/each}
         </tbody>
       </Table>
-    </div>
-  {/if}
+    {/if}
+  </Container>
 
   <DeleteAlertDialog bind:this={alertDialog} on:confirm={deleteSelected} />
 {:else}

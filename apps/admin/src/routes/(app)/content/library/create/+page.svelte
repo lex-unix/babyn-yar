@@ -5,7 +5,9 @@
     LangSelect,
     CoverSelect,
     DocumentsSelect,
-    Button
+    Button,
+    PageHeader,
+    Container
   } from '$components'
   import { createBook } from '$lib'
   import type { JSONContent } from '@tiptap/core'
@@ -54,9 +56,10 @@
   <title>Створити новий запис</title>
 </svelte:head>
 
-<div class="flex items-center justify-between">
-  <h1 class="text-2xl font-semibold">Новий запис</h1>
+<PageHeader>
+  <svelte:fragment slot="heading">Новий запис</svelte:fragment>
   <Button
+    slot="right-items"
     isLoading={isSubmitting}
     loadingText="Створення..."
     form="create-record"
@@ -64,9 +67,9 @@
     <PlusIcon size={16} slot="icon" />
     Створити
   </Button>
-</div>
+</PageHeader>
 
-<div class="pt-10">
+<Container title="Створити новий запис">
   <form id="create-record" on:submit|preventDefault={submit} class="space-y-5">
     <LangSelect bind:lang error={errors?.lang} />
     <CoverSelect bind:cover error={errors?.cover} />
@@ -93,4 +96,4 @@
       <RichTextEditor bind:content />
     </div>
   </form>
-</div>
+</Container>
