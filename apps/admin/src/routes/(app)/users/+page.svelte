@@ -15,6 +15,7 @@
   import { onMount } from 'svelte'
   import { deleteUsers, formatDate } from '$lib'
   import { addToast } from '$components/Toaster.svelte'
+  import { UserIcon, AtSignIcon, CalendarIcon, KeyIcon } from 'lucide-svelte'
 
   let users: User[] = []
   let selectedUsers: number[] = []
@@ -69,7 +70,7 @@
 
 {#if $admin}
   <PageHeader>
-    <svelte:fragment slot="heading">Управління користувачами</svelte:fragment>
+    <svelte:fragment slot="heading">Користувачі</svelte:fragment>
     <RegisterUserDialog slot="right-items" on:register={addUser} />
   </PageHeader>
 
@@ -91,10 +92,30 @@
                 on:input={toggleSelectAll}
               />
             </TableHeader>
-            <TableHeader>Користувач</TableHeader>
-            <TableHeader>Email</TableHeader>
-            <TableHeader>Дата реєстрації</TableHeader>
-            <TableHeader>Дозволи</TableHeader>
+            <TableHeader>
+              <div class="inline-flex items-center gap-2">
+                <UserIcon size={16} />
+                <span>Користувач</span>
+              </div>
+            </TableHeader>
+            <TableHeader>
+              <div class="inline-flex items-center gap-2">
+                <AtSignIcon size={16} />
+                <span>Email</span>
+              </div>
+            </TableHeader>
+            <TableHeader>
+              <div class="inline-flex items-center gap-2">
+                <CalendarIcon size={16} />
+                <span>Дата реєстрації</span>
+              </div>
+            </TableHeader>
+            <TableHeader>
+              <div class="inline-flex items-center gap-2">
+                <KeyIcon size={16} />
+                <span>Дозволи</span>
+              </div>
+            </TableHeader>
           </tr>
         </thead>
         <tbody>
