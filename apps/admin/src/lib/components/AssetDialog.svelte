@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SearchBar, AssetSortMenu, AssetItem } from '$components'
+  import { SearchBar, AssetSortMenu, AssetItem, AssetGrid } from '$components'
   import { fetchAssetsWrapper } from '$lib'
   import type { Asset } from '$lib/types'
   import { createDialog, melt } from '@melt-ui/svelte'
@@ -62,10 +62,10 @@
 <div use:melt={$portalled}>
   {#if $open}
     <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" />
-    <div class="fixed inset-0 z-50 p-10">
+    <div class="fixed inset-0 z-50 md:p-10">
       <div
         use:melt={$content}
-        class="relative h-full overflow-y-auto overflow-x-hidden rounded-xl bg-gray-50 p-9 shadow-xl"
+        class="relative h-full overflow-y-auto overflow-x-hidden bg-gray-50 p-5 shadow-xl md:rounded-xl md:p-9"
       >
         <h2 use:melt={$title} class="m-0 text-xl font-semibold text-gray-900">
           <slot name="title" />
@@ -84,7 +84,7 @@
           </SearchBar>
         </div>
 
-        <ul class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
+        <AssetGrid>
           {#each assets as asset}
             <li class="p-2.5">
               <button
@@ -100,7 +100,7 @@
               </button>
             </li>
           {/each}
-        </ul>
+        </AssetGrid>
         <button
           use:melt={$close}
           aria-label="close"

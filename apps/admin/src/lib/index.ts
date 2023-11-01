@@ -16,7 +16,6 @@ export {
   updateTestimony,
   deleteTestimonies
 } from './testimonies'
-
 export {
   createBook,
   updateBook,
@@ -24,3 +23,4 @@ export {
   fetchBooks,
   fetchBook
 } from './books'
+export { trimText } from './trim-text'

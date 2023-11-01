@@ -11,7 +11,7 @@
     RecordActionBar
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
-  import { formatDate } from '$lib'
+  import { formatDate, trimText } from '$lib'
   import type { VictimTestimony } from '$lib/types'
   import { onMount } from 'svelte'
   import { fetchTestimonies, deleteTestimonies } from '$lib'
@@ -113,10 +113,6 @@
     </thead>
     <tbody>
       {#each testimonies as testimony}
-        {@const title =
-          testimony.title.length < 50
-            ? testimony.title
-            : testimony.title.slice(0, 50) + '...'}
         <TableRow>
           <TableData>
             <input
@@ -126,7 +122,9 @@
             />
           </TableData>
           <TableData>
-            <a href={`/content/victim-testimonies/${testimony.id}`}>{title}</a>
+            <a href={`/content/victim-testimonies/${testimony.id}`}
+              >{trimText(testimony.title)}</a
+            >
           </TableData>
           <TableData>{formatDate(testimony.updatedAt)}</TableData>
           <TableData>{testimony.user.fullName}</TableData>

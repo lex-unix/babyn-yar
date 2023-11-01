@@ -43,7 +43,7 @@
             Цю дію не можна скасувати. Це остаточно видалить обрані елементи.
           </p>
 
-          <div class="mt-6 flex justify-end gap-4">
+          <div class="mt-6 flex justify-between gap-4 md:justify-end">
             <button
               use:melt={$close}
               class="inline-flex h-8 items-center justify-center rounded-[4px] bg-gray-100 px-4 font-medium leading-none text-gray-600"

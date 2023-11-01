@@ -81,7 +81,7 @@
   use:melt={$trigger}
   class="flex items-center gap-3 rounded-md border border-teal-700/10 bg-teal-500 px-4 py-3 text-sm font-medium leading-none text-white outline-none focus:bg-teal-600"
 >
-  <span>Додати користувача</span>
+  <span>Додати</span>
   <PlusIcon size={16} />
 </button>
 
@@ -89,11 +89,11 @@
   {#if $open}
     <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" />
     <div
-      class="fixed inset-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden p-6"
+      class="fixed inset-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:p-6"
     >
       <div
         use:melt={$content}
-        class="relative min-w-[720px] max-w-[800px] rounded-lg bg-white p-9"
+        class="relative rounded-lg bg-white p-5 lg:min-w-[720px] lg:max-w-[800px] lg:p-9"
       >
         <div class="mb-5">
           <h2 use:melt={$title} class="text-xl font-semibold text-gray-700">

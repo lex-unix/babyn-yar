@@ -11,7 +11,7 @@
     RecordActionBar
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
-  import { formatDate } from '$lib'
+  import { formatDate, trimText } from '$lib'
   import type { Event } from '$lib/types'
   import { onMount } from 'svelte'
   import { fetchEvents, deleteEvents } from '$lib'
@@ -121,7 +121,7 @@
             />
           </TableData>
           <TableData>
-            <a href={`/content/events/${event.id}`}>{event.title}</a>
+            <a href={`/content/events/${event.id}`}>{trimText(event.title)}</a>
           </TableData>
           <TableData>{formatDate(event.updatedAt)}</TableData>
           <TableData>{event.user.fullName}</TableData>

@@ -82,20 +82,20 @@
 
 <button
   use:melt={$trigger}
-  class="flex items-center gap-3 rounded-md border border-teal-700/10 bg-teal-500 px-4 py-3 text-sm font-medium leading-none text-white outline-none focus:bg-teal-600"
+  class="flex items-center gap-3 rounded-md border border-teal-700/10 bg-teal-500 px-4 py-3 font-medium leading-none text-white outline-none focus:bg-teal-600"
 >
-  <span>Завантажити файли</span>
   <UploadCloudIcon size={16} />
+  <span>Завантажити</span>
 </button>
 
 <div use:melt={$portalled}>
   {#if $open}
     <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" />
     <div
-      class="fixed inset-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden p-6"
+      class="fixed inset-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden lg:p-6"
     >
       <div
-        class="relative m-auto min-w-[720px] max-w-[800px] rounded-lg bg-white p-9 shadow-lg"
+        class="relative m-auto w-full rounded-lg bg-white p-9 shadow-lg lg:min-w-[720px] lg:max-w-[800px]"
         use:melt={$content}
       >
         <div class="mb-5">
@@ -121,7 +121,7 @@
           {/if}
         </div>
         <div
-          class="-mb-9 -ml-9 -mr-9 flex min-h-[80px] items-center justify-end gap-2.5 rounded-bl-lg rounded-br-lg bg-gray-100 px-9"
+          class="-mb-9 -ml-9 -mr-9 flex min-h-[80px] items-center justify-between gap-2.5 rounded-bl-lg rounded-br-lg bg-gray-100 px-9 lg:justify-end"
         >
           <input
             type="file"

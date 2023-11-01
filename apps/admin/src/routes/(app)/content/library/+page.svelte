@@ -12,7 +12,7 @@
     RecordActionBar
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
-  import { formatDate } from '$lib'
+  import { formatDate, trimText } from '$lib'
   import type { VictimTestimony } from '$lib/types'
   import { onMount } from 'svelte'
   import { fetchBooks, deleteBooks } from '$lib'
@@ -127,10 +127,6 @@
       </thead>
       <tbody>
         {#each books as book}
-          {@const title =
-            book.title.length < 50
-              ? book.title
-              : book.title.slice(0, 50) + '...'}
           <TableRow>
             <TableData>
               <input
@@ -140,7 +136,7 @@
               />
             </TableData>
             <TableData>
-              <a href={`/content/library/${book.id}`}>{title}</a>
+              <a href={`/content/library/${book.id}`}>{trimText(book.title)}</a>
             </TableData>
             <TableData>{formatDate(book.updatedAt)}</TableData>
             <TableData>{book.user.fullName}</TableData>

@@ -6,7 +6,7 @@
   <title>{title}</title>
 </svelte:head>
 
-<div class="mt-20 px-3">
+<div class="mt-[calc(3.5rem+5rem)] px-3 md:mt-20">
   <div class="pt-5">
     <slot />
   </div>

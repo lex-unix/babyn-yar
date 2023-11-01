@@ -35,7 +35,7 @@
 </script>
 
 <PageHeader>
-  <svelte:fragment slot="heading">Налаштування користувача</svelte:fragment>
+  <svelte:fragment slot="heading">Налаштування</svelte:fragment>
 </PageHeader>
 
 <Container title="Налаштування">

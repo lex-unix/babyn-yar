@@ -54,7 +54,7 @@
 
 <button
   use:melt={$trigger}
-  class="inline-flex items-center gap-0.5 text-gray-400 transition-colors hover:text-gray-900"
+  class="inline-flex items-center gap-0.5 text-sm text-gray-400 transition-colors hover:text-gray-900"
 >
   <span>Сортувати: <span class="lowercase">{selected.name}</span></span>
   <svelte:component this={selected.icon} size={14} />
@@ -63,7 +63,7 @@
 {#if open}
   <div
     use:melt={$menu}
-    class="lg:max-h-none; z-10 mt-2.5 flex max-h-[300px] min-w-[220px] flex-col rounded-md bg-white p-1 shadow-lg shadow-gray-900/30"
+    class="z-10 mt-2.5 flex max-h-[300px] min-w-[220px] flex-col rounded-md bg-white p-1 text-sm shadow-lg shadow-gray-900/30 lg:max-h-none"
   >
     {#each menuItems as menuItem}
       <div

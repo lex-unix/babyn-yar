@@ -7,7 +7,8 @@
     AssetSortMenu,
     AssetItem,
     PageHeader,
-    Container
+    Container,
+    AssetGrid
   } from '$components'
   import { TrashIcon } from 'lucide-svelte'
   import { fetchAssetsWrapper } from '$lib'
@@ -64,13 +65,11 @@
 </PageHeader>
 
 <Container title="Медіа файли">
-  <div class="mb-10 mt-6">
-    <SearchBar on:search={search}>
-      <svelte:fragment slot="filters">
-        <AssetSortMenu on:select={sort} />
-      </svelte:fragment>
-    </SearchBar>
-  </div>
+  <SearchBar on:search={search}>
+    <svelte:fragment slot="filters">
+      <AssetSortMenu on:select={sort} />
+    </svelte:fragment>
+  </SearchBar>
 
   {#if selectedAssets.length > 0}
     <div
@@ -103,7 +102,7 @@
     </div>
   {/if}
 
-  <ul class="mt-10 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+  <AssetGrid>
     {#if loading && assets.length === 0}
       <AssetGridItemSkeleton />
       <AssetGridItemSkeleton />
@@ -140,7 +139,7 @@
         </li>
       {/each}
     {/if}
-  </ul>
+  </AssetGrid>
 </Container>
 
 <style lang="postcss">

@@ -1,5 +1,5 @@
 <div
-  class="fixed h-20 w-[calc(100%-80px)] border-b bg-white shadow-sm lg:w-[calc(100%-280px)]"
+  class="fixed z-[2] mt-14 h-20 w-full border-b bg-white shadow-sm md:mt-0 md:w-[calc(100%-80px)] lg:w-[calc(100%-280px)]"
 >
   <div class="flex h-full items-center justify-between px-3">
     <h1 class="text-2xl font-semibold">
