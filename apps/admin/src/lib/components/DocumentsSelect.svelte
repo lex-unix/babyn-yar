@@ -20,7 +20,7 @@
   <label for="select-docs" class="mb-1.5 block text-gray-400">Долучення</label>
 
   <div
-    class="flex w-full flex-wrap items-center border bg-white px-3 py-2 text-sm"
+    class="flex w-full flex-wrap items-center rounded border bg-white px-3 py-2 text-sm"
   >
     {#each documents as doc, i}
       <div class="m-1">
