@@ -24,3 +24,4 @@ export {
   fetchBook
 } from './books'
 export { trimText } from './trim-text'
+export { ResponseError } from './response-error'

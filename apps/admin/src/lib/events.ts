@@ -1,13 +1,19 @@
-import type { Event, EventErrorResponse, Metadata } from './types'
+import type { Event, Metadata } from './types'
 import { PUBLIC_API_URL } from '$env/static/public'
+import { ResponseError } from './response-error'
 
 const baseUrl = PUBLIC_API_URL + '/events'
 
 export async function fetchEvent(id: string) {
   const res = await fetch(`${baseUrl}/${id}`)
+  if (!res.ok) {
+    const json = await res.json()
+    const error = new ResponseError(res.status, json.error)
+    return { ok: false as const, error }
+  }
   const { event } = (await res.json()) as { event: Event }
   event.content = JSON.parse(event.content as unknown as string)
-  return event
+  return { ok: true as const, event }
 }
 
 export async function createEvent(body: string) {
@@ -19,17 +25,14 @@ export async function createEvent(body: string) {
     })
     if (!response.ok) {
       const json = await response.json()
-      if (response.status === 442) {
-        const errors: EventErrorResponse = json.error
-        return { ok: false as const, errors }
-      } else {
-        return { ok: false as const }
-      }
+      const error = new ResponseError(response.status, json.error)
+      return { ok: false as const, error }
     }
     return { ok: true as const }
   } catch (e) {
     console.log(e)
-    return { ok: false as const }
+    const error = new ResponseError(500, 'the server encountered an error')
+    return { ok: false as const, error }
   }
 }
 
@@ -42,17 +45,14 @@ export async function updateEvent(id: string, body: string) {
     })
     if (!response.ok) {
       const json = await response.json()
-      if (response.status === 442) {
-        const errors: EventErrorResponse = json.error
-        return { ok: false as const, errors }
-      } else {
-        return { ok: false as const }
-      }
+      const error = new ResponseError(response.status, json.error)
+      return { ok: false as const, error }
     }
     return { ok: true as const }
   } catch (e) {
     console.log(e)
-    return { ok: false as const }
+    const error = new ResponseError(500, 'the server encountered an error')
+    return { ok: false as const, error }
   }
 }
 

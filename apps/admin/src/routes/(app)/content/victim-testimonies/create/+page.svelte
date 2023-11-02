@@ -9,24 +9,23 @@
     PageHeader,
     Container
   } from '$components'
-  import { createTestimony } from '$lib'
+  import { createTestimony, ResponseError } from '$lib'
   import type { JSONContent } from '@tiptap/core'
   import { PlusIcon } from 'lucide-svelte'
   import { addToast } from '$components/Toaster.svelte'
-  import type { TestimonyErrorResponse } from '$lib/types'
   import { goto } from '$app/navigation'
 
-  let loading = false
+  let isSubmitting = false
   let content: JSONContent
-  let errors: TestimonyErrorResponse | undefined
   let title = ''
   let description = ''
   let lang = ''
   let cover = ''
   let documents: string[] = []
+  let error: ResponseError | undefined
 
   async function submit() {
-    loading = true
+    isSubmitting = true
     const body = JSON.stringify({
       title,
       description,
@@ -37,18 +36,20 @@
     })
     const response = await createTestimony(body)
     if (!response.ok) {
-      errors = response.errors
-    } else {
-      addToast({
-        data: {
-          title: 'Чудово!',
-          description: 'Новий запис було успішно створено',
-          color: 'bg-emerald-500'
-        }
-      })
-      goto('/content/victim-testimonies')
+      error = response.error
+      isSubmitting = false
+      return
     }
-    loading = false
+    addToast({
+      data: {
+        title: 'Чудово!',
+        description: 'Новий запис було успішно створено',
+        color: 'bg-emerald-500'
+      }
+    })
+    isSubmitting = false
+    error = undefined
+    goto('/content/victim-testimonies')
   }
 </script>
 
@@ -56,7 +57,7 @@
   <svelte:fragment slot="heading">Новий запис</svelte:fragment>
   <Button
     slot="right-items"
-    isLoading={loading}
+    isLoading={isSubmitting}
     loadingText="Створення..."
     form="create-record"
   >
@@ -67,27 +68,33 @@
 
 <Container title="Новий запис">
   <form id="create-record" on:submit|preventDefault={submit} class="space-y-5">
-    <LangSelect bind:lang />
-    <CoverSelect bind:cover />
+    <LangSelect
+      bind:lang
+      error={error?.isFormError() ? error.error.lang : undefined}
+    />
+    <CoverSelect
+      bind:cover
+      error={error?.isFormError() ? error.error.cover : undefined}
+    />
     <Input
       name="title"
       label="Назва"
-      error={errors?.title}
+      error={error?.isFormError() ? error.error.title : undefined}
       bind:value={title}
       required
     />
     <Input
       name="description"
       label="Опис"
-      error={errors?.description}
+      error={error?.isFormError() ? error.error.description : undefined}
       bind:value={description}
       required
     />
     <DocumentsSelect bind:documents />
     <div>
       <p class="mb-1.5 text-gray-400">Контент</p>
-      {#if errors?.content}
-        <p class="text-red-500">{errors.content}</p>
+      {#if error?.isFormError() && error?.error.content}
+        <p class="text-red-500">{error.error.content}</p>
       {/if}
       <RichTextEditor bind:content />
     </div>

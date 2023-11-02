@@ -1,4 +1,5 @@
-import type { Metadata, TestimonyErrorResponse, VictimTestimony } from './types'
+import type { Metadata, VictimTestimony } from './types'
+import { ResponseError } from './response-error'
 import { PUBLIC_API_URL } from '$env/static/public'
 
 const baseUrl = PUBLIC_API_URL + '/victim-testimonies'
@@ -12,17 +13,14 @@ export async function createTestimony(body: string) {
     })
     if (!response.ok) {
       const json = await response.json()
-      if (response.status === 442) {
-        const errors: TestimonyErrorResponse = json.error
-        return { ok: false as const, errors }
-      } else {
-        return { ok: false as const }
-      }
+      const error = new ResponseError(response.status, json.error)
+      return { ok: false as const, error }
     }
     return { ok: true as const }
   } catch (e) {
     console.log(e)
-    return { ok: false as const }
+    const error = new ResponseError(500, 'the server encountered an error')
+    return { ok: false as const, error }
   }
 }
 
@@ -56,17 +54,14 @@ export async function updateTestimony(id: string, body: string) {
     })
     if (!response.ok) {
       const json = await response.json()
-      if (response.status === 442) {
-        const errors: TestimonyErrorResponse = json.error
-        return { ok: false as const, errors }
-      } else {
-        return { ok: false as const }
-      }
+      const error = new ResponseError(response.status, json.error)
+      return { ok: false as const, error }
     }
     return { ok: true as const }
   } catch (e) {
     console.log(e)
-    return { ok: false as const }
+    const error = new ResponseError(500, 'the server encountered an error')
+    return { ok: false as const, error }
   }
 }
 

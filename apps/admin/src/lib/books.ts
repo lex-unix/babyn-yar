@@ -1,5 +1,6 @@
 import { PUBLIC_API_URL } from '$env/static/public'
-import type { Book, BookErrorResponse, Metadata } from './types'
+import type { Book, Metadata } from './types'
+import { ResponseError } from './response-error'
 
 const baseUrl = PUBLIC_API_URL + '/books'
 
@@ -10,24 +11,17 @@ export async function createBook(body: string) {
       body,
       credentials: 'include'
     })
-    if (response.ok) {
-      return { ok: true as const }
+    if (!response.ok) {
+      const json = await response.json()
+      const error = new ResponseError(response.status, json.error)
+      return { ok: false as const, error }
     }
-    const json = await response.json()
-    if (response.status === 422) {
-      const errors: BookErrorResponse = json.error
-      return { ok: false as const, errors }
-    }
-    return { ok: false as const }
+    return { ok: true as const }
   } catch (e) {
     console.log(e)
-    return { ok: false as const }
+    const error = new ResponseError(500, 'the server encountered an error')
+    return { ok: false as const, error }
   }
-}
-
-type BookResponse = {
-  books: Book[]
-  metadata: Metadata
 }
 
 export async function fetchBooks(page: number = 1) {
@@ -36,7 +30,7 @@ export async function fetchBooks(page: number = 1) {
   try {
     const response = await fetch(url)
     if (response.ok) {
-      const json: BookResponse = await response.json()
+      const json: { books: Book[]; metadata: Metadata } = await response.json()
       return { ok: true as const, data: json }
     }
     return { ok: false as const }
@@ -69,18 +63,16 @@ export async function updateBook(id: string, body: string) {
       body,
       credentials: 'include'
     })
-    if (response.ok) {
-      return { ok: true as const }
-    }
-    if (response.status === 422) {
+    if (!response.ok) {
       const json = await response.json()
-      const errors: BookErrorResponse = json.error
-      return { ok: false as const, errors }
+      const error = new ResponseError(response.status, json.error)
+      return { ok: false as const, error }
     }
-    return { ok: false as const }
+    return { ok: true as const }
   } catch (e) {
     console.log(e)
-    return { ok: false as const }
+    const error = new ResponseError(500, 'the server encountered an error')
+    return { ok: false as const, error }
   }
 }
 
