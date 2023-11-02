@@ -1,7 +1,7 @@
 <script lang="ts">
   import { melt, createDialog } from '@melt-ui/svelte'
   import { createEventDispatcher } from 'svelte'
-  import { LinkOptionsMenu } from '$components'
+  import { LinkOptionsMenu, Button } from '$components'
 
   export function openDialog() {
     open.set(true)
@@ -58,7 +58,7 @@
           <div class="pb-5">
             <div class="relative h-full">
               <div
-                class="flex h-10 w-full items-center overflow-hidden rounded border px-4 hover:border-teal-400"
+                class="flex h-10 w-full items-center overflow-hidden rounded border px-4 hover:border-sky-400"
               >
                 <div
                   class="inline-flex items-center border-r border-gray-700/20 pr-2"
@@ -70,6 +70,7 @@
                   name="link-variant"
                   bind:value
                   class="h-full w-full border-none pl-4 outline-none"
+                  autocomplete="off"
                 />
               </div>
             </div>
@@ -80,17 +81,13 @@
         >
           <button
             use:melt={$close}
-            class="rounded-md border bg-white px-4 py-3 font-medium leading-none outline-none focus:ring focus:ring-gray-300 disabled:opacity-60"
+            class="rounded-md border bg-white px-4 py-3 text-sm font-semibold leading-none outline-none focus:ring focus:ring-gray-300 disabled:opacity-60"
           >
             Відмінити
           </button>
-          <button
-            disabled={value.length === 0}
-            on:click={done}
-            class="rounded-md bg-teal-500 px-4 py-3 font-medium leading-none text-white outline-none focus:bg-teal-600 disabled:opacity-60"
-          >
+          <Button isDisabled={value.length === 0} on:click={done}>
             Готово
-          </button>
+          </Button>
         </div>
       </div>
     </div>

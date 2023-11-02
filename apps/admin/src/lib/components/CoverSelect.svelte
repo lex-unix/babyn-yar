@@ -8,7 +8,6 @@
   let assetDialog: AssetDialog
 
   function select(e: CustomEvent<{ url: string }>) {
-    console.log(e.detail)
     cover = e.detail.url
     assetDialog.closeDialog()
   }
@@ -25,7 +24,7 @@
     on:click={() => assetDialog.openDialog('image')}
     id="select-cover"
     type="button"
-    class="flex w-full items-center gap-5 rounded border bg-white px-3 py-2"
+    class="flex w-full items-center gap-5 rounded border bg-white px-3 py-2 outline-none hover:border-sky-400 focus:border-sky-400 focus:ring focus:ring-sky-100"
   >
     <div
       class="flex h-20 w-[120px] items-center justify-center overflow-hidden rounded-lg bg-gray-100"

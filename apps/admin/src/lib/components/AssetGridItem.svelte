@@ -52,7 +52,6 @@
           value={id}
           on:change={handleChange}
           {checked}
-          class="accent-teal-300"
         />
       </label>
     </div>

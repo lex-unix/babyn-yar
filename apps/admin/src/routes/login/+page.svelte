@@ -2,10 +2,11 @@
   import { login } from '$lib'
   import { user } from '$lib/stores'
   import { goto } from '$app/navigation'
+  import { Button, Input } from '$components'
 
   let email: string
   let password: string
-  let submitting = false
+  let isSubmitting = false
 
   $: $user && goto('/content')
 
@@ -22,33 +23,23 @@
 
 <div class="min-h-screen bg-gray-50 px-3 pt-10 text-gray-900">
   <form on:submit|preventDefault={submit} class="mx-auto max-w-md space-y-3">
-    <label class="block text-gray-400">
-      Email
-      <input
-        name="email"
-        type="email"
-        bind:value={email}
-        required
-        class="mt-1.5 block h-10 w-full rounded border px-2 text-base text-gray-900 outline-none hover:border-teal-400 focus:border-teal-400 focus:ring focus:ring-teal-100"
-      />
-    </label>
-    <label class="block text-gray-400">
-      Пароль
-      <input
-        name="password"
-        type="password"
-        bind:value={password}
-        required
-        class="mt-1.5 block h-10 w-full rounded border px-2 text-base text-gray-900 outline-none hover:border-teal-400 focus:border-teal-400 focus:ring focus:ring-teal-100"
-      />
-    </label>
+    Email
+    <Input
+      name="email"
+      type="email"
+      label="Email"
+      bind:value={email}
+      required
+    />
+    <Input
+      name="password"
+      type="password"
+      label="Пароль"
+      bind:value={password}
+      required
+    />
     <div class="flex justify-center">
-      <button
-        class="rounded-md border border-teal-700/10 bg-teal-500 px-4 py-2 font-medium text-white disabled:opacity-70"
-        disabled={submitting}
-      >
-        Продовжити
-      </button>
+      <Button isLoading={isSubmitting}>Продовжити</Button>
     </div>
   </form>
 </div>

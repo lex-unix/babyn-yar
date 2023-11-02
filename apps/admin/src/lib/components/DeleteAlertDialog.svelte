@@ -59,11 +59,11 @@
           </div>
 
           <button
-            class="absolute right-3 top-3 inline-flex h-7 w-7 appearance-none items-center justify-center rounded-full p-1 text-gray-800 outline-none hover:bg-gray-100 focus:ring focus:ring-teal-300"
+            class="absolute right-3 top-3 inline-flex items-center justify-center rounded-full p-1 text-gray-800 outline-none hover:bg-gray-100 focus:ring focus:ring-indigo-300 disabled:opacity-60"
             use:melt={$close}
             aria-label="Закрити"
           >
-            <X size={20} />
+            <X class="h-4 w-4" />
           </button>
         </div>
       </div>

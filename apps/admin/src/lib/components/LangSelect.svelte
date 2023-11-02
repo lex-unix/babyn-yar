@@ -42,7 +42,7 @@
     use:melt={$trigger}
     id="select-lang"
     type="button"
-    class="flex min-w-[220px] items-center justify-between rounded border bg-white px-3 py-2 leading-none outline-none hover:border-teal-400 focus:border-teal-400 focus:ring focus:ring-teal-100"
+    class="flex min-w-[220px] items-center justify-between rounded border bg-white px-3 py-2 leading-none outline-none hover:border-sky-400 focus:border-sky-400 focus:ring focus:ring-sky-100"
   >
     {$selectedLabel || 'Обрати мову'}
     <ChevronDown class="h-5 w-5" />
@@ -58,7 +58,7 @@
       <div
         use:melt={$option({ value, label })}
         class={`p-2 hover:cursor-pointer hover:bg-gray-400/10 ${
-          $isSelected(value) ? 'text-teal-500' : ''
+          $isSelected(value) ? 'text-indigo-600' : ''
         }`}
       >
         {label}

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Input } from '$components'
+  import { Input, Button } from '$components'
   import { melt, createDialog, createSelect } from '@melt-ui/svelte'
   import { ChevronDown, PlusIcon, XIcon } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
@@ -79,9 +79,9 @@
 
 <button
   use:melt={$trigger}
-  class="flex items-center gap-3 rounded-md border border-teal-700/10 bg-teal-500 px-4 py-3 text-sm font-medium leading-none text-white outline-none focus:bg-teal-600"
+  class="flex items-center gap-3 rounded-md bg-indigo-600 px-4 py-3 text-sm font-semibold leading-none text-white outline-none transition-colors hover:bg-indigo-500 focus:bg-indigo-500 disabled:opacity-70"
 >
-  <span>Додати</span>
+  <span class="text-sm font-semibold">Додати</span>
   <PlusIcon size={16} />
 </button>
 
@@ -134,7 +134,7 @@
               use:melt={$selectTrigger}
               id="select-role"
               type="button"
-              class="flex min-w-[220px] items-center justify-between rounded border bg-white px-3 py-2 leading-none outline-none hover:border-teal-400 focus:border-teal-400 focus:ring focus:ring-teal-100"
+              class="flex min-w-[220px] items-center justify-between rounded border bg-white px-3 py-2 leading-none outline-none hover:border-sky-400 focus:border-sky-400 focus:ring focus:ring-sky-100"
             >
               {$selectedLabel || 'Обрати роль'}
               <ChevronDown class="h-5 w-5" />
@@ -149,7 +149,7 @@
                 <div
                   use:melt={$option({ value, label })}
                   class={`p-2 hover:cursor-pointer hover:bg-gray-400/10 ${
-                    $isSelected(value) ? 'text-teal-500' : ''
+                    $isSelected(value) ? 'text-indigo-600' : ''
                   }`}
                 >
                   {label}
@@ -158,11 +158,7 @@
             </div>
           {/if}
           <div class="flex justify-end pt-2">
-            <button
-              class="rounded-md bg-teal-500 px-4 py-3 font-medium leading-none text-white outline-none focus:bg-teal-600 disabled:opacity-60"
-            >
-              Додати
-            </button>
+            <Button isLoading={false}>Додати</Button>
           </div>
         </form>
 
@@ -170,9 +166,9 @@
           use:melt={$close}
           aria-label="Закрити"
           disabled={isSubmitting}
-          class="absolute right-5 top-5 inline-flex items-center justify-center rounded-full p-1 text-gray-800 outline-none hover:bg-gray-100 focus:ring focus:ring-teal-300 disabled:opacity-60"
+          class="absolute right-5 top-5 inline-flex items-center justify-center rounded-full p-1 text-gray-800 outline-none hover:bg-gray-100 focus:ring focus:ring-indigo-300 disabled:opacity-60"
         >
-          <XIcon size={16} />
+          <XIcon class="h-4 w-4" />
         </button>
       </div>
     </div>

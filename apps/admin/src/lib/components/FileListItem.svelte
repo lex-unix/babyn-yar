@@ -62,7 +62,7 @@
         type="text"
         value={fileName}
         on:input={change}
-        class="w-full rounded-bl-md rounded-tl-md border px-4 py-3 text-sm outline-none hover:border-teal-400"
+        class="w-full rounded-bl-md rounded-tl-md border px-4 py-3 text-sm outline-none hover:border-sky-400"
       />
       <span
         class="rounded-br-md rounded-tr-md border border-l-0 bg-white px-4 py-3 text-sm text-gray-400"
@@ -70,9 +70,7 @@
         {extension}
       </span>
     </div>
-    <div
-      class="mt-4 hidden w-full items-center justify-end group-hover:inline-flex"
-    >
+    <div class="mt-4 hidden w-full items-center justify-end">
       <button
         class="rounded-md border border-gray-700/20 bg-white px-4 py-3 text-sm leading-none outline-none transition-colors hover:bg-gray-200 focus:ring focus:ring-gray-300"
       >

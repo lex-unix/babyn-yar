@@ -54,7 +54,7 @@
 
 <button
   use:melt={$trigger}
-  class="inline-flex items-center gap-0.5 text-sm text-gray-400 transition-colors hover:text-gray-900"
+  class="inline-flex items-center gap-0.5 rounded p-1.5 text-sm text-gray-400 outline-none transition-colors hover:text-gray-900 focus:text-gray-900 focus:ring focus:ring-sky-300"
 >
   <span>Сортувати: <span class="lowercase">{selected.name}</span></span>
   <svelte:component this={selected.icon} size={14} />
@@ -87,6 +87,6 @@
 
 <style lang="postcss">
   .active {
-    @apply text-teal-500;
+    @apply text-indigo-600;
   }
 </style>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createDialog, melt } from '@melt-ui/svelte'
   import { UploadCloudIcon, XIcon } from 'lucide-svelte'
-  import FileListItem from './FileListItem.svelte'
+  import { Button, FileListItem } from '$components'
   import { createAssets } from '$lib/assets'
   import { addToast } from '$components/Toaster.svelte'
 
@@ -82,10 +82,10 @@
 
 <button
   use:melt={$trigger}
-  class="flex items-center gap-3 rounded-md border border-teal-700/10 bg-teal-500 px-4 py-3 font-medium leading-none text-white outline-none focus:bg-teal-600"
+  class="flex items-center gap-3 rounded-md bg-indigo-600 px-4 py-3 text-sm font-semibold leading-none text-white outline-none transition-colors hover:bg-indigo-500 focus:bg-indigo-500 disabled:opacity-70"
 >
   <UploadCloudIcon size={16} />
-  <span>Завантажити</span>
+  <span class="text-sm font-semibold">Завантажити</span>
 </button>
 
 <div use:melt={$portalled}>
@@ -137,16 +137,12 @@
           >
             Додати файл
           </button>
-          <button
-            class="rounded-md bg-teal-500 px-4 py-3 font-medium leading-none text-white outline-none focus:bg-teal-600 disabled:opacity-60"
-            disabled={isSubmitting}
-            on:click={submit}
-          >
+          <Button isLoading={isSubmitting} on:click={submit}>
             Завантажити
-          </button>
+          </Button>
         </div>
         <button
-          class="absolute right-9 top-9 inline-flex h-7 w-7 appearance-none items-center justify-center rounded-full p-1 text-gray-800 outline-none hover:bg-gray-100 focus:ring focus:ring-teal-300"
+          class="absolute right-9 top-9 inline-flex h-7 w-7 appearance-none items-center justify-center rounded-full p-1 text-gray-800 outline-none hover:bg-gray-100 focus:ring focus:ring-indigo-300"
           use:melt={$close}
           aria-label="Закрити"
         >

@@ -80,6 +80,6 @@
 
 <style lang="postcss">
   .active {
-    @apply text-teal-500;
+    @apply text-indigo-600;
   }
 </style>

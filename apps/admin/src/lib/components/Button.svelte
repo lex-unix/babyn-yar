@@ -1,13 +1,26 @@
 <script lang="ts">
-  export let isLoading: boolean
-  export let loadingText: string = 'Завантаження'
+  import { createEventDispatcher } from 'svelte'
+
+  export let loadingText: string = 'Завантаження...'
   export let form: string | undefined = undefined
+  export let isLoading = false
+  export let isDisabled = false
+  export let variant: 'filled' | 'outline' = 'filled'
+
+  const dispatch = createEventDispatcher()
+
+  function click() {
+    dispatch('click')
+  }
 </script>
 
 <button
-  class="flex items-center gap-3 rounded-md border border-teal-700/10 bg-teal-500 px-4 py-2.5 text-sm font-medium leading-none text-white disabled:opacity-70"
-  disabled={isLoading}
+  class="flex items-center gap-3 rounded-md px-4 py-3 text-sm font-semibold leading-none transition-colors"
+  disabled={isDisabled || isLoading}
+  class:filled={variant === 'filled'}
+  class:outline={variant === 'outline'}
   {form}
+  on:click={click}
 >
   {#if isLoading}
     <svg
@@ -37,3 +50,13 @@
     {/if}
   </span>
 </button>
+
+<style lang="postcss">
+  .filled {
+    @apply bg-indigo-600 text-white transition-colors hover:bg-indigo-500 disabled:bg-indigo-400;
+  }
+
+  .outline {
+    @apply border bg-white focus:ring focus:ring-gray-300 disabled:opacity-60;
+  }
+</style>

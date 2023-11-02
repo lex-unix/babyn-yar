@@ -125,7 +125,7 @@
               class:selected
             >
               <div
-                class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-300 p-3 accent-teal-300"
+                class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-300 p-3"
               >
                 <input
                   id="id-{asset.id}"

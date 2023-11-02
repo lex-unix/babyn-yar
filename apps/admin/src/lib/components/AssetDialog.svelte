@@ -104,9 +104,9 @@
         <button
           use:melt={$close}
           aria-label="close"
-          class="absolute right-9 top-9 inline-flex h-7 w-7 appearance-none items-center justify-center rounded-full p-1 text-gray-800 outline-none hover:bg-gray-100 focus:ring focus:ring-teal-300"
+          class="absolute right-9 top-9 inline-flex h-7 w-7 appearance-none items-center justify-center rounded-full p-1 text-gray-800 outline-none hover:bg-gray-100 focus:ring focus:ring-indigo-300"
         >
-          <X class="square-4" />
+          <X class="h-4 w-4" />
         </button>
       </div>
     </div>
