@@ -49,5 +49,12 @@ func (app *application) routes() http.Handler {
 	router.Patch("/v1/books/{id}", app.requireAuthenticatedUser(app.updateBookHandler))
 	router.Delete("/v1/books", app.requireAuthenticatedUser(app.deleteBooksHandler))
 
+	// holocaust documents
+	router.Get("/v1/holocaust-documents", app.listHolocaustDocumentsHandler)
+	router.Get("/v1/holocaust-documents/{id}", app.showHolocaustDocumentHandler)
+	router.Post("/v1/holocaust-documents", app.requireAuthenticatedUser(app.createHolocaustDocumentHandler))
+	router.Patch("/v1/holocaust-documents/{id}", app.requireAuthenticatedUser(app.updateHolocaustDocumentHandler))
+	router.Delete("/v1/holocaust-documents", app.requireAuthenticatedUser(app.deleteHolocaustDocumentsHandler))
+
 	return router
 }
