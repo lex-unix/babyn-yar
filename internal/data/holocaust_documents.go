@@ -114,7 +114,7 @@ func (m HolocaustDocumentModel) Get(id int64) (*HolocaustDocument, error) {
 
 	query := `
 		SELECT d.id, d.title, d.description, d.content, d.lang, d.cover, d.version
-		FROM events d
+		FROM holocaust_documents d
 		WHERE id = $1`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
