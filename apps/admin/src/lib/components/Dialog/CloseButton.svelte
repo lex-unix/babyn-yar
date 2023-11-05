@@ -34,6 +34,6 @@
   }
 
   .lg {
-    @apply lg:right-9 lg:top-9;
+    @apply right-5 top-5 lg:right-9 lg:top-9;
   }
 </style>
