@@ -30,7 +30,7 @@
 
   function selectAsset(e: CustomEvent<{ url: string; type: string }>) {
     const { url, type } = e.detail
-    assetsDialog.closeDialog()
+    assetsDialog.close()
     if (type === 'image') {
       editor.commands.setImage({ src: url })
     } else {
@@ -43,7 +43,7 @@
   function addLink(
     e: CustomEvent<{ type: 'email' | 'internal' | 'external'; value: string }>
   ) {
-    linkDialog.closeDialog()
+    linkDialog.close()
     const { value, type } = e.detail
     if (!value) return
 
@@ -114,7 +114,7 @@
         </button>
         <button
           type="button"
-          on:click={() => linkDialog.openDialog()}
+          on:click={() => linkDialog.open()}
           class:active={editor.isActive('link')}
           class="rounded p-1.5 hover:bg-gray-600/10"
         >
@@ -203,14 +203,14 @@
         <div class="min-h-full w-[1px] self-stretch bg-gray-800/10" />
         <button
           type="button"
-          on:click={() => assetsDialog.openDialog('image')}
+          on:click={() => assetsDialog.open('image')}
           class="rounded p-1.5 hover:bg-gray-600/10"
         >
           <ImageIcon size={16} />
         </button>
         <button
           type="button"
-          on:click={() => assetsDialog.openDialog('video')}
+          on:click={() => assetsDialog.open('video')}
           class="rounded p-1.5 hover:bg-gray-600/10"
         >
           <VideoIcon size={16} />
@@ -221,10 +221,7 @@
   <div bind:this={element} />
 </div>
 
-<AssetDialog bind:this={assetsDialog} on:select={selectAsset}>
-  <svelte:fragment slot="title">Медіа файли</svelte:fragment>
-  <svelte:fragment slot="description">Оберіть потрібний файл</svelte:fragment>
-</AssetDialog>
+<AssetDialog bind:this={assetsDialog} on:select={selectAsset} />
 
 <LinkDialog bind:this={linkDialog} on:done={addLink} />
 

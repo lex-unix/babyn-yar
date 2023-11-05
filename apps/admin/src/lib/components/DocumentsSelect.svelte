@@ -8,7 +8,7 @@
 
   function select(e: CustomEvent<{ url: string; fileName: string }>) {
     documents = [...documents, e.detail.url]
-    assetDialog.closeDialog()
+    assetDialog.close()
   }
 
   function remove(i: number) {
@@ -42,7 +42,7 @@
       type="button"
       id="select-docs"
       class="flex items-center gap-1 text-sm text-gray-700"
-      on:click={() => assetDialog.openDialog('')}
+      on:click={() => assetDialog.open('')}
     >
       <PlusIcon class="h-4 w-4" />
       <span>Додати</span>
@@ -50,7 +50,4 @@
   </div>
 </div>
 
-<AssetDialog bind:this={assetDialog} on:select={select}>
-  <svelte:fragment slot="title">Медіа файли</svelte:fragment>
-  <svelte:fragment slot="description">Оберіть потрібний файл</svelte:fragment>
-</AssetDialog>
+<AssetDialog bind:this={assetDialog} on:select={select} />

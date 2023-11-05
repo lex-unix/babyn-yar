@@ -13,12 +13,11 @@
   import { TrashIcon } from 'lucide-svelte'
   import { fetchAssetsWrapper } from '$lib'
   import { onMount } from 'svelte'
+  import { debounce } from '$lib'
 
   let loading = false
   let assets: Asset[] = []
   let selectedAssets: number[] = []
-  let assetDialog: UploadAssetsDialog
-  let timeoutId: ReturnType<typeof setTimeout>
 
   const fetchAssets = fetchAssetsWrapper()
 
@@ -34,12 +33,9 @@
     assets = res.assets
   }
 
-  function search(e: CustomEvent<{ search: string }>) {
-    clearTimeout(timeoutId)
-    timeoutId = setTimeout(async () => {
-      const res = await fetchAssets({ filename: e.detail.search })
-      assets = res.assets
-    }, 500)
+  async function search(e: CustomEvent<{ search: string }>) {
+    const res = await fetchAssets({ filename: e.detail.search })
+    assets = res.assets
   }
 
   function clear() {
@@ -61,14 +57,12 @@
 
 <PageHeader>
   <svelte:fragment slot="heading">Медіа файли</svelte:fragment>
-  <UploadAssetsDialog slot="right-items" bind:this={assetDialog} />
+  <UploadAssetsDialog slot="right-items" />
 </PageHeader>
 
 <Container title="Медіа файли">
-  <SearchBar on:search={search}>
-    <svelte:fragment slot="filters">
-      <AssetSortMenu on:select={sort} />
-    </svelte:fragment>
+  <SearchBar on:search={debounce(search)}>
+    <AssetSortMenu slot="filters" on:select={sort} />
   </SearchBar>
 
   {#if selectedAssets.length > 0}

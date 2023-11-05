@@ -1,27 +1,27 @@
 <script lang="ts">
-  import { melt, createDialog } from '@melt-ui/svelte'
   import { createEventDispatcher } from 'svelte'
   import { LinkOptionsMenu, Button } from '$components'
+  import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTitle
+  } from '$components'
 
-  export function openDialog() {
-    open.set(true)
+  export function open() {
+    dialog.show()
   }
 
-  export function closeDialog() {
-    open.set(false)
+  export function close() {
+    dialog.dissmis()
   }
 
   export let value = ''
+
   let type = ''
+  let dialog: Dialog
 
   const dispatch = createEventDispatcher()
-
-  const {
-    elements: { portalled, overlay, content, title, description, close },
-    states: { open }
-  } = createDialog({
-    closeOnOutsideClick: true
-  })
 
   function done() {
     dispatch('done', { value, type })
@@ -33,63 +33,44 @@
   }
 </script>
 
-<div use:melt={$portalled}>
-  {#if $open}
-    <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" />
-    <div
-      class="fixed inset-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden p-6 shadow-lg"
+<Dialog bind:this={dialog} size="md">
+  <DialogContent>
+    <DialogTitle slot="title">Посилання</DialogTitle>
+    <DialogDescription slot="description"
+      >Додати будь-яке посилання</DialogDescription
     >
-      <div
-        use:melt={$content}
-        class="m-auto min-w-[620px] max-w-[700px] rounded-lg bg-white p-9"
-      >
-        <div class="mb-5">
-          <h2 use:melt={$title} class="text-xl font-semibold text-gray-900">
-            Посилання
-          </h2>
-          <p
-            use:melt={$description}
-            class="mb-5 mt-2 leading-normal text-gray-500"
+    <div class="mt-7 min-h-[30px]">
+      <div class="pb-5">
+        <div class="relative h-full">
+          <div
+            class="flex h-10 w-full items-center overflow-hidden rounded border px-4 hover:border-sky-400"
           >
-            Додати будь-яке посилання
-          </p>
-        </div>
-        <div class="min-h-[30px]">
-          <div class="pb-5">
-            <div class="relative h-full">
-              <div
-                class="flex h-10 w-full items-center overflow-hidden rounded border px-4 hover:border-sky-400"
-              >
-                <div
-                  class="inline-flex items-center border-r border-gray-700/20 pr-2"
-                >
-                  <LinkOptionsMenu on:select={selectType} />
-                </div>
-                <input
-                  type="text"
-                  name="link-variant"
-                  bind:value
-                  class="h-full w-full border-none pl-4 outline-none"
-                  autocomplete="off"
-                />
-              </div>
+            <div
+              class="inline-flex items-center border-r border-gray-700/20 pr-2"
+            >
+              <LinkOptionsMenu on:select={selectType} />
             </div>
+            <input
+              type="text"
+              name="link-variant"
+              bind:value
+              class="h-full w-full border-none pl-4 outline-none"
+              autocomplete="off"
+            />
           </div>
-        </div>
-        <div
-          class="-mb-9 -ml-9 -mr-9 flex min-h-[80px] items-center justify-end gap-2.5 rounded-bl-lg rounded-br-lg bg-gray-100 px-9"
-        >
-          <button
-            use:melt={$close}
-            class="rounded-md border bg-white px-4 py-3 text-sm font-semibold leading-none outline-none focus:ring focus:ring-gray-300 disabled:opacity-60"
-          >
-            Відмінити
-          </button>
-          <Button isDisabled={value.length === 0} on:click={done}>
-            Готово
-          </Button>
         </div>
       </div>
     </div>
-  {/if}
-</div>
+    <div
+      class="-mb-9 -ml-9 -mr-9 flex min-h-[80px] items-center justify-end gap-2.5 rounded-bl-lg rounded-br-lg bg-gray-100 px-9"
+    >
+      <button
+        on:click={() => dialog.dissmis()}
+        class="rounded-md border bg-white px-4 py-3 text-sm font-semibold leading-none outline-none focus:ring focus:ring-gray-300 disabled:opacity-60"
+      >
+        Відмінити
+      </button>
+      <Button isDisabled={value.length === 0} on:click={done}>Готово</Button>
+    </div>
+  </DialogContent>
+</Dialog>

@@ -5,19 +5,24 @@
     Select,
     SelectTrigger,
     SelectMenu,
-    SelectItem
+    SelectItem,
+    Dialog,
+    DialogTrigger,
+    DialogClose,
+    DialogTitle,
+    DialogDescription,
+    DialogContent
   } from '$components'
-  import { melt, createDialog } from '@melt-ui/svelte'
-  import { PlusIcon, XIcon } from 'lucide-svelte'
+  import { PlusIcon } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
   import { permissionOptions } from '$lib'
 
-  export function openDialog() {
-    open.set(true)
+  export function open() {
+    dialog.show()
   }
 
-  export function closeDialog() {
-    open.set(false)
+  export function close() {
+    dialog.dissmis()
   }
 
   let fullName: string
@@ -25,6 +30,9 @@
   let password: string
   let permission: string
   let isSubmitting = false
+  let dialog: Dialog
+
+  const dispatch = createEventDispatcher()
 
   async function register() {
     isSubmitting = true
@@ -39,7 +47,7 @@
     dispatch('register', { user })
 
     isSubmitting = false
-    open.set(false)
+    dialog.dissmis()
 
     reset()
   }
@@ -49,102 +57,60 @@
     password = ''
     email = ''
   }
-
-  const dispatch = createEventDispatcher()
-
-  const {
-    elements: {
-      trigger,
-      portalled,
-      content,
-      overlay,
-      title,
-      description,
-      close
-    },
-    states: { open }
-  } = createDialog({ forceVisible: true })
 </script>
 
-<button
-  use:melt={$trigger}
-  class="flex items-center gap-3 rounded-md bg-indigo-600 px-4 py-3 text-sm font-semibold leading-none text-white outline-none transition-colors hover:bg-indigo-500 focus:bg-indigo-500 disabled:opacity-70"
->
-  <span class="text-sm font-semibold">Додати</span>
-  <PlusIcon size={16} />
-</button>
-
-<div use:melt={$portalled}>
-  {#if $open}
-    <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" />
-    <div
-      class="fixed inset-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden p-2 md:p-6"
-    >
-      <div
-        use:melt={$content}
-        class="relative rounded-lg bg-white p-5 lg:min-w-[720px] lg:max-w-[800px] lg:p-9"
-      >
-        <div class="mb-5">
-          <h2 use:melt={$title} class="text-xl font-semibold text-gray-700">
-            Додати нового користувача
-          </h2>
-          <p use:melt={$description} class="mt-2 text-gray-500">
-            Зареєструйте нового користувача, вказавши ім'я, адресу електронної
-            пошти, пароль та роль. Користувач зможе потім змінити пароль у
-            налаштуваннях.
-          </p>
-        </div>
-        <form on:submit|preventDefault={register} class="space-y-3">
-          <Input
-            label="Повне ім'я"
-            name="fullName"
-            bind:value={fullName}
-            required
-          />
-          <Input
-            type="email"
-            label="Email"
-            name="email"
-            bind:value={email}
-            required
-          />
-          <Input
-            type="password"
-            label="Пароль"
-            name="password"
-            bind:value={password}
-            required
-          />
-          <div>
-            <label for="select-role" class="mb-1.5 block text-gray-400">
-              Роль
-            </label>
-            <Select
-              bind:selected={permission}
-              defaultSelected={permissionOptions[0]}
-            >
-              <SelectTrigger id="select-role">Обрати роль</SelectTrigger>
-              <SelectMenu>
-                {#each permissionOptions as { value, label }}
-                  <SelectItem {value} {label} />
-                {/each}
-              </SelectMenu>
-            </Select>
-            <div class="flex justify-end pt-2">
-              <Button isLoading={false}>Додати</Button>
-            </div>
-          </div>
-        </form>
-
-        <button
-          use:melt={$close}
-          aria-label="Закрити"
-          disabled={isSubmitting}
-          class="absolute right-5 top-5 inline-flex items-center justify-center rounded-full p-1 text-gray-800 outline-none hover:bg-gray-100 focus:ring focus:ring-indigo-300 disabled:opacity-60"
+<Dialog bind:this={dialog}>
+  <DialogTrigger>
+    <svelte:fragment slot="text">Додати</svelte:fragment>
+    <PlusIcon slot="icon" size={16} />
+  </DialogTrigger>
+  <DialogContent>
+    <DialogTitle slot="title">Додати нового користувача</DialogTitle>
+    <DialogDescription slot="description">
+      Зареєструйте нового користувача, вказавши ім'я, адресу електронної пошти,
+      пароль та роль. Користувач зможе потім змінити пароль у налаштуваннях.
+    </DialogDescription>
+    <form on:submit|preventDefault={register} class="space-y-3">
+      <Input
+        label="Повне ім'я"
+        name="fullName"
+        bind:value={fullName}
+        required
+      />
+      <Input
+        type="email"
+        label="Email"
+        name="email"
+        bind:value={email}
+        required
+      />
+      <Input
+        type="password"
+        label="Пароль"
+        name="password"
+        bind:value={password}
+        required
+      />
+      <div>
+        <label for="select-role" class="mb-1.5 block text-gray-400">
+          Роль
+        </label>
+        <Select
+          bind:selected={permission}
+          defaultSelected={permissionOptions[0]}
         >
-          <XIcon class="h-4 w-4" />
-        </button>
+          <SelectTrigger id="select-role">Обрати роль</SelectTrigger>
+          <SelectMenu>
+            {#each permissionOptions as { value, label }}
+              <SelectItem {value} {label} />
+            {/each}
+          </SelectMenu>
+        </Select>
+        <div class="flex justify-end pt-2">
+          <Button isLoading={false}>Додати</Button>
+        </div>
       </div>
-    </div>
-  {/if}
-</div>
+    </form>
+    <DialogClose isDisabled={isSubmitting} />
+  </DialogContent>
+</Dialog>

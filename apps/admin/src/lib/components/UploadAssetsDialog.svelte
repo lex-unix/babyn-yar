@@ -1,21 +1,30 @@
 <script lang="ts">
-  import { createDialog, melt } from '@melt-ui/svelte'
-  import { UploadCloudIcon, XIcon } from 'lucide-svelte'
-  import { Button, FileListItem } from '$components'
+  import { UploadCloudIcon } from 'lucide-svelte'
+  import {
+    Button,
+    FileListItem,
+    Dialog,
+    DialogContent,
+    DialogTrigger,
+    DialogTitle,
+    DialogDescription,
+    DialogClose
+  } from '$components'
   import { createAssets } from '$lib/assets'
   import { addToast } from '$components/Toaster.svelte'
 
-  export function openDialog() {
-    open.set(true)
+  export function open() {
+    dialog.show()
   }
 
-  export function closeDialog() {
-    open.set(false)
+  export function close() {
+    dialog.dissmis()
   }
 
   let fileInput: HTMLInputElement
   let files: { file: File; fileName: string; extension: string }[] = []
   let isSubmitting = false
+  let dialog: Dialog
 
   function addFiles(
     e: Event & {
@@ -71,84 +80,54 @@
     files[i].fileName = fileName
     files = files
   }
-
-  const {
-    elements: { trigger, overlay, content, title, close, portalled },
-    states: { open }
-  } = createDialog({
-    closeOnOutsideClick: true
-  })
 </script>
 
-<button
-  use:melt={$trigger}
-  class="flex items-center gap-3 rounded-md bg-indigo-600 px-4 py-3 text-sm font-semibold leading-none text-white outline-none transition-colors hover:bg-indigo-500 focus:bg-indigo-500 disabled:opacity-70"
->
-  <UploadCloudIcon size={16} />
-  <span class="text-sm font-semibold">Завантажити</span>
-</button>
-
-<div use:melt={$portalled}>
-  {#if $open}
-    <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" />
-    <div
-      class="fixed inset-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden lg:p-6"
-    >
-      <div
-        class="relative m-auto w-full rounded-lg bg-white p-9 shadow-lg lg:min-w-[720px] lg:max-w-[800px]"
-        use:melt={$content}
-      >
-        <div class="mb-5">
-          <h2 use:melt={$title} class="text-xl font-semibold text-gray-900">
-            Завантажити файли
-          </h2>
-        </div>
-        <div class="min-h-[30px]">
-          {#if files}
-            <ul class="max-h-[400px] overflow-y-auto">
-              {#each files as { file, fileName, extension }, index}
-                <FileListItem
-                  {index}
-                  {extension}
-                  {fileName}
-                  src={URL.createObjectURL(file)}
-                  type={file.type}
-                  on:remove={removeFile}
-                  on:change={changeFileName}
-                />
-              {/each}
-            </ul>
-          {/if}
-        </div>
-        <div
-          class="-mb-9 -ml-9 -mr-9 flex min-h-[80px] items-center justify-between gap-2.5 rounded-bl-lg rounded-br-lg bg-gray-100 px-9 lg:justify-end"
-        >
-          <input
-            type="file"
-            hidden
-            bind:this={fileInput}
-            multiple
-            on:change={addFiles}
-          />
-          <button
-            class="rounded-md border bg-white px-4 py-3 font-medium leading-none outline-none focus:ring focus:ring-gray-300 disabled:opacity-60"
-            disabled={isSubmitting}
-            on:click={openFileBrowser}
-          >
-            Додати файл
-          </button>
-          <Button isLoading={isSubmitting} on:click={submit}>
-            Завантажити
-          </Button>
-        </div>
-        <button
-          class="absolute right-9 top-9 inline-flex h-7 w-7 appearance-none items-center justify-center rounded-full p-1 text-gray-800 outline-none hover:bg-gray-100 focus:ring focus:ring-indigo-300"
-          use:melt={$close}
-          aria-label="Закрити"
-        >
-          <XIcon size={20} />
-        </button>
-      </div>
+<Dialog size="md">
+  <DialogTrigger>
+    <UploadCloudIcon slot="icon" size={16} />
+    <svelte:fragment slot="text">Завантажити</svelte:fragment>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogTitle slot="title">Завантажити файли</DialogTitle>
+    <DialogDescription slot="description">
+      Будь ласка, оберіть файли для завантаження
+    </DialogDescription>
+    <DialogClose />
+    <div class="min-h-[30px]">
+      {#if files}
+        <ul class="max-h-[400px] overflow-y-auto">
+          {#each files as { file, fileName, extension }, index}
+            <FileListItem
+              {index}
+              {extension}
+              {fileName}
+              src={URL.createObjectURL(file)}
+              type={file.type}
+              on:remove={removeFile}
+              on:change={changeFileName}
+            />
+          {/each}
+        </ul>
+      {/if}
     </div>
-  {/if}
-</div>
+    <div
+      class="-mb-9 -ml-9 -mr-9 flex min-h-[80px] items-center justify-between gap-2.5 rounded-bl-lg rounded-br-lg bg-gray-100 px-9 lg:justify-end"
+    >
+      <input
+        type="file"
+        hidden
+        bind:this={fileInput}
+        multiple
+        on:change={addFiles}
+      />
+      <button
+        class="rounded-md border bg-white px-4 py-3 font-medium leading-none outline-none focus:ring focus:ring-gray-300 disabled:opacity-60"
+        disabled={isSubmitting}
+        on:click={openFileBrowser}
+      >
+        Додати файл
+      </button>
+      <Button isLoading={isSubmitting} on:click={submit}>Завантажити</Button>
+    </div>
+  </DialogContent>
+</Dialog>

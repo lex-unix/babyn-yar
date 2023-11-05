@@ -1,6 +1,7 @@
 <script lang="ts">
   import { SearchIcon } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
+  import { debounce } from '$lib'
 
   const dispatch = createEventDispatcher()
 
@@ -9,7 +10,8 @@
       currentTarget: EventTarget & HTMLInputElement
     }
   ) {
-    dispatch('search', { search: e.currentTarget.value })
+    const input = e.target as HTMLInputElement
+    dispatch('search', { search: input.value })
   }
 </script>
 
@@ -21,7 +23,7 @@
       <input
         type="search"
         placeholder="Пошук файлів..."
-        on:input={search}
+        on:input={debounce(search)}
         class="w-full border-none bg-transparent py-3.5 pl-10 outline-none placeholder:text-gray-400"
       />
       <SearchIcon

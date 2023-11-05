@@ -5,11 +5,11 @@
   export let cover: string
   export let error: string | undefined = undefined
 
-  let assetDialog: AssetDialog
+  let dialog: AssetDialog
 
   function select(e: CustomEvent<{ url: string }>) {
     cover = e.detail.url
-    assetDialog.closeDialog()
+    dialog.close()
   }
 </script>
 
@@ -21,7 +21,7 @@
     <p class="-mt-1.5 mb-1.5 text-red-500">{error}</p>
   {/if}
   <button
-    on:click={() => assetDialog.openDialog('image')}
+    on:click={() => dialog.open('image')}
     id="select-cover"
     type="button"
     class="flex w-full items-center gap-5 rounded border bg-white px-3 py-2 outline-none hover:border-sky-400 focus:border-sky-400 focus:ring focus:ring-sky-100"
@@ -42,7 +42,7 @@
     <div class="flex items-center gap-1">
       {#if cover}
         <button
-          on:click|stopPropagation={() => assetDialog.openDialog('image')}
+          on:click|stopPropagation={() => dialog.open('image')}
           type="button"
           class="text-sm"
         >
@@ -56,7 +56,4 @@
   </button>
 </div>
 
-<AssetDialog bind:this={assetDialog} on:select={select}>
-  <svelte:fragment slot="title">Медіа файли</svelte:fragment>
-  <svelte:fragment slot="description">Оберіть потрібний файл</svelte:fragment>
-</AssetDialog>
+<AssetDialog bind:this={dialog} on:select={select} />
