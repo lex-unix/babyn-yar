@@ -26,7 +26,7 @@
         data: {
           title: 'Помилка!',
           description: res.error,
-          color: ''
+          variant: 'error'
         }
       })
     }

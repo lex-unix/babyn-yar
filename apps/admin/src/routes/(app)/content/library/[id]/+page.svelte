@@ -47,7 +47,7 @@
       data: {
         title: 'Чудово!',
         description: 'Ваші зміни було збережено',
-        color: 'bg-emerald-500'
+        variant: 'success'
       }
     })
     isSubmitting = false

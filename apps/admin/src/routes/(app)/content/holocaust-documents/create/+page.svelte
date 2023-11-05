@@ -41,7 +41,7 @@
       data: {
         title: 'Чудово!',
         description: 'Новий запис було успішно створено',
-        color: 'bg-emerald-500'
+        variant: 'success'
       }
     })
     isSubmitting = false

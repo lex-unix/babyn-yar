@@ -61,7 +61,7 @@
         data: {
           title: 'Операція успішна',
           description: 'Користувачі були видалені',
-          color: 'bg-emerald-400'
+          variant: 'success'
         }
       })
       alertDialog.dismiss()

@@ -68,7 +68,7 @@
         data: {
           title: 'Помилка',
           description: response.error,
-          color: 'bg-red-500'
+          variant: 'error'
         }
       })
     }

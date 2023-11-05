@@ -23,7 +23,6 @@
 
 <div class="min-h-screen bg-gray-50 px-3 pt-10 text-gray-900">
   <form on:submit|preventDefault={submit} class="mx-auto max-w-md space-y-3">
-    Email
     <Input
       name="email"
       type="email"

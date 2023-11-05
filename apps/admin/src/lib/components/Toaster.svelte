@@ -2,7 +2,7 @@
   export type ToastData = {
     title: string
     description: string
-    color: string
+    variant: 'success' | 'error'
   }
 
   const {
@@ -32,7 +32,9 @@
       animate:flip={{ duration: 500 }}
       in:fly={{ duration: 150, x: '100%' }}
       out:fly={{ duration: 150, x: '100%' }}
-      class={`rounded-lg bg-neutral-700 text-white shadow-md ${data.color}`}
+      class="rounded-lg bg-neutral-700 text-white shadow-md"
+      class:success={data.variant === 'success'}
+      class:error={data.variant === 'error'}
     >
       <div
         class="relative flex w-[24rem] max-w-[calc(100vw-2rem)] items-center justify-between gap-4 p-5"
@@ -40,10 +42,10 @@
         <div>
           <h3
             use:melt={$title(id)}
-            class="flex items-center gap-2 font-semibold"
+            class="flex items-center gap-2 text-lg font-semibold"
           >
             {data.title}
-            <span class="square-1.5 rounded-full {data.color}" />
+            <span class="square-1.5 rounded-full" />
           </h3>
           <div use:melt={$description(id)}>
             {data.description}
@@ -51,7 +53,7 @@
         </div>
         <button
           use:melt={$close(id)}
-          class="absolute right-4 top-4 grid h-6 w-6 place-items-center rounded-full text-white"
+          class="absolute right-4 top-4 grid h-6 w-6 place-items-center rounded-full"
         >
           <X class="h-4 w-4" />
         </button>
@@ -59,3 +61,13 @@
     </div>
   {/each}
 </div>
+
+<style lang="postcss">
+  .success {
+    @apply bg-green-100 text-green-700 shadow-green-200;
+  }
+
+  .error {
+    @apply bg-red-100 text-red-700 shadow-red-300;
+  }
+</style>

@@ -49,7 +49,7 @@
         data: {
           title: 'Щось пішло не так',
           description: 'Спробуйте ще раз',
-          color: 'bg-emerald-500'
+          variant: 'error'
         }
       })
       return
@@ -61,7 +61,7 @@
       data: {
         title: 'Операція успішна',
         description: 'Елементи було видалено',
-        color: 'bg-emerald-500'
+        variant: 'success'
       }
     })
   }
