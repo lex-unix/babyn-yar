@@ -23,5 +23,12 @@ export {
   fetchBooks,
   fetchBook
 } from './books'
+export {
+  createHolocaustDocument,
+  fetchHolocaustDocument,
+  fetchHolocaustDocuments,
+  updateHolocaustDocument,
+  deleteHolocaustDocuments
+} from './holocaust-documents'
 export { trimText } from './trim-text'
 export { ResponseError } from './response-error'

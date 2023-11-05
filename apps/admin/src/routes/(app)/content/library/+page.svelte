@@ -72,10 +72,6 @@
   }
 </script>
 
-<svelte:head>
-  <title>Події</title>
-</svelte:head>
-
 <PageHeader>
   <svelte:fragment slot="heading">Бібліотека</svelte:fragment>
   <LinkButton slot="right-items" href="/content/library/create">
@@ -84,7 +80,7 @@
   </LinkButton>
 </PageHeader>
 
-<Container title="Події">
+<Container title="Бібліотека">
   <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
 
   {#if isError}

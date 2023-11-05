@@ -26,20 +26,17 @@ export type Book = BaseContent & {
   user: User
 }
 
+export type HolocaustDocument = BaseContent & {
+  version: number
+  user: User
+}
+
 export type Metadata = {
   currentPage: number
   firstPage: number
   lastPage: number
   pageSize: number
   totalRecords: number
-}
-
-type BaseContentErrorResponse = {
-  title?: string
-  description?: string
-  content?: string
-  lang?: string
-  cover?: string
 }
 
 export type Asset = {
@@ -57,16 +54,6 @@ export type User = {
   fullName: string
   email: string
   permissions: string[]
-}
-
-export type EventErrorResponse = BaseContentErrorResponse
-
-export type TestimonyErrorResponse = BaseContentErrorResponse & {
-  documents?: string
-}
-
-export type BookErrorResponse = BaseContentErrorResponse & {
-  documents?: string
 }
 
 export type UserErrorResponse = {
