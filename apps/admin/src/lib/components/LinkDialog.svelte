@@ -62,7 +62,7 @@
       </div>
     </div>
     <div
-      class="-mb-9 -ml-9 -mr-9 flex min-h-[80px] items-center justify-end gap-2.5 rounded-bl-lg rounded-br-lg bg-gray-100 px-9"
+      class="-mb-9 -ml-5 -mr-5 flex min-h-[80px] items-center justify-end gap-2.5 rounded-bl-lg rounded-br-lg bg-gray-100 px-9 lg:-ml-9 lg:-mr-9"
     >
       <button
         on:click={() => dialog.dissmis()}
