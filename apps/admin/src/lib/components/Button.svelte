@@ -15,7 +15,7 @@
 </script>
 
 <button
-  class="flex items-center gap-3 rounded-md px-4 py-3 text-sm font-semibold leading-none transition-colors"
+  class="flex items-center gap-3 rounded-md px-4 py-3 text-sm leading-none transition-colors"
   disabled={isDisabled || isLoading}
   class:filled={variant === 'filled'}
   class:outline={variant === 'outline'}
@@ -42,7 +42,7 @@
   {:else}
     <slot name="icon" />
   {/if}
-  <span class="font-medium">
+  <span class="font-semibold">
     {#if isLoading}
       {loadingText}
     {:else}
