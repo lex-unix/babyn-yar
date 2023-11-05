@@ -1,68 +1,26 @@
 <script lang="ts">
-  import { melt, createSelect } from '@melt-ui/svelte'
-  import { ChevronDown } from 'lucide-svelte'
+  import { Select, SelectTrigger, SelectMenu, SelectItem } from '$components'
+  import { langOptions } from '$lib/select-option'
 
   export let lang: string
   export let error: string | undefined = undefined
 
-  const langOptions = [
-    { value: 'ua', label: 'Українська' },
-    { value: 'en', label: 'Англійська' }
-  ]
-
   let defaultValue = lang
     ? langOptions.find(option => option.value === lang)
-    : langOptions[0]
-
-  $: {
-    lang = $selected!.value
-  }
-
-  const {
-    elements: { trigger, menu, option },
-    states: { selectedLabel, open, selected },
-    helpers: { isSelected }
-  } = createSelect({
-    forceVisible: true,
-    defaultSelected: defaultValue,
-    positioning: {
-      placement: 'bottom',
-      fitViewport: true,
-      sameWidth: true
-    }
-  })
+    : undefined
 </script>
 
 <div>
   <label for="select-lang" class="mb-1.5 block text-gray-400">Мова</label>
   {#if error}
-    <p class="-mt-1.5 mb-1.5 text-red-500">{Error}</p>
+    <p class="-mt-1.5 mb-1.5 text-red-500">{error}</p>
   {/if}
-  <button
-    use:melt={$trigger}
-    id="select-lang"
-    type="button"
-    class="flex min-w-[220px] items-center justify-between rounded border bg-white px-3 py-2 leading-none outline-none hover:border-sky-400 focus:border-sky-400 focus:ring focus:ring-sky-100"
-  >
-    {$selectedLabel || 'Обрати мову'}
-    <ChevronDown class="h-5 w-5" />
-  </button>
+  <Select bind:selected={lang} defaultSelected={defaultValue}>
+    <SelectTrigger id="select-lang">Обрати мову</SelectTrigger>
+    <SelectMenu>
+      {#each langOptions as { value, label }}
+        <SelectItem {value} {label} />
+      {/each}
+    </SelectMenu>
+  </Select>
 </div>
-
-{#if $open}
-  <div
-    use:melt={$menu}
-    class="z-10 flex max-h-[300px] flex-col overflow-y-auto rounded border bg-white p-1"
-  >
-    {#each langOptions as { value, label }}
-      <div
-        use:melt={$option({ value, label })}
-        class={`p-2 hover:cursor-pointer hover:bg-gray-400/10 ${
-          $isSelected(value) ? 'text-indigo-600' : ''
-        }`}
-      >
-        {label}
-      </div>
-    {/each}
-  </div>
-{/if}

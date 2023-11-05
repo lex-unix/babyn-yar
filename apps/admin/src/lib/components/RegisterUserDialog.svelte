@@ -1,8 +1,16 @@
 <script lang="ts">
-  import { Input, Button } from '$components'
-  import { melt, createDialog, createSelect } from '@melt-ui/svelte'
-  import { ChevronDown, PlusIcon, XIcon } from 'lucide-svelte'
+  import {
+    Input,
+    Button,
+    Select,
+    SelectTrigger,
+    SelectMenu,
+    SelectItem
+  } from '$components'
+  import { melt, createDialog } from '@melt-ui/svelte'
+  import { PlusIcon, XIcon } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
+  import { permissionOptions } from '$lib'
 
   export function openDialog() {
     open.set(true)
@@ -15,11 +23,11 @@
   let fullName: string
   let email: string
   let password: string
+  let permission: string
   let isSubmitting = false
 
   async function register() {
     isSubmitting = true
-    const permission = $selected?.value
     const body = JSON.stringify({ fullName, email, password, permission })
     const response = await fetch('http://localhost:8000/v1/users/register', {
       method: 'POST',
@@ -44,11 +52,6 @@
 
   const dispatch = createEventDispatcher()
 
-  const permissionOptions = [
-    { value: 'publisher', label: 'Автор' },
-    { value: 'admin', label: 'Адміністратор' }
-  ]
-
   const {
     elements: {
       trigger,
@@ -61,20 +64,6 @@
     },
     states: { open }
   } = createDialog({ forceVisible: true })
-
-  const {
-    elements: { trigger: selectTrigger, menu, option },
-    states: { selectedLabel, open: selectOpen, selected },
-    helpers: { isSelected }
-  } = createSelect({
-    forceVisible: true,
-    defaultSelected: { value: 'publisher', label: 'Автор' },
-    positioning: {
-      placement: 'bottom',
-      fitViewport: true,
-      sameWidth: true
-    }
-  })
 </script>
 
 <button
@@ -130,35 +119,20 @@
             <label for="select-role" class="mb-1.5 block text-gray-400">
               Роль
             </label>
-            <button
-              use:melt={$selectTrigger}
-              id="select-role"
-              type="button"
-              class="flex min-w-[220px] items-center justify-between rounded border bg-white px-3 py-2 leading-none outline-none hover:border-sky-400 focus:border-sky-400 focus:ring focus:ring-sky-100"
+            <Select
+              bind:selected={permission}
+              defaultSelected={permissionOptions[0]}
             >
-              {$selectedLabel || 'Обрати роль'}
-              <ChevronDown class="h-5 w-5" />
-            </button>
-          </div>
-          {#if $selectOpen}
-            <div
-              use:melt={$menu}
-              class="z-10 flex max-h-[300px] flex-col overflow-y-auto rounded border bg-white p-1"
-            >
-              {#each permissionOptions as { label, value }}
-                <div
-                  use:melt={$option({ value, label })}
-                  class={`p-2 hover:cursor-pointer hover:bg-gray-400/10 ${
-                    $isSelected(value) ? 'text-indigo-600' : ''
-                  }`}
-                >
-                  {label}
-                </div>
-              {/each}
+              <SelectTrigger id="select-role">Обрати роль</SelectTrigger>
+              <SelectMenu>
+                {#each permissionOptions as { value, label }}
+                  <SelectItem {value} {label} />
+                {/each}
+              </SelectMenu>
+            </Select>
+            <div class="flex justify-end pt-2">
+              <Button isLoading={false}>Додати</Button>
             </div>
-          {/if}
-          <div class="flex justify-end pt-2">
-            <Button isLoading={false}>Додати</Button>
           </div>
         </form>
 
