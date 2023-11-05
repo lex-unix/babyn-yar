@@ -64,10 +64,10 @@
 
 <style lang="postcss">
   .success {
-    @apply bg-green-100 text-green-700 shadow-green-200;
+    @apply bg-green-100 text-green-800 shadow-green-200;
   }
 
   .error {
-    @apply bg-red-100 text-red-700 shadow-red-300;
+    @apply bg-red-100 text-red-800 shadow-red-300;
   }
 </style>
