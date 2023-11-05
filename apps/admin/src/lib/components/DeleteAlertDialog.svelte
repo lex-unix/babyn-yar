@@ -24,7 +24,7 @@
   }
 </script>
 
-<Dialog bind:this={dialog} size="sm">
+<Dialog bind:this={dialog} size="sm" role="alertdialog">
   <DialogContent>
     <DialogTitle slot="title">Ви впевнені, що хочете це видалити?</DialogTitle>
     <DialogDescription slot="description">
