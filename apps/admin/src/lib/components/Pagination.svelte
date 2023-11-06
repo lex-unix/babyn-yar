@@ -55,6 +55,6 @@
 
 <style lang="postcss">
   .active {
-    @apply border-t-indigo-700 text-indigo-700;
+    @apply !border-t-indigo-700 !text-indigo-700;
   }
 </style>
