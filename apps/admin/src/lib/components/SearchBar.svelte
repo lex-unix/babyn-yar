@@ -22,7 +22,7 @@
     <div class="relative w-full">
       <input
         type="search"
-        placeholder="Пошук файлів..."
+        placeholder="Пошук..."
         on:input={debounce(search)}
         class="w-full border-none bg-transparent py-3.5 pl-10 outline-none placeholder:text-gray-400"
       />

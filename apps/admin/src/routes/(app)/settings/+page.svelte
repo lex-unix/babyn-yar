@@ -39,27 +39,35 @@
 </PageHeader>
 
 <Container title="Налаштування">
-  <form on:submit|preventDefault={submit} class="space-y-3">
-    <Input
-      bind:value={fullName}
-      label="Повне ім'я"
-      name="fullName"
-      error={errors?.fullName}
-    />
-    <Input
-      bind:value={email}
-      type="email"
-      label="Email"
-      name="email"
-      error={errors?.email}
-    />
-    <Input
-      bind:value={password}
-      type="password"
-      label="Новий пароль"
-      name="password"
-      error={errors?.password}
-    />
-    <Button isLoading={isSubmitting}>Зберегти зміни</Button>
-  </form>
+  <div class="flex flex-col items-center">
+    <div class="mx-auto w-full max-w-xl">
+      <div class="rounded-md border bg-white p-6 shadow md:p-12">
+        <form on:submit|preventDefault={submit} class="space-y-5">
+          <Input
+            bind:value={fullName}
+            label="Повне ім'я"
+            name="fullName"
+            error={errors?.fullName}
+          />
+          <Input
+            bind:value={email}
+            type="email"
+            label="Email"
+            name="email"
+            error={errors?.email}
+          />
+          <Input
+            bind:value={password}
+            type="password"
+            label="Новий пароль"
+            name="password"
+            error={errors?.password}
+          />
+          <Button isLoading={isSubmitting} class="w-full justify-center">
+            Зберегти зміни
+          </Button>
+        </form>
+      </div>
+    </div>
+  </div>
 </Container>
