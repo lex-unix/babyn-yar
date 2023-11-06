@@ -1,13 +1,24 @@
 <script>
-  import { Folder, History, User } from 'lucide-svelte'
-  import {
-    Table,
-    TableData,
-    TableHeader,
-    TableRow,
-    PageHeader,
-    Container
-  } from '$components'
+  import { PageHeader, Container, ContentCard } from '$components'
+
+  const links = [
+    {
+      href: '/content/events',
+      text: 'Події'
+    },
+    {
+      href: '/content/library',
+      text: 'Бібліотека'
+    },
+    {
+      href: '/content/holocaust-documents',
+      text: 'Документи Голокосту'
+    },
+    {
+      href: '/content/victim-testimonies',
+      text: 'Свідчення очевидців трагедії'
+    }
+  ]
 </script>
 
 <PageHeader>
@@ -15,60 +26,11 @@
 </PageHeader>
 
 <Container title="Контент">
-  <Table>
-    <thead>
-      <tr>
-        <TableHeader>
-          <div class="inline-flex items-center gap-2">
-            <Folder size={16} />
-            <span>Розділ</span>
-          </div>
-        </TableHeader>
-        <TableHeader>
-          <div class="flex items-center gap-2">
-            <History size={16} />
-            <span>Остання зміна</span>
-          </div>
-        </TableHeader>
-        <TableHeader>
-          <div class="inline-flex items-center gap-2">
-            <User size={16} />
-            <span>Автор</span>
-          </div>
-        </TableHeader>
-      </tr>
-    </thead>
-    <tbody>
-      <TableRow>
-        <TableData>
-          <a href="/content/events">Події</a>
-        </TableData>
-        <TableData>04/27/2023 7:36 AM</TableData>
-        <TableData>Олексій Міїн</TableData>
-      </TableRow>
-      <TableRow>
-        <TableData>
-          <a href="/content/library">Бібліотека</a>
-        </TableData>
-        <TableData>04/27/2023 7:36 AM</TableData>
-        <TableData>Олексій Міїн</TableData>
-      </TableRow>
-      <TableRow>
-        <TableData>
-          <a href="/content/holocaust-documents">Документи Голокосту</a>
-        </TableData>
-        <TableData>04/27/2023 7:36 AM</TableData>
-        <TableData>Олексій Міїн</TableData>
-      </TableRow>
-      <TableRow>
-        <TableData>
-          <a href="/content/victim-testimonies">
-            Свідчення очевидців трагедії
-          </a>
-        </TableData>
-        <TableData>04/27/2023 7:36 AM</TableData>
-        <TableData>Олексій Міїн</TableData>
-      </TableRow>
-    </tbody>
-  </Table>
+  <ul class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6">
+    {#each links as { href, text }}
+      <ContentCard {href}>
+        <svelte:fragment slot="title">{text}</svelte:fragment>
+      </ContentCard>
+    {/each}
+  </ul>
 </Container>
