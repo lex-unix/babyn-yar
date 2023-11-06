@@ -18,9 +18,9 @@
       {#if contentType.startsWith('image')}
         <img {src} alt={fileName} class="!max-h-full !max-w-full" />
       {:else if contentType.startsWith('video')}
-        <FileVideo2 class="h-16 w-16 text-amber-400 lg:h-20 lg:w-20" />
+        <FileVideo2 class="h-12 w-12 text-amber-400 lg:h-16 lg:w-16" />
       {:else}
-        <FileText class="h-12 w-12 text-blue-400 lg:h-20 lg:w-20" />
+        <FileText class="h-12 w-12 text-blue-400 lg:h-16 lg:w-16" />
       {/if}
     </div>
   </div>
