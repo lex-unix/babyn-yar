@@ -1,3 +1,3 @@
-<tr class="border-b last:border-white hover:bg-gray-400/10">
+<tr class="border-b last:border-none hover:bg-gray-50">
   <slot />
 </tr>

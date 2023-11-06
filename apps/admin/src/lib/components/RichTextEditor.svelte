@@ -100,7 +100,7 @@
           on:click={() =>
             editor.chain().focus().toggleHeading({ level: 1 }).run()}
           class:active={editor.isActive('heading', { level: 1 })}
-          class="rounded p-1.5 hover:bg-gray-600/10"
+          class="rounded p-1.5 hover:bg-gray-100"
         >
           <HeadingIcon size={16} />
         </button>
@@ -108,7 +108,7 @@
           type="button"
           on:click={() => editor.chain().focus().setParagraph().run()}
           class:active={editor.isActive('paragraph')}
-          class="rounded p-1.5 hover:bg-gray-600/10"
+          class="rounded p-1.5 hover:bg-gray-100"
         >
           <PilcrowIcon size={16} />
         </button>
@@ -116,7 +116,7 @@
           type="button"
           on:click={() => linkDialog.open()}
           class:active={editor.isActive('link')}
-          class="rounded p-1.5 hover:bg-gray-600/10"
+          class="rounded p-1.5 hover:bg-gray-100"
         >
           <LinkIcon size={16} />
         </button>
@@ -124,7 +124,7 @@
           <button
             type="button"
             on:click={() => editor.chain().focus().unsetLink().run()}
-            class="rounded p-1.5 hover:bg-gray-600/10"
+            class="rounded p-1.5 hover:bg-gray-100"
           >
             <UnlinkIcon size={16} />
           </button>
@@ -133,7 +133,7 @@
           type="button"
           on:click={() => editor.chain().focus().toggleBulletList().run()}
           class:active={editor.isActive('bulletList')}
-          class="rounded p-1.5 hover:bg-gray-600/10"
+          class="rounded p-1.5 hover:bg-gray-100"
         >
           <ListIcon size={16} />
         </button>
@@ -141,16 +141,16 @@
           type="button"
           on:click={() => editor.chain().focus().toggleOrderedList().run()}
           class:active={editor.isActive('orderedList')}
-          class="rounded p-1.5 hover:bg-gray-600/10"
+          class="rounded p-1.5 hover:bg-gray-100"
         >
           <ListOrderedIcon size={16} />
         </button>
-        <div class="min-h-full w-[1px] self-stretch bg-gray-800/10" />
+        <div class="min-h-full w-[1px] self-stretch bg-gray-200" />
         <button
           type="button"
           on:click={() => editor.chain().focus().toggleBold().run()}
           class:active={editor.isActive('bold')}
-          class="rounded p-1.5 hover:bg-gray-600/10"
+          class="rounded p-1.5 hover:bg-gray-100"
         >
           <BoldIcon size={16} />
         </button>
@@ -158,7 +158,7 @@
           type="button"
           on:click={() => editor.chain().focus().toggleItalic().run()}
           class:active={editor.isActive('italic')}
-          class="rounded p-1.5 hover:bg-gray-600/10"
+          class="rounded p-1.5 hover:bg-gray-100"
         >
           <ItalicIcon size={16} />
         </button>
@@ -166,7 +166,7 @@
           type="button"
           on:click={() => editor.chain().focus().toggleUnderline().run()}
           class:active={editor.isActive('underline')}
-          class="rounded p-1.5 hover:bg-gray-600/10"
+          class="rounded p-1.5 hover:bg-gray-100"
         >
           <UnderlineIcon size={16} />
         </button>
@@ -174,44 +174,44 @@
           type="button"
           on:click={() => editor.chain().focus().toggleStrike().run()}
           class:active={editor.isActive('strike')}
-          class="rounded p-1.5 hover:bg-gray-600/10"
+          class="rounded p-1.5 hover:bg-gray-100"
         >
           <StrikethroughIcon size={16} />
         </button>
-        <div class="min-h-full w-[1px] self-stretch bg-gray-800/10" />
+        <div class="min-h-full w-[1px] self-stretch bg-gray-200" />
         <button
           type="button"
           on:click={() => editor.chain().focus().setTextAlign('left').run()}
-          class="rounded p-1.5 hover:bg-gray-600/10"
+          class="rounded p-1.5 hover:bg-gray-100"
         >
           <AlignLeftIcon size={16} />
         </button>
         <button
           type="button"
           on:click={() => editor.chain().focus().setTextAlign('center').run()}
-          class="rounded p-1.5 hover:bg-gray-600/10"
+          class="rounded p-1.5 hover:bg-gray-100"
         >
           <AlignCenterIcon size={16} />
         </button>
         <button
           type="button"
           on:click={() => editor.chain().focus().setTextAlign('right').run()}
-          class="rounded p-1.5 hover:bg-gray-600/10"
+          class="rounded p-1.5 hover:bg-gray-100"
         >
           <AlignRightIcon size={16} />
         </button>
-        <div class="min-h-full w-[1px] self-stretch bg-gray-800/10" />
+        <div class="min-h-full w-[1px] self-stretch bg-gray-200" />
         <button
           type="button"
           on:click={() => assetsDialog.open('image')}
-          class="rounded p-1.5 hover:bg-gray-600/10"
+          class="rounded p-1.5 hover:bg-gray-100"
         >
           <ImageIcon size={16} />
         </button>
         <button
           type="button"
           on:click={() => assetsDialog.open('video')}
-          class="rounded p-1.5 hover:bg-gray-600/10"
+          class="rounded p-1.5 hover:bg-gray-100"
         >
           <VideoIcon size={16} />
         </button>
@@ -227,6 +227,6 @@
 
 <style lang="postcss">
   .active {
-    @apply bg-gray-600/10;
+    @apply bg-gray-100;
   }
 </style>

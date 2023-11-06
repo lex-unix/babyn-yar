@@ -15,27 +15,46 @@
   onMount(() => {
     !$user && goto('/login')
   })
+
+  const links = [
+    {
+      text: 'Контент',
+      href: '/content',
+      icon: Layers
+    },
+    {
+      text: 'Медіа файли',
+      href: '/assets',
+      icon: Image
+    },
+    {
+      text: 'Налаштування',
+      href: '/settings',
+      icon: Cog
+    }
+  ]
 </script>
 
 <div class="h-screen bg-gray-50 text-gray-900">
   <MobileHeader />
   <div class="flex h-full">
     <Sidebar>
-      <SidebarLink href="/content">
-        <Layers size={20} class="min-w-[20px]" />
-        <SidebarLinkLabel>Контент</SidebarLinkLabel>
-      </SidebarLink>
-      <SidebarLink href="/assets">
-        <Image size={20} class="min-w-[20px]" />
-        <SidebarLinkLabel>Медіа файли</SidebarLinkLabel>
-      </SidebarLink>
-      <SidebarLink href="/settings">
-        <Cog size={20} class="min-w-[20px]" />
-        <SidebarLinkLabel>Налаштування</SidebarLinkLabel>
-      </SidebarLink>
+      {#each links as { text, href, icon }}
+        <SidebarLink {href}>
+          <svelte:component
+            this={icon}
+            class="min-w-[20px] group-data-[active=true]:text-indigo-700"
+            size={20}
+          />
+          <SidebarLinkLabel>{text}</SidebarLinkLabel>
+        </SidebarLink>
+      {/each}
       {#if $admin}
         <SidebarLink href="/users">
-          <Users2 size={20} class="min-w-[20px]" />
+          <Users2
+            size={20}
+            class="min-w-[20px] group-data-[active=true]:text-indigo-700"
+          />
           <SidebarLinkLabel>Користувачі</SidebarLinkLabel>
         </SidebarLink>
       {/if}

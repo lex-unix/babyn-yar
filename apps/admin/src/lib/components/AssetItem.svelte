@@ -9,7 +9,7 @@
 </script>
 
 <div
-  class="h-[100px] max-h-[100px] w-full min-w-[160px] overflow-x-hidden rounded-lg bg-gray-200 lg:h-[140px] lg:max-h-[140px] lg:min-w-[220px]"
+  class="h-[100px] max-h-[100px] w-full min-w-[160px] overflow-x-hidden rounded-lg bg-gray-100 lg:h-[140px] lg:max-h-[140px] lg:min-w-[220px]"
 >
   <div class="h-full w-full">
     <div

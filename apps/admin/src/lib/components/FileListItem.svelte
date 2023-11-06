@@ -25,7 +25,7 @@
 </script>
 
 <li
-  class="group relative grid w-full grid-cols-[230px_auto] gap-5 rounded-md p-4 hover:bg-gray-300/20"
+  class="group relative grid w-full grid-cols-[230px_auto] gap-5 rounded-md p-4 hover:bg-gray-50"
 >
   <button
     on:click={remove}
@@ -35,7 +35,7 @@
     <Trash2Icon size={16} />
   </button>
   <div
-    class="flex h-[160px] items-center justify-center overflow-hidden rounded-lg bg-gray-200"
+    class="flex h-[160px] items-center justify-center overflow-hidden rounded-lg bg-gray-100"
   >
     {#if type.startsWith('image')}
       <img
@@ -44,9 +44,9 @@
         class="max-h-full w-full object-cover"
       />
     {:else if type.startsWith('video')}
-      <FileVideo2Icon class="h-20 w-20 text-amber-400" />
+      <FileVideo2Icon class="h-12 w-12 text-amber-400 lg:h-16 lg:w-16" />
     {:else}
-      <FileTextIcon class="h-20 w-20 text-blue-400" />
+      <FileTextIcon class="h-12 w-12 text-blue-400 lg:h-16  lg:w-16" />
     {/if}
   </div>
   <div class="w-full">

@@ -16,7 +16,7 @@
 </script>
 
 <div
-  class="relative flex w-full items-center rounded-lg border bg-white pr-2 hover:border-sky-400"
+  class="relative flex w-full items-center rounded-lg border bg-white pr-2 focus-within:border-sky-400 focus-within:ring focus-within:ring-sky-100 hover:border-sky-400"
 >
   <div class="w-full flex-[1_1_60%]">
     <div class="relative w-full">
