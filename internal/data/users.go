@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -196,25 +197,31 @@ func (m UserModel) GetByID(id int64) (*User, error) {
 	return &user, nil
 }
 
-func (m UserModel) GetAll() ([]*User, error) {
-	query := `
-		SELECT u.id, u.created_at, u.updated_at, u.full_name, u.email, array_agg(p.name) as permissions
+func (m UserModel) GetAll(filters Filters) ([]*User, Metadata, error) {
+	query := fmt.Sprintf(`
+		SELECT count(*) OVER(), u.id, u.created_at, u.updated_at, u.full_name, u.email, array_agg(p.name) as permissions
 		FROM users u
 		INNER JOIN users_permissions up ON u.id = up.user_id
 		INNER JOIN permissions p ON up.permission_id = p.id
-		GROUP BY u.id`
+		GROUP BY u.id
+		ORDER BY %s %s, id ASC
+		LIMIT $1 OFFSET $2`, filters.sortColumn(), filters.sortDirection())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	rows, err := m.DB.Query(ctx, query)
+	args := []interface{}{filters.limit(), filters.offset()}
+
+	rows, err := m.DB.Query(ctx, query, args...)
 	if err != nil {
-		return nil, err
+		return nil, Metadata{}, err
 	}
 
+	totalRecords := 0
 	users, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (*User, error) {
 		var user User
 		err := row.Scan(
+			&totalRecords,
 			&user.ID,
 			&user.CreatedAt,
 			&user.UpdatedAt,
@@ -226,10 +233,12 @@ func (m UserModel) GetAll() ([]*User, error) {
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, Metadata{}, err
 	}
 
-	return users, nil
+	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
+
+	return users, metadata, nil
 }
 
 func (m UserModel) Update(user *User) error {

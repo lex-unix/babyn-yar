@@ -130,13 +130,32 @@ func (app *application) meHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) listUsersHandler(w http.ResponseWriter, r *http.Request) {
-	users, err := app.models.Users.GetAll()
+	var input struct {
+		data.Filters
+	}
+
+	v := validator.New()
+
+	qs := r.URL.Query()
+
+	input.Filters.Page = app.readInt(qs, "page", 1, v)
+	input.Filters.PageSize = app.readInt(qs, "page_size", 10, v)
+
+	input.Filters.Sort = app.readString(qs, "sort", "-created_at")
+	input.Filters.SortSafelist = []string{"created_at", "-created_at"}
+
+	if data.ValidateFilters(v, input.Filters); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	users, metadata, err := app.models.Users.GetAll(input.Filters)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"users": users}, nil)
+	err = app.writeJson(w, http.StatusOK, envelope{"users": users, "metadata": metadata}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
