@@ -1,22 +1,26 @@
 import { PUBLIC_API_URL } from '$env/static/public'
 import type { User } from './types'
+import { ResponseError } from './response-error'
 
 const baseUrl = PUBLIC_API_URL + '/users'
 
 export async function login(email: string, password: string) {
-  const res = await fetch(`${baseUrl}/login`, {
-    method: 'POST',
-    body: JSON.stringify({ email, password }),
-    credentials: 'include'
-  })
-
-  const json = await res.json()
-
-  if (res.ok) {
-    const user: User = json.user
-    return { ok: true as const, user }
-  } else {
-    const { error } = json
+  try {
+    const res = await fetch(`${baseUrl}/login`, {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+      credentials: 'include'
+    })
+    const json = await res.json()
+    if (res.ok) {
+      const user: User = json.user
+      return { ok: true as const, user }
+    }
+    const error = new ResponseError(res.status, json.error)
+    return { ok: false as const, error }
+  } catch (e) {
+    console.log(e)
+    const error = new ResponseError(500, 'the server encountered an error')
     return { ok: false as const, error }
   }
 }

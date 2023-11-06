@@ -3,7 +3,6 @@
   import {
     Sidebar,
     MobileHeader,
-    Toaster,
     SidebarLink,
     SidebarLinkLabel
   } from '$components'
@@ -64,5 +63,3 @@
     </div>
   </div>
 </div>
-
-<Toaster />

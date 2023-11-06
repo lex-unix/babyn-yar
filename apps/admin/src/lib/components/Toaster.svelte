@@ -42,7 +42,7 @@
         <div>
           <h3
             use:melt={$title(id)}
-            class="flex items-center gap-2 text-lg font-semibold"
+            class="flex items-center gap-2 font-semibold"
           >
             {data.title}
             <span class="square-1.5 rounded-full" />

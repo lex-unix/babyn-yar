@@ -3,6 +3,7 @@
   import '../app.css'
   import { PUBLIC_API_URL } from '$env/static/public'
   import { user } from '$lib/stores'
+  import { Toaster } from '$components'
 
   let blocked = true
 
@@ -24,3 +25,5 @@
 {#if !blocked}
   <slot />
 {/if}
+
+<Toaster />

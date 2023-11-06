@@ -6,6 +6,8 @@
   export let isLoading = false
   export let isDisabled = false
   export let variant: 'filled' | 'outline' = 'filled'
+  let className: string = ''
+  export { className as class }
 
   const dispatch = createEventDispatcher()
 
@@ -15,7 +17,7 @@
 </script>
 
 <button
-  class="flex items-center gap-3 rounded-md px-4 py-3 text-sm leading-none transition-colors"
+  class={`flex items-center gap-3 rounded-md px-4 py-3 text-sm leading-none transition-colors ${className}`}
   disabled={isDisabled || isLoading}
   class:filled={variant === 'filled'}
   class:outline={variant === 'outline'}
@@ -25,7 +27,7 @@
   {#if isLoading}
     <svg
       aria-hidden="true"
-      class="h-4 w-4 animate-spin fill-gray-400 text-white"
+      class="h-3.5 w-3.5 animate-spin fill-gray-400 text-white"
       viewBox="0 0 100 101"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
