@@ -17,7 +17,7 @@
 </script>
 
 <div>
-  <label for="select-docs" class="mb-1.5 block text-gray-400">Долучення</label>
+  <label for="select-docs" class="mb-1.5 block text-gray-500">Долучення</label>
 
   <div
     class="flex w-full flex-wrap items-center rounded border bg-white px-3 py-2 text-sm"

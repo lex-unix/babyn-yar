@@ -11,7 +11,7 @@
 </script>
 
 <div>
-  <label for="select-lang" class="mb-1.5 block text-gray-400">Мова</label>
+  <label for="select-lang" class="mb-1.5 block text-gray-500">Мова</label>
   {#if error}
     <p class="-mt-1.5 mb-1.5 text-red-500">{error}</p>
   {/if}

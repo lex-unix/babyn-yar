@@ -92,7 +92,7 @@
       required
     />
     <div>
-      <p class="mb-1.5 text-gray-400">Контент</p>
+      <p class="mb-1.5 text-gray-500">Контент</p>
       {#if error?.isFormError() && error?.error.content}
         <p class="text-red-500">{error.error.content}</p>
       {/if}

@@ -14,7 +14,7 @@
 </script>
 
 <div>
-  <label for="select-cover" class="mb-1.5 block text-gray-400">
+  <label for="select-cover" class="mb-1.5 block text-gray-500">
     Обкладинка
   </label>
   {#if error}

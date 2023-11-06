@@ -24,7 +24,7 @@
   }
 </script>
 
-<label class="block text-gray-400">
+<label class="block text-gray-500">
   {label}
   {#if error}
     <p class="-mb-1.5 text-red-500">{error}</p>
