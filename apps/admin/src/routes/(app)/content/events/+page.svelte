@@ -9,24 +9,31 @@
     PageHeader,
     LinkButton,
     RecordActionBar,
-    TableSkeleton
+    TableSkeleton,
+    Pagination
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
   import { formatDate, trimText } from '$lib'
-  import type { Event } from '$lib/types'
+  import type { Event, Metadata } from '$lib/types'
   import { onMount } from 'svelte'
-  import { fetchEvents, deleteEvents } from '$lib'
+  import { deleteEvents, fetchEventsWrapper } from '$lib'
   import { addToast } from '$components/Toaster.svelte'
 
   let isLoading = false
   let events: Event[] = []
+  let metadata: Metadata
   let selected: number[] = []
   let alertDialog: DeleteAlertDialog
 
+  const fetchEvents = fetchEventsWrapper()
+
   onMount(async () => {
     isLoading = true
-    const json = await fetchEvents()
-    events = json.events
+    const response = await fetchEvents()
+    if (response.ok) {
+      events = response.data.events
+      metadata = response.data.metadata
+    }
     isLoading = false
   })
 
@@ -58,7 +65,6 @@
       })
       return
     }
-    events = events.filter(e => !selected.includes(e.id))
     selected = []
     alertDialog.dismiss()
     addToast({
@@ -68,6 +74,20 @@
         variant: 'success'
       }
     })
+    const res = await fetchEvents()
+    if (res.ok) {
+      events = res.data.events
+      metadata = res.data.metadata
+    }
+  }
+
+  async function selectPage(e: CustomEvent<{ page: number }>) {
+    const { page } = e.detail
+    const response = await fetchEvents(page)
+    if (response.ok) {
+      events = response.data.events
+      metadata = response.data.metadata
+    }
   }
 </script>
 
@@ -133,6 +153,15 @@
           </TableRow>
         {/each}
       </tbody>
+      <svelte:fragment slot="pagination">
+        {#if metadata}
+          <Pagination
+            currentPage={metadata.currentPage}
+            lastPage={metadata.lastPage}
+            on:select={selectPage}
+          />
+        {/if}
+      </svelte:fragment>
     </Table>
   {/if}
 </Container>

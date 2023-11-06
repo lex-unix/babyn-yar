@@ -9,24 +9,31 @@
     PageHeader,
     Container,
     RecordActionBar,
-    TableSkeleton
+    TableSkeleton,
+    Pagination
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
   import { formatDate, trimText } from '$lib'
-  import type { VictimTestimony } from '$lib/types'
+  import type { Metadata, VictimTestimony } from '$lib/types'
   import { onMount } from 'svelte'
-  import { fetchTestimonies, deleteTestimonies } from '$lib'
+  import { fetchTestimoniesWrapper, deleteTestimonies } from '$lib'
   import { addToast } from '$components/Toaster.svelte'
 
   let testimonies: VictimTestimony[] = []
+  let metadata: Metadata
   let selected: number[] = []
   let alertDialog: DeleteAlertDialog
   let isLoading = false
 
+  const fetchTestimonies = fetchTestimoniesWrapper()
+
   onMount(async () => {
     isLoading = true
-    const json = await fetchTestimonies()
-    testimonies = json.testimonies
+    const res = await fetchTestimonies()
+    if (res.ok) {
+      testimonies = res.data.testimonies
+      metadata = res.data.metadata
+    }
     isLoading = false
   })
 
@@ -58,7 +65,6 @@
       })
       return
     }
-    testimonies = testimonies.filter(t => !selected.includes(t.id))
     selected = []
     alertDialog.dismiss()
     addToast({
@@ -68,6 +74,20 @@
         variant: 'success'
       }
     })
+    const res = await fetchTestimonies()
+    if (res.ok) {
+      testimonies = res.data.testimonies
+      metadata = res.data.metadata
+    }
+  }
+
+  async function selectPage(e: CustomEvent<{ page: number }>) {
+    const { page } = e.detail
+    const response = await fetchTestimonies(page)
+    if (response.ok) {
+      testimonies = response.data.testimonies
+      metadata = response.data.metadata
+    }
   }
 </script>
 
@@ -135,6 +155,15 @@
           </TableRow>
         {/each}
       </tbody>
+      <svelte:fragment slot="pagination">
+        {#if metadata}
+          <Pagination
+            currentPage={metadata.currentPage}
+            lastPage={metadata.lastPage}
+            on:select={selectPage}
+          />
+        {/if}
+      </svelte:fragment>
     </Table>
   {/if}
 </Container>

@@ -2,7 +2,36 @@ import type { Metadata, VictimTestimony } from './types'
 import { ResponseError } from './response-error'
 import { PUBLIC_API_URL } from '$env/static/public'
 
+type PaginatedResponse = {
+  testimonies: VictimTestimony[]
+  metadata: Metadata
+}
+
 const baseUrl = PUBLIC_API_URL + '/victim-testimonies'
+
+export function fetchTestimoniesWrapper() {
+  const url = new URL(baseUrl)
+  const searchParams = new URLSearchParams()
+  searchParams.set('page_size', '10')
+
+  return async (page: number = 1) => {
+    try {
+      searchParams.set('page', `${page}`)
+      url.search = searchParams.toString()
+      const response = await fetch(url)
+      const json = await response.json()
+      if (response.ok) {
+        return { ok: true as const, data: json as PaginatedResponse }
+      }
+      const error = new ResponseError(response.status, json.error)
+      return { ok: false as const, error }
+    } catch (e) {
+      console.log(e)
+      const error = new ResponseError(500, 'the server encountered an error')
+      return { ok: false as const, error }
+    }
+  }
+}
 
 export async function createTestimony(body: string) {
   try {

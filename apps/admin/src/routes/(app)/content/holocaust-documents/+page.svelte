@@ -9,17 +9,24 @@
     PageHeader,
     LinkButton,
     RecordActionBar,
-    TableSkeleton
+    TableSkeleton,
+    Pagination
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
   import { formatDate, trimText } from '$lib'
-  import type { HolocaustDocument } from '$lib/types'
+  import type { HolocaustDocument, Metadata } from '$lib/types'
   import { onMount } from 'svelte'
-  import { fetchHolocaustDocuments, deleteHolocaustDocuments } from '$lib'
+  import {
+    deleteHolocaustDocuments,
+    fetchHolocaustDocumentsWrapper
+  } from '$lib'
   import { addToast } from '$components/Toaster.svelte'
+
+  const fetchHolocaustDocuments = fetchHolocaustDocumentsWrapper()
 
   let isLoading = false
   let documents: HolocaustDocument[] = []
+  let metadata: Metadata
   let selected: number[] = []
   let alertDialog: DeleteAlertDialog
 
@@ -28,6 +35,7 @@
     const response = await fetchHolocaustDocuments()
     if (response.ok) {
       documents = response.data.documents
+      metadata = response.data.metadata
     }
     isLoading = false
   })
@@ -60,7 +68,6 @@
       })
       return
     }
-    documents = documents.filter(e => !selected.includes(e.id))
     selected = []
     alertDialog.dismiss()
     addToast({
@@ -70,6 +77,20 @@
         variant: 'success'
       }
     })
+    const res = await fetchHolocaustDocuments()
+    if (res.ok) {
+      documents = res.data.documents
+      metadata = res.data.metadata
+    }
+  }
+
+  async function selectPage(e: CustomEvent<{ page: number }>) {
+    const { page } = e.detail
+    const response = await fetchHolocaustDocuments(page)
+    if (response.ok) {
+      documents = response.data.documents
+      metadata = response.data.metadata
+    }
   }
 </script>
 
@@ -137,6 +158,15 @@
           </TableRow>
         {/each}
       </tbody>
+      <svelte:fragment slot="pagination">
+        {#if metadata}
+          <Pagination
+            currentPage={metadata.currentPage}
+            lastPage={metadata.lastPage}
+            on:select={selectPage}
+          />
+        {/if}
+      </svelte:fragment>
     </Table>
   {/if}
 </Container>

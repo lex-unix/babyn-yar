@@ -5,7 +5,8 @@ export {
   fetchEvents,
   createEvent,
   updateEvent,
-  deleteEvents
+  deleteEvents,
+  fetchEventsWrapper
 } from './events'
 export { fetchAssets, createAssets, fetchAssetsWrapper } from './assets'
 export { login, deleteUsers, updateUser } from './user'
@@ -14,21 +15,24 @@ export {
   fetchTestimony,
   createTestimony,
   updateTestimony,
-  deleteTestimonies
+  deleteTestimonies,
+  fetchTestimoniesWrapper
 } from './testimonies'
 export {
   createBook,
   updateBook,
   deleteBooks,
   fetchBooks,
-  fetchBook
+  fetchBook,
+  fetchBooksWrapper
 } from './books'
 export {
   createHolocaustDocument,
   fetchHolocaustDocument,
   fetchHolocaustDocuments,
   updateHolocaustDocument,
-  deleteHolocaustDocuments
+  deleteHolocaustDocuments,
+  fetchHolocaustDocumentsWrapper
 } from './holocaust-documents'
 export { trimText } from './trim-text'
 export { ResponseError } from './response-error'

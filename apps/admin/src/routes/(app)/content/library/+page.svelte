@@ -9,25 +9,30 @@
     Container,
     LinkButton,
     RecordActionBar,
-    TableSkeleton
+    TableSkeleton,
+    Pagination
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
   import { formatDate, trimText } from '$lib'
-  import type { VictimTestimony } from '$lib/types'
+  import type { Metadata, VictimTestimony } from '$lib/types'
   import { onMount } from 'svelte'
-  import { fetchBooks, deleteBooks } from '$lib'
+  import { fetchBooksWrapper, deleteBooks } from '$lib'
   import { addToast } from '$components/Toaster.svelte'
 
   let books: VictimTestimony[] = []
+  let metadata: Metadata
   let selected: number[] = []
   let alertDialog: DeleteAlertDialog
   let isLoading = false
+
+  const fetchBooks = fetchBooksWrapper()
 
   onMount(async () => {
     isLoading = true
     const res = await fetchBooks()
     if (res.ok) {
       books = res.data.books
+      metadata = res.data.metadata
     }
     isLoading = false
   })
@@ -60,7 +65,6 @@
       })
       return
     }
-    books = books.filter(t => !selected.includes(t.id))
     selected = []
     alertDialog.dismiss()
     addToast({
@@ -70,6 +74,20 @@
         variant: 'success'
       }
     })
+    const res = await fetchBooks()
+    if (res.ok) {
+      books = res.data.books
+      metadata = res.data.metadata
+    }
+  }
+
+  async function selectPage(e: CustomEvent<{ page: number }>) {
+    const { page } = e.detail
+    const response = await fetchBooks(page)
+    if (response.ok) {
+      books = response.data.books
+      metadata = response.data.metadata
+    }
   }
 </script>
 
@@ -134,6 +152,15 @@
           </TableRow>
         {/each}
       </tbody>
+      <svelte:fragment slot="pagination">
+        {#if metadata}
+          <Pagination
+            currentPage={metadata.currentPage}
+            lastPage={metadata.lastPage}
+            on:select={selectPage}
+          />
+        {/if}
+      </svelte:fragment>
     </Table>
   {/if}
 </Container>
