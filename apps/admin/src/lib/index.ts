@@ -9,7 +9,7 @@ export {
   fetchEventsWrapper
 } from './events'
 export { fetchAssets, createAssets, fetchAssetsWrapper } from './assets'
-export { login, deleteUsers, updateUser } from './user'
+export { login, deleteUsers, updateUser, fetchUsersWrapper } from './user'
 export {
   fetchTestimonies,
   fetchTestimony,

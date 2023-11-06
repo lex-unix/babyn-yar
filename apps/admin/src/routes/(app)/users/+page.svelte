@@ -9,28 +9,32 @@
     PageHeader,
     Container,
     RecordActionBar,
-    TableSkeleton
+    TableSkeleton,
+    Pagination
   } from '$components'
-  import type { User } from '$lib/types'
+  import type { Metadata, User } from '$lib/types'
   import { admin } from '$lib/stores'
   import { onMount } from 'svelte'
-  import { deleteUsers, formatDate } from '$lib'
+  import { deleteUsers, formatDate, fetchUsersWrapper } from '$lib'
   import { addToast } from '$components/Toaster.svelte'
   import { UserIcon, AtSignIcon, CalendarIcon, KeyIcon } from 'lucide-svelte'
 
   let users: User[] = []
+  let metadata: Metadata
   let selectedUsers: number[] = []
   let alertDialog: DeleteAlertDialog
   let isLoading = false
 
+  const fetchUsers = fetchUsersWrapper()
+
   onMount(async () => {
     if ($admin) {
       isLoading = true
-      const res = await fetch('http://localhost:8000/v1/users', {
-        credentials: 'include'
-      })
-      const json = await res.json()
-      users = json.users
+      const res = await fetchUsers()
+      if (res.ok) {
+        users = res.data.users
+        metadata = res.data.metadata
+      }
       isLoading = false
     }
   })
@@ -57,18 +61,39 @@
   }
 
   async function deleteSelected() {
-    const { ok } = await deleteUsers(selectedUsers)
-    if (ok) {
-      users = users.filter(u => !selectedUsers.includes(u.id))
-      selectedUsers = []
+    const ok = await deleteUsers(selectedUsers)
+    if (!ok) {
       addToast({
         data: {
-          title: 'Операція успішна',
-          description: 'Користувачі були видалені',
-          variant: 'success'
+          title: 'Щось пішло не так',
+          description: 'Спробуйте ще раз',
+          variant: 'error'
         }
       })
-      alertDialog.dismiss()
+      return
+    }
+    selectedUsers = []
+    alertDialog.dismiss()
+    addToast({
+      data: {
+        title: 'Операція успішна',
+        description: 'Елементи було видалено',
+        variant: 'success'
+      }
+    })
+    const res = await fetchUsers()
+    if (res.ok) {
+      users = res.data.users
+      metadata = res.data.metadata
+    }
+  }
+
+  async function selectPage(e: CustomEvent<{ page: number }>) {
+    const { page } = e.detail
+    const response = await fetchUsers(page)
+    if (response.ok) {
+      users = response.data.users
+      metadata = response.data.metadata
     }
   }
 </script>
@@ -142,6 +167,15 @@
             </TableRow>
           {/each}
         </tbody>
+        <svelte:fragment slot="pagination">
+          {#if metadata}
+            <Pagination
+              currentPage={metadata.currentPage}
+              lastPage={metadata.lastPage}
+              on:select={selectPage}
+            />
+          {/if}
+        </svelte:fragment>
       </Table>
     {/if}
   </Container>
