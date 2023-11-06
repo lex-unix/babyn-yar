@@ -8,7 +8,8 @@
     PageHeader,
     Button,
     Container,
-    NotFound
+    NotFound,
+    EditorSkeleton
   } from '$components'
   import type { Event } from '$lib/types'
   import { fetchEvent, updateEvent, ResponseError } from '$lib'
@@ -17,11 +18,12 @@
   import { SaveIcon } from 'lucide-svelte'
 
   let isSubmitting = false
-  let isLoading = true
+  let isLoading = false
   let event: Event
   let error: ResponseError | undefined
 
   onMount(async function () {
+    isLoading = true
     const response = await fetchEvent($page.params.slug)
     if (response.ok) {
       event = response.event
@@ -59,7 +61,7 @@
   }
 </script>
 
-{#if !error?.isNotFoundError() && !isLoading}
+{#if !error?.isNotFoundError()}
   <PageHeader>
     <svelte:fragment slot="heading">Редагування запису</svelte:fragment>
     <Button
@@ -73,7 +75,9 @@
     </Button>
   </PageHeader>
   <Container title="Редагувати запис">
-    {#if event}
+    {#if !event || isLoading}
+      <EditorSkeleton />
+    {:else}
       <form
         on:submit|preventDefault={submit}
         id="edit-record"

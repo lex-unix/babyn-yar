@@ -5,11 +5,11 @@
     TableData,
     TableHeader,
     TableRow,
-    ErrorMessage,
     PageHeader,
     Container,
     LinkButton,
-    RecordActionBar
+    RecordActionBar,
+    TableSkeleton
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
   import { formatDate, trimText } from '$lib'
@@ -21,14 +21,15 @@
   let books: VictimTestimony[] = []
   let selected: number[] = []
   let alertDialog: DeleteAlertDialog
-  let isError = false
+  let isLoading = false
 
   onMount(async () => {
+    isLoading = true
     const res = await fetchBooks()
-    isError = !res.ok
     if (res.ok) {
       books = res.data.books
     }
+    isLoading = false
   })
 
   function toggleSelect(id: number) {
@@ -82,11 +83,8 @@
 
 <Container title="Бібліотека">
   <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
-
-  {#if isError}
-    <ErrorMessage>
-      При завантажені даних сталася помилка. Спробуйте ще раз.
-    </ErrorMessage>
+  {#if books.length === 0 || isLoading}
+    <TableSkeleton />
   {:else}
     <Table>
       <thead>

@@ -39,10 +39,21 @@ export async function fetchTestimonies(page: number = 1) {
 }
 
 export async function fetchTestimony(id: string) {
-  const res = await fetch(`${baseUrl}/${id}`)
-  const { testimony } = (await res.json()) as { testimony: VictimTestimony }
-  testimony.content = JSON.parse(testimony.content as unknown as string)
-  return testimony
+  try {
+    const res = await fetch(`${baseUrl}/${id}`)
+    const json = await res.json()
+    if (res.ok) {
+      const { testimony } = json as { testimony: VictimTestimony }
+      testimony.content = JSON.parse(testimony.content as unknown as string)
+      return { ok: true as const, testimony }
+    }
+    const error = new ResponseError(res.status, json.error)
+    return { ok: false as const, error }
+  } catch (e) {
+    console.log(e)
+    const error = new ResponseError(500, 'the server encountered an error')
+    return { ok: false as const, error }
+  }
 }
 
 export async function updateTestimony(id: string, body: string) {

@@ -8,7 +8,8 @@
     LinkButton,
     PageHeader,
     Container,
-    RecordActionBar
+    RecordActionBar,
+    TableSkeleton
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
   import { formatDate, trimText } from '$lib'
@@ -20,10 +21,13 @@
   let testimonies: VictimTestimony[] = []
   let selected: number[] = []
   let alertDialog: DeleteAlertDialog
+  let isLoading = false
 
   onMount(async () => {
+    isLoading = true
     const json = await fetchTestimonies()
     testimonies = json.testimonies
+    isLoading = false
   })
 
   function toggleSelect(id: number) {
@@ -77,57 +81,61 @@
 
 <Container title="Свідчення очевидців трагедії">
   <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
-  <Table>
-    <thead>
-      <tr>
-        <TableHeader>
-          <input
-            type="checkbox"
-            checked={selected.length === testimonies.length &&
-              selected.length > 0}
-            on:input={toggleSelectAll}
-          />
-        </TableHeader>
-        <TableHeader>
-          <div class="inline-flex items-center gap-2">
-            <File size={16} />
-            <span>Сторінка</span>
-          </div>
-        </TableHeader>
-        <TableHeader>
-          <div class="flex items-center gap-2">
-            <History size={16} />
-            <span>Остання зміна</span>
-          </div>
-        </TableHeader>
-        <TableHeader>
-          <div class="inline-flex items-center gap-2">
-            <User size={16} />
-            <span>Автор</span>
-          </div>
-        </TableHeader>
-      </tr>
-    </thead>
-    <tbody>
-      {#each testimonies as testimony}
-        <TableRow>
-          <TableData>
+  {#if testimonies.length === 0 || isLoading}
+    <TableSkeleton />
+  {:else}
+    <Table>
+      <thead>
+        <tr>
+          <TableHeader>
             <input
               type="checkbox"
-              on:input={() => toggleSelect(testimony.id)}
-              checked={selected.includes(testimony.id)}
+              checked={selected.length === testimonies.length &&
+                selected.length > 0}
+              on:input={toggleSelectAll}
             />
-          </TableData>
-          <TableData>
-            <a href={`/content/victim-testimonies/${testimony.id}`}
-              >{trimText(testimony.title)}</a
-            >
-          </TableData>
-          <TableData>{formatDate(testimony.updatedAt)}</TableData>
-          <TableData>{testimony.user.fullName}</TableData>
-        </TableRow>
-      {/each}
-    </tbody>
-  </Table>
+          </TableHeader>
+          <TableHeader>
+            <div class="inline-flex items-center gap-2">
+              <File size={16} />
+              <span>Сторінка</span>
+            </div>
+          </TableHeader>
+          <TableHeader>
+            <div class="flex items-center gap-2">
+              <History size={16} />
+              <span>Остання зміна</span>
+            </div>
+          </TableHeader>
+          <TableHeader>
+            <div class="inline-flex items-center gap-2">
+              <User size={16} />
+              <span>Автор</span>
+            </div>
+          </TableHeader>
+        </tr>
+      </thead>
+      <tbody>
+        {#each testimonies as testimony}
+          <TableRow>
+            <TableData>
+              <input
+                type="checkbox"
+                on:input={() => toggleSelect(testimony.id)}
+                checked={selected.includes(testimony.id)}
+              />
+            </TableData>
+            <TableData>
+              <a href={`/content/victim-testimonies/${testimony.id}`}
+                >{trimText(testimony.title)}</a
+              >
+            </TableData>
+            <TableData>{formatDate(testimony.updatedAt)}</TableData>
+            <TableData>{testimony.user.fullName}</TableData>
+          </TableRow>
+        {/each}
+      </tbody>
+    </Table>
+  {/if}
 </Container>
 <DeleteAlertDialog bind:this={alertDialog} on:confirm={deleteSelected} />

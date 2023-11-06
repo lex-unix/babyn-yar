@@ -20,7 +20,7 @@
     <div class="flex-1">
       <a
         {href}
-        class="flex items-center justify-center gap-1.5 py-4 text-sm font-semibold"
+        class="flex items-center justify-center gap-1.5 rounded-bl-md py-4 text-sm font-semibold hover:bg-gray-50"
       >
         <ArrowUpLeft class="h-5 w-5 text-gray-400" />
         <span>Переглянути</span>
@@ -29,7 +29,7 @@
     <div class="flex-1">
       <a
         href={createHref}
-        class="flex items-center justify-center gap-1.5 py-4 text-sm font-semibold"
+        class="flex items-center justify-center gap-1.5 rounded-br-md py-4 text-sm font-semibold hover:bg-gray-50"
       >
         <PlusCircle class="h-5 w-5 text-gray-400" />
         <span>Створити</span>

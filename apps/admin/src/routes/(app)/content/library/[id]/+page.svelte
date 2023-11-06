@@ -8,7 +8,8 @@
     DocumentsSelect,
     Button,
     PageHeader,
-    Container
+    Container,
+    NotFound
   } from '$components'
   import type { Book } from '$lib/types'
   import { fetchBook, updateBook, ResponseError } from '$lib'
@@ -24,6 +25,8 @@
     const res = await fetchBook($page.params.id)
     if (res.ok) {
       book = res.book
+    } else {
+      error = res.error
     }
   })
 
@@ -55,47 +58,55 @@
   }
 </script>
 
-<PageHeader>
-  <svelte:fragment slot="heading">Редагувати запис</svelte:fragment>
-  <Button slot="right-items" isLoading={isSubmitting} form="edit-record">
-    <SaveIcon size={16} slot="icon" />
-    Зберегти зміни
-  </Button>
-</PageHeader>
+{#if !error?.isNotFoundError()}
+  <PageHeader>
+    <svelte:fragment slot="heading">Редагувати запис</svelte:fragment>
+    <Button slot="right-items" isLoading={isSubmitting} form="edit-record">
+      <SaveIcon size={16} slot="icon" />
+      Зберегти зміни
+    </Button>
+  </PageHeader>
 
-<Container title="Редагувати запис">
-  {#if book}
-    <form on:submit|preventDefault={submit} id="edit-record" class="space-y-5">
-      <LangSelect
-        bind:lang={book.lang}
-        error={error?.isFormError() ? error.error.lang : undefined}
-      />
-      <CoverSelect
-        bind:cover={book.cover}
-        error={error?.isFormError() ? error.error.cover : undefined}
-      />
-      <Input
-        bind:value={book.title}
-        name="title"
-        label="Назва"
-        error={error?.isFormError() ? error.error.title : undefined}
-        required
-      />
-      <Input
-        bind:value={book.description}
-        name="description"
-        label="Опис"
-        error={error?.isFormError() ? error.error.description : undefined}
-        required
-      />
-      <DocumentsSelect bind:documents={book.documents} />
-      <div>
-        <p class="mb-1.5 text-gray-500">Контент</p>
-        {#if error?.isFormError() && error?.error.content}
-          <p class="text-red-500">{error.error.content}</p>
-        {/if}
-        <RichTextEditor bind:content={book.content} />
-      </div>
-    </form>
-  {/if}
-</Container>
+  <Container title="Редагувати запис">
+    {#if book}
+      <form
+        on:submit|preventDefault={submit}
+        id="edit-record"
+        class="space-y-5"
+      >
+        <LangSelect
+          bind:lang={book.lang}
+          error={error?.isFormError() ? error.error.lang : undefined}
+        />
+        <CoverSelect
+          bind:cover={book.cover}
+          error={error?.isFormError() ? error.error.cover : undefined}
+        />
+        <Input
+          bind:value={book.title}
+          name="title"
+          label="Назва"
+          error={error?.isFormError() ? error.error.title : undefined}
+          required
+        />
+        <Input
+          bind:value={book.description}
+          name="description"
+          label="Опис"
+          error={error?.isFormError() ? error.error.description : undefined}
+          required
+        />
+        <DocumentsSelect bind:documents={book.documents} />
+        <div>
+          <p class="mb-1.5 text-gray-500">Контент</p>
+          {#if error?.isFormError() && error?.error.content}
+            <p class="text-red-500">{error.error.content}</p>
+          {/if}
+          <RichTextEditor bind:content={book.content} />
+        </div>
+      </form>
+    {/if}
+  </Container>
+{:else if error?.isNotFoundError()}
+  <NotFound />
+{/if}

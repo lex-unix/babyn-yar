@@ -8,7 +8,8 @@
     Container,
     PageHeader,
     LinkButton,
-    RecordActionBar
+    RecordActionBar,
+    TableSkeleton
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
   import { formatDate, trimText } from '$lib'
@@ -17,13 +18,16 @@
   import { fetchEvents, deleteEvents } from '$lib'
   import { addToast } from '$components/Toaster.svelte'
 
+  let isLoading = false
   let events: Event[] = []
   let selected: number[] = []
   let alertDialog: DeleteAlertDialog
 
   onMount(async () => {
+    isLoading = true
     const json = await fetchEvents()
     events = json.events
+    isLoading = false
   })
 
   function toggleSelect(id: number) {
@@ -77,55 +81,60 @@
 
 <Container title="Події">
   <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
-  <Table>
-    <thead>
-      <tr>
-        <TableHeader>
-          <input
-            type="checkbox"
-            checked={selected.length === events.length && selected.length > 0}
-            on:input={toggleSelectAll}
-          />
-        </TableHeader>
-        <TableHeader>
-          <div class="inline-flex items-center gap-2">
-            <File size={16} />
-            <span>Сторінка</span>
-          </div>
-        </TableHeader>
-        <TableHeader>
-          <div class="flex items-center gap-2">
-            <History size={16} />
-            <span>Остання зміна</span>
-          </div>
-        </TableHeader>
-        <TableHeader>
-          <div class="inline-flex items-center gap-2">
-            <User size={16} />
-            <span>Автор</span>
-          </div>
-        </TableHeader>
-      </tr>
-    </thead>
-    <tbody>
-      {#each events as event}
-        <TableRow>
-          <TableData>
+  {#if events.length === 0 || isLoading}
+    <TableSkeleton />
+  {:else}
+    <Table>
+      <thead>
+        <tr>
+          <TableHeader>
             <input
               type="checkbox"
-              on:input={() => toggleSelect(event.id)}
-              checked={selected.includes(event.id)}
+              checked={selected.length === events.length && selected.length > 0}
+              on:input={toggleSelectAll}
             />
-          </TableData>
-          <TableData>
-            <a href={`/content/events/${event.id}`}>{trimText(event.title)}</a>
-          </TableData>
-          <TableData>{formatDate(event.updatedAt)}</TableData>
-          <TableData>{event.user.fullName}</TableData>
-        </TableRow>
-      {/each}
-    </tbody>
-  </Table>
+          </TableHeader>
+          <TableHeader>
+            <div class="inline-flex items-center gap-2">
+              <File size={16} />
+              <span>Сторінка</span>
+            </div>
+          </TableHeader>
+          <TableHeader>
+            <div class="flex items-center gap-2">
+              <History size={16} />
+              <span>Остання зміна</span>
+            </div>
+          </TableHeader>
+          <TableHeader>
+            <div class="inline-flex items-center gap-2">
+              <User size={16} />
+              <span>Автор</span>
+            </div>
+          </TableHeader>
+        </tr>
+      </thead>
+      <tbody>
+        {#each events as event}
+          <TableRow>
+            <TableData>
+              <input
+                type="checkbox"
+                on:input={() => toggleSelect(event.id)}
+                checked={selected.includes(event.id)}
+              />
+            </TableData>
+            <TableData>
+              <a href={`/content/events/${event.id}`}>{trimText(event.title)}</a
+              >
+            </TableData>
+            <TableData>{formatDate(event.updatedAt)}</TableData>
+            <TableData>{event.user.fullName}</TableData>
+          </TableRow>
+        {/each}
+      </tbody>
+    </Table>
+  {/if}
 </Container>
 
 <DeleteAlertDialog bind:this={alertDialog} on:confirm={deleteSelected} />

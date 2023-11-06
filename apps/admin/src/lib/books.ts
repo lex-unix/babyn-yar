@@ -43,16 +43,18 @@ export async function fetchBooks(page: number = 1) {
 export async function fetchBook(id: string) {
   try {
     const response = await fetch(`${baseUrl}/${id}`)
+    const json = await response.json()
     if (response.ok) {
-      const json = await response.json()
       const { book } = json as { book: Book }
       book.content = JSON.parse(book.content as unknown as string)
       return { ok: true as const, book }
     }
-    return { ok: false as const }
+    const error = new ResponseError(response.status, json.error)
+    return { ok: false as const, error }
   } catch (e) {
     console.log(e)
-    return { ok: false as const }
+    const error = new ResponseError(500, 'the server encountered an error')
+    return { ok: false as const, error }
   }
 }
 

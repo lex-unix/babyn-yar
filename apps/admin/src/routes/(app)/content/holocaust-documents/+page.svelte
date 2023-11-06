@@ -9,7 +9,7 @@
     PageHeader,
     LinkButton,
     RecordActionBar,
-    ErrorMessage
+    TableSkeleton
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
   import { formatDate, trimText } from '$lib'
@@ -18,17 +18,18 @@
   import { fetchHolocaustDocuments, deleteHolocaustDocuments } from '$lib'
   import { addToast } from '$components/Toaster.svelte'
 
+  let isLoading = false
   let documents: HolocaustDocument[] = []
   let selected: number[] = []
   let alertDialog: DeleteAlertDialog
-  let isError = false
 
   onMount(async () => {
+    isLoading = true
     const response = await fetchHolocaustDocuments()
-    isError = !response.ok
     if (response.ok) {
       documents = response.data.documents
     }
+    isLoading = false
   })
 
   function toggleSelect(id: number) {
@@ -82,10 +83,8 @@
 
 <Container title="Документи Голокосту">
   <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
-  {#if isError}
-    <ErrorMessage>
-      При завантажені даних сталася помилка. Спробуйте ще раз.
-    </ErrorMessage>
+  {#if documents.length === 0 || isLoading}
+    <TableSkeleton />
   {:else}
     <Table>
       <thead>

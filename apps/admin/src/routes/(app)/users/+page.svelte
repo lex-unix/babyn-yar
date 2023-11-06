@@ -8,7 +8,8 @@
     RegisterUserDialog,
     PageHeader,
     Container,
-    RecordActionBar
+    RecordActionBar,
+    TableSkeleton
   } from '$components'
   import type { User } from '$lib/types'
   import { admin } from '$lib/stores'
@@ -20,14 +21,17 @@
   let users: User[] = []
   let selectedUsers: number[] = []
   let alertDialog: DeleteAlertDialog
+  let isLoading = false
 
   onMount(async () => {
     if ($admin) {
+      isLoading = true
       const res = await fetch('http://localhost:8000/v1/users', {
         credentials: 'include'
       })
       const json = await res.json()
       users = json.users
+      isLoading = false
     }
   })
 
@@ -81,7 +85,9 @@
       on:delete={() => alertDialog.show()}
     />
 
-    {#if users.length > 0}
+    {#if isLoading}
+      <TableSkeleton />
+    {:else}
       <Table>
         <thead>
           <tr>

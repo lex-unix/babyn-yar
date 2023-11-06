@@ -7,7 +7,8 @@
     RichTextEditor,
     Button,
     PageHeader,
-    Container
+    Container,
+    NotFound
   } from '$components'
   import type { HolocaustDocument } from '$lib/types'
   import {
@@ -27,6 +28,8 @@
     const response = await fetchHolocaustDocument($page.params.id)
     if (response.ok) {
       doc = response.document
+    } else {
+      error = response.error
     }
   })
 
@@ -57,46 +60,54 @@
   }
 </script>
 
-<PageHeader>
-  <svelte:fragment slot="heading">Редагувати запис</svelte:fragment>
-  <Button slot="right-items" isLoading={isSubmitting} form="edit-record">
-    <SaveIcon size={16} slot="icon" />
-    Зберегти зміни
-  </Button>
-</PageHeader>
+{#if !error?.isNotFoundError()}
+  <PageHeader>
+    <svelte:fragment slot="heading">Редагувати запис</svelte:fragment>
+    <Button slot="right-items" isLoading={isSubmitting} form="edit-record">
+      <SaveIcon size={16} slot="icon" />
+      Зберегти зміни
+    </Button>
+  </PageHeader>
 
-<Container title="Редагувати запис">
-  {#if doc}
-    <form on:submit|preventDefault={submit} id="edit-record" class="space-y-5">
-      <LangSelect
-        bind:lang={doc.lang}
-        error={error?.isFormError() ? error.error.lang : undefined}
-      />
-      <CoverSelect
-        bind:cover={doc.cover}
-        error={error?.isFormError() ? error.error.cover : undefined}
-      />
-      <Input
-        bind:value={doc.title}
-        name="title"
-        label="Назва"
-        error={error?.isFormError() ? error.error.title : undefined}
-        required
-      />
-      <Input
-        bind:value={doc.description}
-        name="description"
-        label="Опис"
-        error={error?.isFormError() ? error.error.description : undefined}
-        required
-      />
-      <div>
-        <p class="mb-1.5 text-gray-500">Контент</p>
-        {#if error?.isFormError() && error?.error.content}
-          <p class="text-red-500">{error.error.content}</p>
-        {/if}
-        <RichTextEditor bind:content={doc.content} />
-      </div>
-    </form>
-  {/if}
-</Container>
+  <Container title="Редагувати запис">
+    {#if doc}
+      <form
+        on:submit|preventDefault={submit}
+        id="edit-record"
+        class="space-y-5"
+      >
+        <LangSelect
+          bind:lang={doc.lang}
+          error={error?.isFormError() ? error.error.lang : undefined}
+        />
+        <CoverSelect
+          bind:cover={doc.cover}
+          error={error?.isFormError() ? error.error.cover : undefined}
+        />
+        <Input
+          bind:value={doc.title}
+          name="title"
+          label="Назва"
+          error={error?.isFormError() ? error.error.title : undefined}
+          required
+        />
+        <Input
+          bind:value={doc.description}
+          name="description"
+          label="Опис"
+          error={error?.isFormError() ? error.error.description : undefined}
+          required
+        />
+        <div>
+          <p class="mb-1.5 text-gray-500">Контент</p>
+          {#if error?.isFormError() && error?.error.content}
+            <p class="text-red-500">{error.error.content}</p>
+          {/if}
+          <RichTextEditor bind:content={doc.content} />
+        </div>
+      </form>
+    {/if}
+  </Container>
+{:else if error?.isNotFoundError()}
+  <NotFound />
+{/if}

@@ -8,7 +8,8 @@
     DocumentsSelect,
     Button,
     PageHeader,
-    Container
+    Container,
+    NotFound
   } from '$components'
   import type { VictimTestimony } from '$lib/types'
   import { ResponseError, fetchTestimony, updateTestimony } from '$lib'
@@ -21,7 +22,12 @@
   let error: ResponseError | undefined
 
   onMount(async function () {
-    testimony = await fetchTestimony($page.params.id)
+    const res = await fetchTestimony($page.params.id)
+    if (res.ok) {
+      testimony = res.testimony
+    } else {
+      error = res.error
+    }
   })
 
   async function submit() {
@@ -52,52 +58,60 @@
   }
 </script>
 
-<PageHeader>
-  <svelte:fragment slot="heading">Редагування запису</svelte:fragment>
-  <Button
-    slot="right-items"
-    isLoading={isSubmitting}
-    loadingText="Збереження..."
-    form="edit-record"
-  >
-    <SaveIcon size={16} slot="icon" />
-    Зберегти зміни
-  </Button>
-</PageHeader>
+{#if !error?.isNotFoundError()}
+  <PageHeader>
+    <svelte:fragment slot="heading">Редагування запису</svelte:fragment>
+    <Button
+      slot="right-items"
+      isLoading={isSubmitting}
+      loadingText="Збереження..."
+      form="edit-record"
+    >
+      <SaveIcon size={16} slot="icon" />
+      Зберегти зміни
+    </Button>
+  </PageHeader>
 
-<Container title="Редагування запису">
-  {#if testimony}
-    <form on:submit|preventDefault={submit} id="edit-record" class="space-y-5">
-      <LangSelect
-        bind:lang={testimony.lang}
-        error={error?.isFormError() ? error.error.lang : undefined}
-      />
-      <CoverSelect
-        bind:cover={testimony.cover}
-        error={error?.isFormError() ? error.error.cover : undefined}
-      />
-      <Input
-        bind:value={testimony.title}
-        name="title"
-        label="Назва"
-        error={error?.isFormError() ? error.error.title : undefined}
-        required
-      />
-      <Input
-        bind:value={testimony.description}
-        name="description"
-        label="Опис"
-        error={error?.isFormError() ? error.error.description : undefined}
-        required
-      />
-      <DocumentsSelect bind:documents={testimony.documents} />
-      <div>
-        <p class="mb-1.5 text-gray-500">Контент</p>
-        {#if error?.isFormError() && error?.error.content}
-          <p class="text-red-500">{error.error.content}</p>
-        {/if}
-        <RichTextEditor bind:content={testimony.content} />
-      </div>
-    </form>
-  {/if}
-</Container>
+  <Container title="Редагування запису">
+    {#if testimony}
+      <form
+        on:submit|preventDefault={submit}
+        id="edit-record"
+        class="space-y-5"
+      >
+        <LangSelect
+          bind:lang={testimony.lang}
+          error={error?.isFormError() ? error.error.lang : undefined}
+        />
+        <CoverSelect
+          bind:cover={testimony.cover}
+          error={error?.isFormError() ? error.error.cover : undefined}
+        />
+        <Input
+          bind:value={testimony.title}
+          name="title"
+          label="Назва"
+          error={error?.isFormError() ? error.error.title : undefined}
+          required
+        />
+        <Input
+          bind:value={testimony.description}
+          name="description"
+          label="Опис"
+          error={error?.isFormError() ? error.error.description : undefined}
+          required
+        />
+        <DocumentsSelect bind:documents={testimony.documents} />
+        <div>
+          <p class="mb-1.5 text-gray-500">Контент</p>
+          {#if error?.isFormError() && error?.error.content}
+            <p class="text-red-500">{error.error.content}</p>
+          {/if}
+          <RichTextEditor bind:content={testimony.content} />
+        </div>
+      </form>
+    {/if}
+  </Container>
+{:else if error.isNotFoundError()}
+  <NotFound />
+{/if}
