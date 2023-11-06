@@ -15,10 +15,12 @@
   import { createEventDispatcher } from 'svelte'
 
   export async function open(type: string) {
+    isLoading = true
     dialog.show()
     const res = await fetchAssets({ contentType: type })
     assets = res.assets
     contentType = type
+    isLoading = false
   }
 
   export function close() {
@@ -28,6 +30,7 @@
   let assets: Asset[] = []
   let contentType: string
   let dialog: Dialog
+  let isLoading = false
 
   const fetchAssets = fetchAssetsWrapper()
   const dispatch = createEventDispatcher<{
@@ -82,13 +85,15 @@
           </button>
         </li>
       {:else}
-        <div
-          class="flex flex-col justify-center items-center h-full col-span-full w-full"
-        >
-          <p class="text-gray-500 font-medium text-center text-lg">
-            Вибачте, ми не змогли знайти жодного запису за вашими критеріями
-          </p>
-        </div>
+        {#if !isLoading}
+          <div
+            class="flex flex-col justify-center items-center h-full col-span-full w-full"
+          >
+            <p class="text-gray-500 font-medium text-center text-lg">
+              Вибачте, ми не змогли знайти жодного файлу за вашими критеріями
+            </p>
+          </div>
+        {/if}
       {/each}
     </AssetGrid>
     <DialogClose />
