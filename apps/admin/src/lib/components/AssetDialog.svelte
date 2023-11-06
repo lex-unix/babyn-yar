@@ -81,6 +81,14 @@
             />
           </button>
         </li>
+      {:else}
+        <div
+          class="flex flex-col justify-center items-center h-full col-span-full w-full"
+        >
+          <p class="text-gray-500 font-medium text-center text-lg">
+            Вибачте, ми не змогли знайти жодного запису за вашими критеріями
+          </p>
+        </div>
       {/each}
     </AssetGrid>
     <DialogClose />
