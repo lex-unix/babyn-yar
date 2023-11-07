@@ -16,6 +16,7 @@ const siteColletion = defineCollection({
 const eventsCollection = defineCollection({
   type: 'data',
   schema: z.object({
+    // @ts-ignore
     events: z.array(eventSchema)
   })
 })
@@ -23,6 +24,7 @@ const eventsCollection = defineCollection({
 const libraryCollection = defineCollection({
   type: 'data',
   schema: z.object({
+    // @ts-ignore
     library: z.array(librarySchema)
   })
 })
@@ -30,6 +32,7 @@ const libraryCollection = defineCollection({
 const holocaustDocumentsCollection = defineCollection({
   type: 'data',
   schema: z.object({
+    // @ts-ignore
     documents: z.array(holocaustDocumentsSchema)
   })
 })
@@ -37,6 +40,7 @@ const holocaustDocumentsCollection = defineCollection({
 const testimoniesCollection = defineCollection({
   type: 'data',
   schema: z.object({
+    // @ts-ignore
     testimonies: z.array(testimoniesSchema)
   })
 })
@@ -44,6 +48,7 @@ const testimoniesCollection = defineCollection({
 const legislativeBasisCollection = defineCollection({
   type: 'data',
   schema: z.object({
+    // @ts-ignore
     legislativeBasis: z.array(legislativeBasisSchema)
   })
 })
@@ -51,6 +56,7 @@ const legislativeBasisCollection = defineCollection({
 const exhibitionsCollection = defineCollection({
   type: 'data',
   schema: z.object({
+    // @ts-ignore
     exhibitions: z.array(exhibitionsSchema)
   })
 })

@@ -22,10 +22,24 @@ RUN npm install
 COPY --from=builder /app/out/full/ .
 COPY public ./apps/gov/public
 
+ARG API_URL
+
+ENV API_URL=${API_URL}
+
 RUN npx turbo run build --filter=gov...
 
-FROM httpd:2.4 AS runtime
+FROM base AS runtime
 
-COPY --from=installer /app/apps/gov/dist /usr/local/apache2/htdocs/
+WORKDIR /app
 
-EXPOSE 80
+COPY --from=installer /app .
+
+ARG API_URL
+
+ENV API_URL=${API_URL}
+ENV HOST=0.0.0.0
+ENV PORT=4321
+
+EXPOSE 4321
+
+CMD [ "node", "./apps/gov/dist/server/entry.mjs" ]
