@@ -1,5 +1,4 @@
-## This is api Dockerfile
-FROM golang:latest
+FROM golang:latest as builder
 
 WORKDIR /app
 
@@ -10,6 +9,14 @@ COPY cmd/api ./cmd/api
 COPY internal ./internal
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o=./api ./cmd/api
+
+FROM alpine:latest
+
+RUN apk --no-cache add curl
+
+WORKDIR /app
+
+COPY --from=builder /app/api ./api
 
 ARG DATABASE_URL
 ARG API_PORT

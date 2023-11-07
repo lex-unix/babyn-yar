@@ -47,6 +47,11 @@ services:
         condition: service_healthy
     environment:
       - 'DATABASE_URL=${DATABASE_URL}'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/v1/healthcheck']
+      interval: 30s
+      timeout: 5s
+      retries: 3
   db:
     image: postgres:alpine
     restart: always
