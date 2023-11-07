@@ -19,6 +19,10 @@ COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/package-lock.json ./package-lock.json
 RUN npm install
 
+ARG PUBLIC_API_URL
+
+ENV PUBLIC_API_URL=${PUBLIC_API_URL}
+
 COPY --from=builder /app/out/full/ .
 COPY public ./apps/admin/public
 

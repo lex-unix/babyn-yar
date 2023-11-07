@@ -20,8 +20,12 @@ services:
     build:
       context: .
       dockerfile: ./apps/admin/Dockerfile
+      args:
+        - PUBLIC_API_URL=${PUBLIC_API_URL}
     ports:
       - 8082:80
+    env_file:
+      - .env
   api:
     build:
       context: .
