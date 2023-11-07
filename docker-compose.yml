@@ -70,6 +70,24 @@ services:
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
+  migrate:
+    image: migrate/migrate:v4.16.2
+    profiles:
+      - 'tools'
+    volumes:
+      - ./migrations:/migrations
+    entrypoint:
+      - 'migrate'
+      - '-path'
+      - '/migrations'
+      - '-database'
+      - '${DATABASE_URL}'
+    command:
+      - 'up'
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
 volumes:
   db-data:
   redis:

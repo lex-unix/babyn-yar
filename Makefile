@@ -47,3 +47,12 @@ db/migrations/up:
 	@echo 'Running migrations...'
 	migrate -path ./migrations -database ${DATABASE_URL} up
 
+# ==================================================================================== #
+# PRODUCTION
+# ==================================================================================== #
+
+## migrate-up: apply all up database migrations
+.PHONY migrate-up: confirm
+migrate-up:
+	@echo 'Running migrations...'
+	docker-compose --profile tools run --rm migrate up
