@@ -2,6 +2,7 @@ package config
 
 import (
 	"flag"
+	"strings"
 )
 
 type Config struct {
@@ -21,6 +22,9 @@ type Config struct {
 		Secret       string
 		MaxIdleConns int
 		Password     string
+	}
+	CORS struct {
+		TrustedOrigins []string
 	}
 }
 
@@ -45,6 +49,12 @@ func NewConfig() Config {
 	flag.StringVar(&cfg.SessionStore.Secret, "session-store-secret", "", "Session secret")
 	flag.IntVar(&cfg.SessionStore.MaxIdleConns, "session-store-max-idle-conns", 10, "Redis max idle connections")
 	flag.StringVar(&cfg.SessionStore.Password, "session-store-password", "", "Redis password")
+
+	// CORS
+	flag.Func("cors-trusted-origins", "Trusted CORS origins (space separated)", func(val string) error {
+		cfg.CORS.TrustedOrigins = strings.Fields(val)
+		return nil
+	})
 
 	flag.Parse()
 
