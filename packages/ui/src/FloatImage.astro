@@ -8,7 +8,7 @@ const { src, alt } = Astro.props
 ---
 
 <div class="md:float-left">
-  <div class="pb-2 md:pr-4">
-    <img src={src} alt={alt} />
+  <div class="aspect-[16/9] overflow-hidden pb-2 md:pr-4">
+    <img src={src} alt={alt} class="object-cover" />
   </div>
 </div>
