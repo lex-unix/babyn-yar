@@ -26,6 +26,7 @@ func (app *application) routes() http.Handler {
 	// assets
 	router.Get("/v1/assets", app.requireAuthenticatedUser(app.listAssetsHandler))
 	router.Post("/v1/assets", app.requireAuthenticatedUser(app.createAssetsHandler))
+	router.Delete("/v1/assets", app.requireAuthenticatedUser(app.deleteAssetsHandler))
 
 	// users
 	router.Post("/v1/users/register", app.requirePermission("admin", app.registerUserHandler))

@@ -85,7 +85,7 @@ func (app *application) listAssetsHandler(w http.ResponseWriter, r *http.Request
 	input.ContentType = app.readString(qs, "content_type", "")
 
 	input.Filters.Page = app.readInt(qs, "page", 1, v)
-	input.Filters.PageSize = app.readInt(qs, "pagesize", 20, v)
+	input.Filters.PageSize = app.readInt(qs, "page_size", 10, v)
 
 	input.Filters.Sort = app.readString(qs, "sort", "-created_at")
 	input.Filters.SortSafelist = []string{"created_at", "file_name", "-created_at", "-file_name"}
@@ -119,7 +119,23 @@ func (app *application) deleteAssetsHandler(w http.ResponseWriter, r *http.Reque
 		app.failedValidationResponse(w, r, v.Errors)
 	}
 
-	err := app.models.Assets.DeleteMultiple(ids)
+	filenames, err := app.models.Assets.GetFileNames(ids)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.storage.Delete(filenames)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+
+	err = app.models.Assets.DeleteMultiple(ids)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):

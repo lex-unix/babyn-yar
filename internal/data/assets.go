@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -98,4 +97,61 @@ func (m AssetModel) GetAll(filename, contentType string, filters Filters) ([]*As
 	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
 
 	return assets, metadata, nil
+}
+
+func (m AssetModel) DeleteMultiple(ids []int64) error {
+	if len(ids) < 1 {
+		return ErrRecordNotFound
+	}
+
+	query := `
+		DELETE FROM assets
+		WHERE id = ANY($1)`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	result, err := m.DB.Exec(ctx, query, ids)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected := result.RowsAffected()
+
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
+	return nil
+}
+
+func (m AssetModel) GetFileNames(ids []int64) ([]*string, error) {
+	if len(ids) < 1 {
+		return nil, ErrRecordNotFound
+	}
+
+	query := `
+		SELECT file_name
+		FROM assets
+		WHERE id = ANY($1)`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	rows, err := m.DB.Query(ctx, query, ids)
+	if err != nil {
+		return nil, err
+	}
+
+	filenames, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (*string, error) {
+		var filename string
+		err := row.Scan(&filename)
+		return &filename, err
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return filenames, err
 }
