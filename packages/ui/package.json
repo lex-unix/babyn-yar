@@ -8,15 +8,15 @@
   "types": "index.ts",
   "dependencies": {
     "embla-carousel-react": "^8.0.0-rc12",
-    "lucide-react": "^0.274.0",
+    "i18n": "*",
+    "lucide-react": "^0.292.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "shared": "*",
-    "i18n": "*"
+    "shared": "*"
   },
   "devDependencies": {
-    "tailwindcss": "^3.3.3",
-    "tsconfig": "*",
-    "eslint-config-custom": "*"
+    "eslint-config-custom": "*",
+    "tailwindcss": "^3.3.5",
+    "tsconfig": "*"
   }
 }
