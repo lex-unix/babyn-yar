@@ -32,7 +32,8 @@ FROM base AS runtime
 
 WORKDIR /app
 
-COPY --from=installer /app .
+COPY --from=installer /app/apps/gov/dist/ ./dist
+COPY --from=installer /app/node_modules ./node_modules
 
 ARG API_URL
 
@@ -42,4 +43,4 @@ ENV PORT=4321
 
 EXPOSE 4321
 
-CMD [ "node", "./apps/gov/dist/server/entry.mjs" ]
+CMD [ "node", "./dist/server/entry.mjs" ]
