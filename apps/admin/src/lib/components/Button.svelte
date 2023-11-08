@@ -5,7 +5,7 @@
   export let form: string | undefined = undefined
   export let isLoading = false
   export let isDisabled = false
-  export let variant: 'filled' | 'outline' = 'filled'
+  export let variant: 'filled' | 'outline' | 'soft' = 'filled'
   let className: string = ''
   export { className as class }
 
@@ -21,6 +21,7 @@
   disabled={isDisabled || isLoading}
   class:filled={variant === 'filled'}
   class:outline={variant === 'outline'}
+  class:soft={variant === 'soft'}
   {form}
   on:click={click}
 >
@@ -60,5 +61,9 @@
 
   .outline {
     @apply border bg-white focus:ring focus:ring-gray-300 disabled:opacity-60;
+  }
+
+  .soft {
+    @apply bg-indigo-50 text-indigo-700 hover:bg-indigo-100 disabled:opacity-60;
   }
 </style>

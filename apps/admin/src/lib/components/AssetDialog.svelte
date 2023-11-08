@@ -123,9 +123,9 @@
     {#if metadata && metadata.currentPage !== metadata.lastPage}
       <div class="mt-8">
         <div class="flex min-w-full items-center justify-center">
-          <Button on:click={loadMore} isLoading={isLoadingMore}>
+          <Button on:click={loadMore} isLoading={isLoadingMore} variant="soft">
             <RefreshCcw slot="icon" class="h-4 w-4" />
-            Завантажити ще
+            Показати ще
           </Button>
         </div>
       </div>
