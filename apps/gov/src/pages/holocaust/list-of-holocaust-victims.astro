@@ -2,12 +2,14 @@
 import MainLayout from '@/layouts/MainLayout.astro'
 import { SSRPagination } from 'ui'
 import type { Metadata, Victim } from '@/shared'
-import { objectKeys, getParams } from 'shared'
 
 export const prerender = false
 
 let metadata: Metadata
 let victims: Victim[]
+
+const fullname = Astro.url.searchParams.get('fullname') || ''
+const info = Astro.url.searchParams.get('info') || ''
 
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData()
@@ -34,13 +36,7 @@ if (Astro.request.method === 'POST') {
 
 const apiUrl = new URL(import.meta.env.API_URL + '/victims')
 
-const params = getParams(Astro.url, 'page', 'pagesize', 'fullname', 'info')
-for (const key of objectKeys(params)) {
-  const param = params[key]
-  if (param !== null) {
-    apiUrl.searchParams.set(key, param)
-  }
-}
+apiUrl.search = Astro.url.search
 
 const res = await fetch(apiUrl)
 const json = await res.json()
@@ -71,7 +67,7 @@ const prev = metadata.currentPage > 1
             <input
               type="text"
               name="fullname"
-              value={params?.fullname ?? ''}
+              value={fullname ?? ''}
               class="block h-10 w-full rounded border border-stone-900/20 px-2 outline-none focus:ring-2 focus:ring-stone-400"
             />
           </label>
@@ -80,15 +76,16 @@ const prev = metadata.currentPage > 1
             <input
               type="text"
               name="info"
-              value={params?.info ?? ''}
+              value={info ?? ''}
               class="block h-10 w-full rounded border border-stone-900/20 px-2 outline-none focus:ring-2 focus:ring-stone-400"
             />
           </label>
         </div>
         <button
           class="mt-5 rounded bg-stone-600 px-4 py-2 text-stone-100 outline-none focus:ring-2 focus:ring-stone-200 focus:ring-offset-stone-950"
-          >Пошук</button
         >
+          Пошук
+        </button>
       </form>
     </div>
     {
