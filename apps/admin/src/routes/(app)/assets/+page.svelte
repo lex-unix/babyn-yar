@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Asset } from '$lib/types'
+  import type { Asset, Metadata } from '$lib/types'
   import {
     AssetGridItemSkeleton,
     UploadAssetsDialog,
@@ -8,34 +8,49 @@
     AssetItem,
     PageHeader,
     Container,
-    AssetGrid
+    AssetGrid,
+    DeleteAlertDialog,
+    Button
   } from '$components'
-  import { TrashIcon } from 'lucide-svelte'
-  import { fetchAssetsWrapper } from '$lib'
+  import { Trash } from 'lucide-svelte'
+  import { fetchAssetsWrapper, deleteAssets } from '$lib'
   import { onMount } from 'svelte'
   import { debounce } from '$lib'
+  import { addToast } from '$components/Toaster.svelte'
 
   let loading = false
   let assets: Asset[] = []
+  let metadata: Metadata
   let selectedAssets: number[] = []
+  let alertDialog: DeleteAlertDialog
+  let isLoadingMore = false
 
   const fetchAssets = fetchAssetsWrapper()
 
   onMount(async () => {
     loading = true
     const res = await fetchAssets()
-    assets = res.assets
+    if (res.ok) {
+      assets = res.data.assets
+      metadata = res.data.metadata
+    }
     loading = false
   })
 
   async function sort(e: CustomEvent<string>) {
     const res = await fetchAssets({ sort: e.detail })
-    assets = res.assets
+    if (res.ok) {
+      assets = res.data.assets
+      metadata = res.data.metadata
+    }
   }
 
   async function search(e: CustomEvent<{ search: string }>) {
     const res = await fetchAssets({ filename: e.detail.search })
-    assets = res.assets
+    if (res.ok) {
+      assets = res.data?.assets
+      metadata = res.data.metadata
+    }
   }
 
   function clear() {
@@ -53,6 +68,47 @@
       selectedAssets = [...selectedAssets, id]
     }
   }
+
+  async function loadMore() {
+    isLoadingMore = true
+    const { currentPage } = metadata
+    const res = await fetchAssets(undefined, currentPage + 1)
+    if (res.ok) {
+      assets = [...assets, ...res.data.assets]
+      metadata = res.data.metadata
+    }
+    isLoadingMore = false
+  }
+
+  async function deleteSelected() {
+    const { ok } = await deleteAssets(selectedAssets)
+    if (!ok) {
+      addToast({
+        data: {
+          title: 'Щось пішло не так',
+          description: 'Спробуйте ще раз',
+          variant: 'error'
+        }
+      })
+      return
+    }
+    selectedAssets = []
+    alertDialog.dismiss()
+    addToast({
+      data: {
+        title: 'Операція успішна',
+        description: 'Елементи було видалено',
+        variant: 'success'
+      }
+    })
+    const res = await fetchAssets()
+    if (res.ok) {
+      assets = res.data.assets
+      metadata = res.data.metadata
+    }
+  }
+
+  $: console.log(metadata)
 </script>
 
 <PageHeader>
@@ -66,30 +122,35 @@
   </SearchBar>
 
   {#if selectedAssets.length > 0}
-    <div
-      class="w-full rounded-md bg-gray-800 text-sm font-normal text-gray-100"
-    >
-      <div class="px-3 py-2">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <p>Обрано {selectedAssets.length}</p>
-            <button
-              on:click={selectAll}
-              class="rounded-md px-3 py-2 hover:bg-white/10">Обрати всі</button
-            >
-            <button
-              on:click={clear}
-              class="rounded-md px-3 py-2 hover:bg-white/10"
-            >
-              Очистити
-            </button>
-          </div>
-          <div class="flex items-center justify-center gap-4">
-            <button
-              class="inline-flex items-center justify-center rounded-md p-2 hover:bg-white/20"
-            >
-              <TrashIcon size={16} />
-            </button>
+    <div class="my-5">
+      <div
+        class="w-full rounded-md bg-gray-100 text-sm font-normal text-gray-700"
+      >
+        <div class="px-3 py-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <p>Обрано {selectedAssets.length}</p>
+              <button
+                on:click={selectAll}
+                class="rounded-md px-3 py-2 hover:bg-gray-200"
+              >
+                Обрати всі
+              </button>
+              <button
+                on:click={clear}
+                class="rounded-md px-3 py-2 hover:bg-gray-200"
+              >
+                Очистити
+              </button>
+            </div>
+            <div class="flex items-center justify-center gap-4">
+              <button
+                on:click={() => alertDialog.show()}
+                class="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-200"
+              >
+                <Trash size={16} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -134,7 +195,18 @@
       {/each}
     {/if}
   </AssetGrid>
+  {#if metadata && metadata.currentPage !== metadata.lastPage}
+    <div class="mt-8">
+      <div class="flex min-w-full items-center justify-center">
+        <Button on:click={loadMore} isLoading={isLoadingMore}>
+          Завантажити ще
+        </Button>
+      </div>
+    </div>
+  {/if}
 </Container>
+
+<DeleteAlertDialog bind:this={alertDialog} on:confirm={deleteSelected} />
 
 <style lang="postcss">
   .selected {

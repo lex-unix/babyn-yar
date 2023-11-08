@@ -8,17 +8,23 @@
     SearchBar,
     AssetGrid,
     AssetSortMenu,
-    AssetItem
+    AssetItem,
+    Button
   } from '$components'
   import { fetchAssetsWrapper } from '$lib'
-  import type { Asset } from '$lib/types'
+  import type { Asset, Metadata } from '$lib/types'
   import { createEventDispatcher } from 'svelte'
+  import { RefreshCcw } from 'lucide-svelte'
 
   export async function open(type: string) {
     isLoading = true
+    assets = []
     dialog.show()
     const res = await fetchAssets({ contentType: type })
-    assets = res.assets
+    if (res.ok) {
+      assets = res.data.assets
+      metadata = res.data.metadata
+    }
     contentType = type
     isLoading = false
   }
@@ -28,9 +34,11 @@
   }
 
   let assets: Asset[] = []
+  let metadata: Metadata
   let contentType: string
   let dialog: Dialog
   let isLoading = false
+  let isLoadingMore = false
 
   const fetchAssets = fetchAssetsWrapper()
   const dispatch = createEventDispatcher<{
@@ -39,12 +47,17 @@
 
   async function sort(e: CustomEvent<string>) {
     const res = await fetchAssets({ sort: e.detail })
-    assets = res.assets
+    if (res.ok) {
+      assets = res.data.assets
+    }
   }
 
   async function search(e: CustomEvent<{ search: string }>) {
     const res = await fetchAssets({ contentType, filename: e.detail.search })
-    assets = res.assets
+    if (res.ok) {
+      assets = res.data.assets
+      metadata = res.data.metadata
+    }
   }
 
   function selectAsset(url: string, contentType: string, fileName: string) {
@@ -55,6 +68,17 @@
       type = 'video'
     }
     dispatch('select', { url, type, fileName })
+  }
+
+  async function loadMore() {
+    isLoadingMore = true
+    const { currentPage } = metadata
+    const res = await fetchAssets(undefined, currentPage + 1)
+    if (res.ok) {
+      assets = [...assets, ...res.data.assets]
+      metadata = res.data.metadata
+    }
+    isLoadingMore = false
   }
 </script>
 
@@ -96,6 +120,16 @@
         {/if}
       {/each}
     </AssetGrid>
+    {#if metadata && metadata.currentPage !== metadata.lastPage}
+      <div class="mt-8">
+        <div class="flex min-w-full items-center justify-center">
+          <Button on:click={loadMore} isLoading={isLoadingMore}>
+            <RefreshCcw slot="icon" class="h-4 w-4" />
+            Завантажити ще
+          </Button>
+        </div>
+      </div>
+    {/if}
     <DialogClose />
   </DialogContent>
 </Dialog>
