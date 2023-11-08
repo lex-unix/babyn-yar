@@ -108,12 +108,20 @@
     }
   }
 
-  $: console.log(metadata)
+  async function onUpload() {
+    loading = true
+    const res = await fetchAssets()
+    if (res.ok) {
+      assets = res.data.assets
+      metadata = res.data.metadata
+    }
+    loading = false
+  }
 </script>
 
 <PageHeader>
   <svelte:fragment slot="heading">Медіа файли</svelte:fragment>
-  <UploadAssetsDialog slot="right-items" />
+  <UploadAssetsDialog slot="right-items" on:submit={onUpload} />
 </PageHeader>
 
 <Container title="Медіа файли">

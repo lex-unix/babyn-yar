@@ -13,6 +13,7 @@
   } from '$components'
   import { createAssets } from '$lib/assets'
   import { addToast } from '$components/Toaster.svelte'
+  import { createEventDispatcher } from 'svelte'
 
   export function open() {
     dialog.show()
@@ -27,6 +28,8 @@
   let filePrefix: string = ''
   let isSubmitting = false
   let dialog: Dialog
+
+  const dispatch = createEventDispatcher()
 
   function addFiles(
     e: Event & {
@@ -76,6 +79,7 @@
       })
     }
     isSubmitting = false
+    dispatch('submit')
   }
 
   function changeFileName(e: CustomEvent<{ i: number; fileName: string }>) {
