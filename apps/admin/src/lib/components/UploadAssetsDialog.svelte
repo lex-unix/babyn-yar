@@ -8,7 +8,8 @@
     DialogTrigger,
     DialogTitle,
     DialogDescription,
-    DialogClose
+    DialogClose,
+    Input
   } from '$components'
   import { createAssets } from '$lib/assets'
   import { addToast } from '$components/Toaster.svelte'
@@ -23,6 +24,7 @@
 
   let fileInput: HTMLInputElement
   let files: { file: File; fileName: string; extension: string }[] = []
+  let filePrefix: string = ''
   let isSubmitting = false
   let dialog: Dialog
 
@@ -34,7 +36,7 @@
     if (!e.currentTarget.files) return
     const fileList = Array.from(e.currentTarget.files).map(file => ({
       file,
-      fileName: file.name.split('.')[0],
+      fileName: filePrefix + file.name.split('.')[0],
       extension: file.name.split('.').at(-1) as string
     }))
 
@@ -59,7 +61,8 @@
     const formData = new FormData()
 
     files.forEach(({ file, fileName, extension }) => {
-      formData.append('assets', file, fileName + '.' + extension)
+      const prefix = filePrefix ? filePrefix + '_' : ''
+      formData.append('assets', file, prefix + fileName + '.' + extension)
     })
 
     const response = await createAssets(formData)
@@ -90,9 +93,14 @@
   <DialogContent>
     <DialogTitle slot="title">Завантажити файли</DialogTitle>
     <DialogDescription slot="description">
-      Будь ласка, оберіть файли для завантаження
+      Будь ласка, оберіть файли для завантаження. Ви також можете додати префікс
+      до усіх файлів одночасно, щоб їх було легше організувати і шукати. Просто
+      введіть префікс у поле.
     </DialogDescription>
     <DialogClose />
+    <div>
+      <Input bind:value={filePrefix} label="Префікс" name="filePrefix" />
+    </div>
     <div class="min-h-[30px]">
       {#if files}
         <ul class="max-h-[400px] overflow-y-auto">
