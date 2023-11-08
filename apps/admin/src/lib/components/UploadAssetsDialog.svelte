@@ -69,17 +69,24 @@
     })
 
     const response = await createAssets(formData)
-    if (!response.ok) {
-      addToast({
-        data: {
-          title: 'Помилка',
-          description: response.error,
-          variant: 'error'
-        }
-      })
+    if (response.ok) {
+      dispatch('submit')
+      isSubmitting = false
+      return
     }
+    let errMsg = 'Спробуйте, будь ласка, ще раз'
+    if (response.error.isFormError()) {
+      const existingFiles = Object.keys(response.error.error).join(', ')
+      errMsg = 'Файли вже існують: ' + existingFiles
+    }
+    addToast({
+      data: {
+        title: 'Помилка',
+        description: errMsg,
+        variant: 'error'
+      }
+    })
     isSubmitting = false
-    dispatch('submit')
   }
 
   function changeFileName(e: CustomEvent<{ i: number; fileName: string }>) {
