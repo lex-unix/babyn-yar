@@ -52,7 +52,7 @@ func NewConfig() Config {
 
 	// CORS
 	flag.Func("cors-trusted-origins", "Trusted CORS origins (space separated)", func(val string) error {
-		cfg.CORS.TrustedOrigins = strings.Fields(val)
+		cfg.CORS.TrustedOrigins = strings.Split(val, ",")
 		return nil
 	})
 
