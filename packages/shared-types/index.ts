@@ -28,3 +28,10 @@ export type Metadata = {
   pageSize: number
   totalRecords: number
 }
+
+export type Victim = {
+  id: string
+  fullname: string
+  info: string
+  version: string
+}
