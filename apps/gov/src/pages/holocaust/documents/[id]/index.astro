@@ -13,6 +13,8 @@ let content: string | undefined = undefined
 const id = Astro.params.id
 const response = await fetchHolocaustDocument(id as string)
 
+console.log(response.document)
+
 if (response.ok) {
   doc = response.document
   content = generateHTML(doc.content)
