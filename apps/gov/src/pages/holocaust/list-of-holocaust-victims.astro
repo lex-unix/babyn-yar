@@ -140,8 +140,6 @@ if (response.ok) {
             </table>
             <div class="mt-10 max-w-4xl">
               <SSRPagination
-                next={metadata.currentPage < metadata.lastPage}
-                prev={metadata.currentPage > 1}
                 current={metadata.currentPage}
                 total={metadata.lastPage}
               />

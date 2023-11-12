@@ -1,13 +1,16 @@
 ---
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 interface Props {
-  next: boolean
-  prev: boolean
+  next?: boolean
+  prev?: boolean
   current: number
   total: number
 }
 
-const { next, prev, current, total } = Astro.props
+const { current, total } = Astro.props
+
+const next = current < total
+const prev = current > 1
 
 const delta = 3
 const lower = Math.max(1, current - delta)
