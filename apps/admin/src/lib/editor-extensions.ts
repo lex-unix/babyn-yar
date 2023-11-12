@@ -9,9 +9,10 @@ export const extensions = [
   StarterKit.configure({
     heading: {
       HTMLAttributes: {
-        class: 'text-2xl my-5 font-semibold'
+        class:
+          'my-5 font-semibold [div>&]:mt-0 [&:is(h1)]:text-2xl [&:is(h2)]:text-xl [&:is(h3)]:text-lg'
       },
-      levels: [1, 2]
+      levels: [1, 2, 3]
     },
     bulletList: {
       HTMLAttributes: {
@@ -25,7 +26,7 @@ export const extensions = [
     },
     paragraph: {
       HTMLAttributes: {
-        class: 'my-4'
+        class: 'my-4 [div>&]:mt-0'
       }
     }
   }),

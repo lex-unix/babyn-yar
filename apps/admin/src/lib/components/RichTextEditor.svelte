@@ -6,7 +6,9 @@
     BoldIcon,
     PilcrowIcon,
     ListIcon,
-    HeadingIcon,
+    Heading1Icon,
+    Heading2Icon,
+    Heading3Icon,
     ListOrderedIcon,
     ItalicIcon,
     StrikethroughIcon,
@@ -17,7 +19,8 @@
     ImageIcon,
     VideoIcon,
     LinkIcon,
-    UnlinkIcon
+    UnlinkIcon,
+    CornerDownLeftIcon
   } from 'lucide-svelte'
   import { AssetDialog, LinkDialog } from '$components'
 
@@ -102,7 +105,25 @@
           class:active={editor.isActive('heading', { level: 1 })}
           class="rounded p-1.5 hover:bg-gray-100"
         >
-          <HeadingIcon size={16} />
+          <Heading1Icon size={16} />
+        </button>
+        <button
+          type="button"
+          on:click={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          class:active={editor.isActive('heading', { level: 2 })}
+          class="rounded p-1.5 hover:bg-gray-100"
+        >
+          <Heading2Icon size={16} />
+        </button>
+        <button
+          type="button"
+          on:click={() =>
+            editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          class:active={editor.isActive('heading', { level: 3 })}
+          class="rounded p-1.5 hover:bg-gray-100"
+        >
+          <Heading3Icon size={16} />
         </button>
         <button
           type="button"
@@ -199,6 +220,13 @@
           class="rounded p-1.5 hover:bg-gray-100"
         >
           <AlignRightIcon size={16} />
+        </button>
+        <button
+          type="button"
+          on:click={() => editor.chain().focus().setHardBreak().run()}
+          class="rounded p-1.5 hover:bg-gray-100"
+        >
+          <CornerDownLeftIcon size={16} />
         </button>
         <div class="min-h-full w-[1px] self-stretch bg-gray-200" />
         <button
