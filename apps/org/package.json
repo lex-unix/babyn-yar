@@ -34,6 +34,7 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.9",
     "eslint-config-custom": "*",
-    "tsconfig": "*"
+    "tsconfig": "*",
+    "shared-types": "*"
   }
 }
