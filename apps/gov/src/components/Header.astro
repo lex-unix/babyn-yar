@@ -18,21 +18,23 @@ import {
     </a>
     <nav class="flex items-center justify-end md:justify-between">
       <HeaderSection>
-        <HeaderLink href="/events/1">події</HeaderLink>
+        <HeaderLink href="/events">події</HeaderLink>
       </HeaderSection>
       <HeaderDropdown>
         <HeaderLink slot="trigger">голокост</HeaderLink>
         <Fragment slot="list">
-          <HeaderDropdownItem href="/holocaust/list-of-holocaust-victims/1">
+          <HeaderDropdownItem
+            href="/holocaust/list-of-holocaust-victims?page=1&pagesize=100"
+          >
             списки розстріляних
           </HeaderDropdownItem>
-          <HeaderDropdownItem href="/holocaust/documents/1">
+          <HeaderDropdownItem href="/holocaust/documents">
             документи
           </HeaderDropdownItem>
           <HeaderDropdownItem href="/holocaust/list-of-righteous">
             списки праведників
           </HeaderDropdownItem>
-          <HeaderDropdownItem href="/holocaust/testimonies/1">
+          <HeaderDropdownItem href="/holocaust/testimonies">
             свідчення очивидців трагедії
           </HeaderDropdownItem>
         </Fragment>
@@ -49,7 +51,7 @@ import {
           <HeaderDropdownItem href="/education/archive">
             архів
           </HeaderDropdownItem>
-          <HeaderDropdownItem href="/education/library/1">
+          <HeaderDropdownItem href="/education/library">
             бібліотека
           </HeaderDropdownItem>
           <HeaderDropdownItem href="/education/exhibitions/1">
