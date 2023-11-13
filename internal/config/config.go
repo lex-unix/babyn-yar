@@ -16,6 +16,7 @@ type Config struct {
 		AccessKeyID     string
 		AccessKeySecret string
 		Bucket          string
+		PublicURL       string
 	}
 	SessionStore struct {
 		DSN          string
@@ -43,6 +44,7 @@ func NewConfig() Config {
 	flag.StringVar(&cfg.Storage.AccessKeyID, "storage-access-key-id", "", "Storage access key ID")
 	flag.StringVar(&cfg.Storage.AccessKeySecret, "storage-access-key-secret", "", "Storage access key secret")
 	flag.StringVar(&cfg.Storage.Bucket, "storage-bucket", "", "Storage bucket name")
+	flag.StringVar(&cfg.Storage.PublicURL, "storage-public-url", "", "Storage public access URL")
 
 	// redis store
 	flag.StringVar(&cfg.SessionStore.DSN, "session-store-dsn", "", "Redis DSN")
