@@ -40,9 +40,10 @@ ENV DATABASE_URL=$DATABASE_URL \
   SESSION_SECRET=$SESSION_SECRET \
   CORS_ORIGINS=${CORS_ORIGINS}
 
-EXPOSE 8080
+EXPOSE 8000
 
 ENTRYPOINT ./api \
+  -env=production \
   -db-dsn=${DATABASE_URL} \
   -port=${API_PORT} \
   -storage-account-id=${STORAGE_ACCOUNT_ID} \
