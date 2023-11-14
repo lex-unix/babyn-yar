@@ -53,7 +53,7 @@ func NewConfig() Config {
 	flag.StringVar(&cfg.SessionStore.Password, "session-store-password", "", "Redis password")
 
 	// CORS
-	flag.Func("cors-trusted-origins", "Trusted CORS origins (space separated)", func(val string) error {
+	flag.Func("cors-trusted-origins", "Trusted CORS origins (comma separated)", func(val string) error {
 		cfg.CORS.TrustedOrigins = strings.Split(val, ",")
 		return nil
 	})
