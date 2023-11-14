@@ -26,6 +26,7 @@ run/api:
 		-storage-access-key-id=${STORAGE_ACCESS_KEY_ID} \
 		-storage-access-key-secret=${STORAGE_SECRET_ACCESS_KEY} \
 		-storage-bucket=${STORAGE_BUCKET_NAME} \
+		-storage-public-url=${STORAGE_PUBLIC_ACCESS_URL} \
 		-session-store-dsn=${REDIS_URL} \
 		-session-store-secret=${SESSION_SECRET} \
 		-cors-trusted-origins=${CORS_ORIGINS}

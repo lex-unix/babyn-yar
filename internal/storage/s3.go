@@ -16,8 +16,9 @@ import (
 )
 
 type S3Handler struct {
-	client *s3.Client
-	bucket string
+	client    *s3.Client
+	bucket    string
+	publicURL string
 }
 
 func NewS3Handler(cfg config.Config) (*S3Handler, error) {
@@ -42,8 +43,9 @@ func NewS3Handler(cfg config.Config) (*S3Handler, error) {
 
 	client := s3.NewFromConfig(awsCfg)
 	S3Handler := &S3Handler{
-		client: client,
-		bucket: cfg.Storage.Bucket,
+		client:    client,
+		bucket:    cfg.Storage.Bucket,
+		publicURL: cfg.Storage.PublicURL,
 	}
 	return S3Handler, nil
 
@@ -61,7 +63,7 @@ func (handler S3Handler) Upload(file io.ReadSeeker, filename, contentType string
 	if err != nil {
 		return "", err
 	}
-	url := fmt.Sprintf("https://pub-19a33262430841eab2e6c44d78ed92d6.r2.dev/%s", filename)
+	url := fmt.Sprintf("%s/%s", handler.publicURL, filename)
 	return url, nil
 }
 
