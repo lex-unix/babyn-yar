@@ -67,6 +67,42 @@ func (p *password) Matches(plaintextPassword string) (bool, error) {
 	return true, nil
 }
 
+func SeedInitialUser(db *pgxpool.Pool, fullName, email, password string) error {
+	user := &User{
+		FullName: fullName,
+		Email:    email,
+	}
+
+	err := user.Password.Set(password)
+
+	query := `
+		INSERT INTO users (full_name, email, password_hash)
+		VALUES ($1, $2, $3)
+		RETURNING id, created_at, updated_at`
+
+	args := []interface{}{user.FullName, user.Email, user.Password.hash}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err = db.QueryRow(ctx, query, args...).Scan(&user.ID, &user.CreatedAt, &user.UpdatedAt)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case "23505":
+				return ErrDuplicateEmail
+			default:
+				return err
+			}
+		}
+		return err
+	}
+
+	return nil
+
+}
+
 func ValidateEmail(v *validator.Validator, email string) {
 	v.Check(email != "", "email", "must be provided")
 }

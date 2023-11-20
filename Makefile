@@ -29,7 +29,8 @@ run/api:
 		-storage-public-url=${STORAGE_PUBLIC_ACCESS_URL} \
 		-session-store-dsn=${REDIS_URL} \
 		-session-store-secret=${SESSION_SECRET} \
-		-cors-trusted-origins=${CORS_ORIGINS}
+		-cors-trusted-origins=${CORS_ORIGINS} \
+		-seed
 
 ## db/psql: connect to the database using psql
 .PHONY: db/psql

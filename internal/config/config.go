@@ -27,6 +27,7 @@ type Config struct {
 	CORS struct {
 		TrustedOrigins []string
 	}
+	Seed bool
 }
 
 func NewConfig() Config {
@@ -57,6 +58,9 @@ func NewConfig() Config {
 		cfg.CORS.TrustedOrigins = strings.Split(val, ",")
 		return nil
 	})
+
+	// add initial user here
+	flag.BoolVar(&cfg.Seed, "seed", false, "A boolean flag to add initial user")
 
 	flag.Parse()
 

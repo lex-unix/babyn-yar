@@ -39,6 +39,10 @@ services:
         - 'REDIS_URL=${REDIS_URL}'
         - 'SESSION_SECRET=${SESSION_SECRET}'
         - 'CORS_ORIGINS=${CORS_ORIGINS}'
+        - 'SEED_USER=${SEED_USER}'
+        - 'SEED_USER_NAME=${SEED_USER_NAME}'
+        - 'SEED_USER_EMAIL=${SEED_USER_EMAIL}'
+        - 'SEED_USER_PASSWORD=${SEED_USER_PASSWORD}'
     ports:
       - 8000:8000
     depends_on:

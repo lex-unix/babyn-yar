@@ -57,6 +57,19 @@ func main() {
 
 	logger.PrintInfo("storage handler initialized", nil)
 
+	if cfg.Seed {
+		err := data.SeedInitialUser(
+			db,
+			os.Getenv("SEED_USER_NAME"),
+			os.Getenv("SEED_USER_EMAIL"),
+			os.Getenv("SEED_USER_PASSWORD"),
+		)
+		if err != nil {
+			logger.PrintFatal(err, nil)
+		}
+		logger.PrintInfo("initialized new user", nil)
+	}
+
 	app := &application{
 		config:       cfg,
 		models:       data.NewModels(db),
