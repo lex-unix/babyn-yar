@@ -14,7 +14,13 @@ export {
   fetchAssetsWrapper,
   deleteAssets
 } from './assets'
-export { login, deleteUsers, updateUser, fetchUsersWrapper } from './user'
+export {
+  login,
+  register,
+  deleteUsers,
+  updateUser,
+  fetchUsersWrapper
+} from './user'
 export {
   fetchTestimonies,
   fetchTestimony,

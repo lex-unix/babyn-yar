@@ -54,6 +54,27 @@ export async function login(email: string, password: string) {
   }
 }
 
+export async function register(body: string) {
+  try {
+    const response = await fetch(`${baseUrl}/register`, {
+      method: 'POST',
+      credentials: 'include',
+      body
+    })
+    const json = await response.json()
+    if (response.ok) {
+      const { user } = json as { user: User }
+      return { ok: true as const, user }
+    }
+    const error = new ResponseError(response.status, json.error)
+    return { ok: false as const, error }
+  } catch (e) {
+    console.log(e)
+    const error = new ResponseError(500, 'the server encountered an error')
+    return { ok: false as const, error }
+  }
+}
+
 export async function deleteUsers(ids: number[]) {
   const url = new URL(baseUrl)
   url.searchParams.set('ids', ids.join(','))
