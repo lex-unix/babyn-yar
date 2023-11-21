@@ -93,43 +93,49 @@
         <AssetSortMenu slot="filters" on:select={sort} />
       </SearchBar>
     </div>
-    <AssetGrid>
-      {#each assets as asset}
-        <li class="p-2.5">
-          <button
-            class="group relative w-full"
-            on:click={() =>
-              selectAsset(asset.url, asset.contentType, asset.fileName)}
-          >
-            <AssetItem
-              src={asset.url}
-              fileName={asset.fileName}
-              contentType={asset.contentType}
-            />
-          </button>
-        </li>
-      {:else}
-        {#if !isLoading}
-          <div
-            class="flex flex-col justify-center items-center h-full col-span-full w-full"
-          >
-            <p class="text-gray-500 font-medium text-center text-lg">
-              Вибачте, ми не змогли знайти жодного файлу за вашими критеріями
-            </p>
+    <div class="h-[85%] overflow-y-auto pb-20 pr-3">
+      <AssetGrid>
+        {#each assets as asset}
+          <li class="p-2.5">
+            <button
+              class="group relative w-full"
+              on:click={() =>
+                selectAsset(asset.url, asset.contentType, asset.fileName)}
+            >
+              <AssetItem
+                src={asset.url}
+                fileName={asset.fileName}
+                contentType={asset.contentType}
+              />
+            </button>
+          </li>
+        {:else}
+          {#if !isLoading}
+            <div
+              class="flex flex-col justify-center items-center h-full col-span-full w-full"
+            >
+              <p class="text-gray-500 font-medium text-center text-lg">
+                Вибачте, ми не змогли знайти жодного файлу за вашими критеріями
+              </p>
+            </div>
+          {/if}
+        {/each}
+      </AssetGrid>
+      {#if metadata && metadata.currentPage !== metadata.lastPage}
+        <div class="pt-8">
+          <div class="flex min-w-full items-center justify-center">
+            <Button
+              on:click={loadMore}
+              isLoading={isLoadingMore}
+              variant="soft"
+            >
+              <RefreshCcw slot="icon" class="h-4 w-4" />
+              Показати ще
+            </Button>
           </div>
-        {/if}
-      {/each}
-    </AssetGrid>
-    {#if metadata && metadata.currentPage !== metadata.lastPage}
-      <div class="mt-8">
-        <div class="flex min-w-full items-center justify-center">
-          <Button on:click={loadMore} isLoading={isLoadingMore} variant="soft">
-            <RefreshCcw slot="icon" class="h-4 w-4" />
-            Показати ще
-          </Button>
         </div>
-      </div>
-    {/if}
+      {/if}
+    </div>
     <DialogClose />
   </DialogContent>
 </Dialog>
