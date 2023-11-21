@@ -99,8 +99,19 @@ func SeedInitialUser(db *pgxpool.Pool, fullName, email, password string) error {
 		return err
 	}
 
-	return nil
+	query = `
+		INSERT INTO users_permissions
+		SELECT $1, permissions.id FROM permissions WHERE permissions.name = ANY($2)`
 
+	ctx, cancel = context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	_, err = db.Exec(ctx, query, user.ID, []string{"admin"})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func ValidateEmail(v *validator.Validator, email string) {

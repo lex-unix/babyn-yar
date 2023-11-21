@@ -21,6 +21,10 @@ export default function MultiCarousel({ slides }: Props) {
     setSelectedIndex(snap)
   }
 
+  const close = () => {
+    setShow(false)
+  }
+
   return (
     <div className="w-full max-w-4xl">
       <CarouselWithThumbs
@@ -32,13 +36,14 @@ export default function MultiCarousel({ slides }: Props) {
       />
       {show && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 px-3 pb-2 pt-10"
+          className="fixed inset-0 z-40 bg-black"
           onClick={handleOutsideClick}
         >
           <Carousel
             ref={slideRef}
             slides={slides}
             onIndexSelect={handleIndexSelect}
+            onClose={close}
             selectedIndex={selectedIndex}
           />
         </div>

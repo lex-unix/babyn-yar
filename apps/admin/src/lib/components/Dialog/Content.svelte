@@ -22,7 +22,7 @@
     >
       <div
         use:melt={$content}
-        class="relative rounded-lg bg-white p-5 shadow-[0_16px_20px_hsla(0,0%,0%,20%)]"
+        class="relative overflow-hidden rounded-lg bg-white p-5 shadow-[0_16px_20px_hsla(0,0%,0%,20%)]"
         class:md={size === 'md'}
         class:lg={size === 'lg'}
         class:sm={size === 'sm'}
