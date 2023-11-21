@@ -15,7 +15,8 @@
   } from '$components'
   import { PlusIcon } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
-  import { permissionOptions } from '$lib'
+  import { permissionOptions, register } from '$lib'
+  import { addToast } from './Toaster.svelte'
 
   export function open() {
     dialog.show()
@@ -34,22 +35,25 @@
 
   const dispatch = createEventDispatcher()
 
-  async function register() {
+  async function submit() {
     isSubmitting = true
     const body = JSON.stringify({ fullName, email, password, permission })
-    const response = await fetch('http://localhost:8000/v1/users/register', {
-      method: 'POST',
-      credentials: 'include',
-      body
+    const response = await register(body)
+    if (response.ok) {
+      dispatch('register', { user: response.user })
+      isSubmitting = false
+      reset()
+      dialog.dissmis()
+      return
+    }
+    addToast({
+      data: {
+        title: 'Щось пішло не так',
+        description: 'Спробуйте ще раз',
+        variant: 'error'
+      }
     })
-
-    const { user } = await response.json()
-    dispatch('register', { user })
-
     isSubmitting = false
-    dialog.dissmis()
-
-    reset()
   }
 
   function reset() {
@@ -70,7 +74,7 @@
       Зареєструйте нового користувача, вказавши ім'я, адресу електронної пошти,
       пароль та роль. Користувач зможе потім змінити пароль у налаштуваннях.
     </DialogDescription>
-    <form on:submit|preventDefault={register} class="space-y-3">
+    <form on:submit|preventDefault={submit} class="space-y-3">
       <Input
         label="Повне ім'я"
         name="fullName"
@@ -107,7 +111,7 @@
           </SelectMenu>
         </Select>
         <div class="flex justify-end pt-2">
-          <Button isLoading={false}>Додати</Button>
+          <Button isLoading={isSubmitting}>Додати</Button>
         </div>
       </div>
     </form>
