@@ -48,15 +48,13 @@ const Carousel = forwardRef<HTMLDivElement, Props>(function Carousel(
               <div
                 key={image}
                 ref={i === selectedIndex ? ref : undefined}
-                className="relative m-auto min-w-0 flex-[0_0_100%]"
+                className="m-auto flex min-w-0 flex-[0_0_100%] flex-col items-center"
               >
-                <div className="relative">
-                  <img
-                    className="h-auto w-auto max-w-full cursor-grab object-cover active:cursor-grabbing"
-                    src={image}
-                    alt=""
-                  />
-                </div>
+                <img
+                  className="h-auto w-auto max-w-full cursor-grab object-cover active:cursor-grabbing"
+                  src={image}
+                  alt=""
+                />
               </div>
             ))}
           </div>
