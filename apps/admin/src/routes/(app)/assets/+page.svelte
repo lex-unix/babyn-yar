@@ -184,7 +184,7 @@
               contentType={asset.contentType}
             />
             <div
-              class="absolute left-2 top-2 z-10 hidden overflow-hidden group-hover:block"
+              class="absolute left-2 top-2 z-[2] hidden overflow-hidden group-hover:block"
               class:selected
             >
               <div
