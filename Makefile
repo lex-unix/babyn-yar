@@ -30,7 +30,7 @@ run/api:
 		-session-store-dsn=${REDIS_URL} \
 		-session-store-secret=${SESSION_SECRET} \
 		-cors-trusted-origins=${CORS_ORIGINS} \
-		-seed
+		-seed=${SEED_USER}
 
 ## db/psql: connect to the database using psql
 .PHONY: db/psql

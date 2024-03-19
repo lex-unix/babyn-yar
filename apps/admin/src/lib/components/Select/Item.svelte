@@ -13,7 +13,7 @@
 
 <div
   use:melt={$option({ value, label })}
-  class={`p-2 hover:cursor-pointer hover:bg-gray-400/10 ${
+  class={`rounded p-2 hover:cursor-pointer data-[highlighted]:bg-gray-400/10 ${
     $isSelected(value) ? 'text-indigo-600' : ''
   }`}
 >
