@@ -15,7 +15,7 @@
   } from '$components'
   import { PlusIcon } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
-  import { permissionOptions, register } from '$lib'
+  import { ResponseError, permissionOptions, register } from '$lib'
   import { addToast } from './Toaster.svelte'
 
   export function open() {
@@ -32,6 +32,7 @@
   let permission: string
   let isSubmitting = false
   let dialog: Dialog
+  let error: ResponseError | undefined
 
   const dispatch = createEventDispatcher()
 
@@ -39,21 +40,21 @@
     isSubmitting = true
     const body = JSON.stringify({ fullName, email, password, permission })
     const response = await register(body)
-    if (response.ok) {
-      dispatch('register', { user: response.user })
-      isSubmitting = false
-      reset()
-      dialog.dissmis()
+    isSubmitting = false
+    if (!response.ok) {
+      error = response.error
+      addToast({
+        data: {
+          title: 'Щось пішло не так',
+          description: 'Спробуйте ще раз',
+          variant: 'error'
+        }
+      })
       return
     }
-    addToast({
-      data: {
-        title: 'Щось пішло не так',
-        description: 'Спробуйте ще раз',
-        variant: 'error'
-      }
-    })
-    isSubmitting = false
+    dispatch('register', { user: response.user })
+    reset()
+    dialog.dissmis()
   }
 
   function reset() {
@@ -86,6 +87,7 @@
         label="Email"
         name="email"
         bind:value={email}
+        error={error?.isFormError() ? error.error.email : undefined}
         required
       />
       <Input
