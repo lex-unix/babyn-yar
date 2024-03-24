@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
-  import { ArrowUpIcon, ArrowDownIcon } from 'lucide-svelte'
   import {
     Dropdown,
     DropdownMenu,
     DropdownTrigger,
     DropdownItem
   } from '$components'
+  import { ArrowDownIcon, ArrowUpIcon } from 'lucide-svelte'
+  import { createEventDispatcher } from 'svelte'
 
   const defaultSort = '-created_at'
 
@@ -26,20 +26,18 @@
       icon: ArrowDownIcon
     },
     {
-      value: 'file_name',
-      name: 'Назва файлу',
+      value: 'occured_on',
+      name: 'Дата проведення',
       icon: ArrowUpIcon
     },
     {
-      value: '-file_name',
-      name: 'Назва файлу',
+      value: '-occured_on',
+      name: 'Дата проведення',
       icon: ArrowDownIcon
     }
   ]
 
-  type EventDispatcher = {
-    select: string
-  }
+  const dispatch = createEventDispatcher()
 
   let selected = menuItems[0]
 
@@ -50,8 +48,6 @@
     dispatch('select', value)
     selected = item
   }
-
-  const dispatch = createEventDispatcher<EventDispatcher>()
 </script>
 
 <Dropdown>

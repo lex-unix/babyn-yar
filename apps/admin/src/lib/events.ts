@@ -7,6 +7,11 @@ type PaginatedResponse = {
   metadata: Metadata
 }
 
+type Filters = {
+  title?: string
+  sort?: string
+}
+
 const baseUrl = PUBLIC_API_URL + '/events'
 
 export function fetchEventsWrapper() {
@@ -14,10 +19,20 @@ export function fetchEventsWrapper() {
   const searchParams = new URLSearchParams()
   searchParams.set('page_size', '10')
 
-  return async (page: number = 1) => {
+  return async (page: number = 1, filters: Filters | undefined = undefined) => {
+    searchParams.set('page', `${page}`)
+
+    if (filters?.title !== undefined) {
+      searchParams.set('title', filters.title)
+    }
+
+    if (filters?.sort !== undefined) {
+      searchParams.set('sort', filters.sort)
+    }
+
+    url.search = searchParams.toString()
+
     try {
-      searchParams.set('page', `${page}`)
-      url.search = searchParams.toString()
       const response = await fetch(url)
       const json = await response.json()
       if (response.ok) {
