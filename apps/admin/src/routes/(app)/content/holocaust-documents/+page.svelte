@@ -148,7 +148,7 @@
                 checked={selected.includes(doc.id)}
               />
             </TableData>
-            <TableData>
+            <TableData class="w-full">
               <a href={`/content/holocaust-documents/${doc.id}`}>
                 {trimText(doc.title)}
               </a>

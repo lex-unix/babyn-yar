@@ -12,6 +12,7 @@ type BaseContent = {
 }
 
 export type Event = BaseContent & {
+  occuredOn: string
   version: number
   user: User
 }

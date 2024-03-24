@@ -145,10 +145,10 @@
                 checked={selected.includes(testimony.id)}
               />
             </TableData>
-            <TableData>
-              <a href={`/content/victim-testimonies/${testimony.id}`}
-                >{trimText(testimony.title)}</a
-              >
+            <TableData class="w-full">
+              <a href={`/content/victim-testimonies/${testimony.id}`}>
+                {trimText(testimony.title)}
+              </a>
             </TableData>
             <TableData>{formatDate(testimony.updatedAt)}</TableData>
             <TableData>{testimony.user.fullName}</TableData>

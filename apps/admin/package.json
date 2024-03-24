@@ -12,7 +12,9 @@
     "format": "prettier --plugin-search-dir . --write ."
   },
   "devDependencies": {
-    "@melt-ui/pp": "^0.1.2",
+    "@internationalized/date": "^3.5.2",
+    "@melt-ui/pp": "^0.3.0",
+    "@melt-ui/svelte": "^0.76.1",
     "@sveltejs/adapter-auto": "^2.0.0",
     "@sveltejs/adapter-static": "^2.0.3",
     "@sveltejs/kit": "^1.27.3",
@@ -33,7 +35,6 @@
   },
   "type": "module",
   "dependencies": {
-    "@melt-ui/svelte": "^0.50.0",
     "@tiptap/core": "^2.1.11",
     "@tiptap/extension-image": "^2.1.11",
     "@tiptap/extension-link": "^2.1.11",
@@ -41,6 +42,8 @@
     "@tiptap/extension-underline": "^2.1.11",
     "@tiptap/pm": "^2.1.11",
     "@tiptap/starter-kit": "^2.1.11",
-    "lucide-svelte": "^0.292.0"
+    "clsx": "^2.1.0",
+    "lucide-svelte": "^0.292.0",
+    "tailwind-merge": "^2.2.2"
   }
 }

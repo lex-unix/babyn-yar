@@ -15,7 +15,6 @@
   import { RefreshCcw, Trash } from 'lucide-svelte'
   import { fetchAssetsWrapper, deleteAssets } from '$lib'
   import { onMount } from 'svelte'
-  import { debounce } from '$lib'
   import { addToast } from '$components/Toaster.svelte'
 
   let loading = false
@@ -125,7 +124,7 @@
 </PageHeader>
 
 <Container title="Медіа файли">
-  <SearchBar on:search={debounce(search)}>
+  <SearchBar on:search={search}>
     <AssetSortMenu slot="filters" on:select={sort} />
   </SearchBar>
 

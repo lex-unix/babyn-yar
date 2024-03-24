@@ -10,7 +10,9 @@
     LinkButton,
     RecordActionBar,
     TableSkeleton,
-    Pagination
+    SearchBar,
+    Pagination,
+    EventSortMenu
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
   import { formatDate, trimText } from '$lib'
@@ -36,6 +38,22 @@
     }
     isLoading = false
   })
+
+  async function search(e: CustomEvent<{ search: string }>) {
+    const res = await fetchEvents(1, { title: e.detail.search })
+    if (res.ok) {
+      events = res.data.events
+      metadata = res.data.metadata
+    }
+  }
+
+  async function sort(e: CustomEvent<string>) {
+    const res = await fetchEvents(1, { sort: e.detail })
+    if (res.ok) {
+      events = res.data.events
+      metadata = res.data.metadata
+    }
+  }
 
   function toggleSelect(id: number) {
     if (selected.includes(id)) {
@@ -100,6 +118,11 @@
 </PageHeader>
 
 <Container title="Події">
+  <div class="mb-5">
+    <SearchBar on:search={search}>
+      <EventSortMenu slot="filters" on:select={sort} />
+    </SearchBar>
+  </div>
   <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
   {#if events.length === 0 || isLoading}
     <TableSkeleton />
@@ -144,9 +167,10 @@
                 checked={selected.includes(event.id)}
               />
             </TableData>
-            <TableData>
-              <a href={`/content/events/${event.id}`}>{trimText(event.title)}</a
-              >
+            <TableData class="w-full">
+              <a href={`/content/events/${event.id}`} class="block w-full">
+                {trimText(event.title)}
+              </a>
             </TableData>
             <TableData>{formatDate(event.updatedAt)}</TableData>
             <TableData>{event.user.fullName}</TableData>

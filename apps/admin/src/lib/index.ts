@@ -1,5 +1,5 @@
 export { extensions } from './editor-extensions'
-export { formatDate } from './format-date'
+export { formatDate, jsDateToCalendarDate } from './format-date'
 export {
   fetchEvent,
   fetchEvents,
@@ -49,3 +49,4 @@ export { trimText } from './trim-text'
 export { ResponseError } from './response-error'
 export { langOptions, permissionOptions } from './select-option'
 export { debounce } from './debounce'
+export { cn } from './cn'

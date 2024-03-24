@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/lex-unix/babyn-yar/internal/data"
 	"github.com/lex-unix/babyn-yar/internal/validator"
@@ -11,11 +12,12 @@ import (
 
 func (app *application) createEventHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Title       string `json:"title"`
-		Description string `json:"description"`
-		Content     string `json:"content"`
-		Lang        string `json:"lang"`
-		Cover       string `json:"cover"`
+		Title       string    `json:"title"`
+		Description string    `json:"description"`
+		Content     string    `json:"content"`
+		Lang        string    `json:"lang"`
+		Cover       string    `json:"cover"`
+		OccuredOn   time.Time `json:"occuredOn"`
 	}
 
 	err := app.readJson(w, r, &input)
@@ -32,6 +34,7 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 		Content:     input.Content,
 		Lang:        input.Lang,
 		Cover:       input.Cover,
+		OccuredOn:   input.OccuredOn,
 		UserID:      user.ID,
 	}
 
@@ -59,7 +62,8 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 
 func (app *application) listEventsHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Lang string
+		Title string
+		Lang  string
 		data.Filters
 	}
 
@@ -67,20 +71,21 @@ func (app *application) listEventsHandler(w http.ResponseWriter, r *http.Request
 
 	qs := r.URL.Query()
 
+	input.Title = app.readString(qs, "title", "")
 	input.Lang = app.readString(qs, "lang", "")
 
 	input.Filters.Page = app.readInt(qs, "page", 1, v)
 	input.Filters.PageSize = app.readInt(qs, "page_size", 10, v)
 
 	input.Filters.Sort = app.readString(qs, "sort", "-created_at")
-	input.Filters.SortSafelist = []string{"created_at", "-created_at"}
+	input.Filters.SortSafelist = []string{"created_at", "-created_at", "occured_on", "-occured_on"}
 
 	if data.ValidateFilters(v, input.Filters); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
 
-	events, metadata, err := app.models.Events.GetAll(input.Lang, input.Filters)
+	events, metadata, err := app.models.Events.GetAll(input.Title, input.Lang, input.Filters)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
@@ -164,11 +169,12 @@ func (app *application) updateEventHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	var input struct {
-		Title       *string `json:"title"`
-		Description *string `json:"description"`
-		Content     *string `json:"content"`
-		Lang        *string `json:"lang"`
-		Cover       *string `json:"cover"`
+		Title       *string    `json:"title"`
+		Description *string    `json:"description"`
+		Content     *string    `json:"content"`
+		Lang        *string    `json:"lang"`
+		Cover       *string    `json:"cover"`
+		OccuredOn   *time.Time `json:"occuredOn"`
 	}
 
 	err = app.readJson(w, r, &input)
@@ -195,6 +201,10 @@ func (app *application) updateEventHandler(w http.ResponseWriter, r *http.Reques
 
 	if input.Cover != nil {
 		event.Cover = *input.Cover
+	}
+
+	if input.OccuredOn != nil {
+		event.OccuredOn = *input.OccuredOn
 	}
 
 	v := validator.New()

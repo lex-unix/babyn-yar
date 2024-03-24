@@ -144,7 +144,7 @@
                 checked={selected.includes(book.id)}
               />
             </TableData>
-            <TableData>
+            <TableData class="w-full">
               <a href={`/content/library/${book.id}`}>{trimText(book.title)}</a>
             </TableData>
             <TableData>{formatDate(book.updatedAt)}</TableData>

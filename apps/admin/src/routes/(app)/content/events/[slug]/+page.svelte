@@ -9,7 +9,8 @@
     Button,
     Container,
     NotFound,
-    EditorSkeleton
+    EditorSkeleton,
+    DatePicker
   } from '$components'
   import type { Event } from '$lib/types'
   import { fetchEvent, updateEvent, ResponseError } from '$lib'
@@ -41,12 +42,13 @@
       description: event.description,
       lang: event.lang,
       cover: event.cover,
-      content: JSON.stringify(event.content)
+      content: JSON.stringify(event.content),
+      occuredOn: new Date(event.occuredOn).toISOString()
     })
     const response = await updateEvent($page.params.slug, body)
+    isSubmitting = false
     if (!response.ok) {
       error = response.error
-      isSubmitting = false
       return
     }
     addToast({
@@ -57,7 +59,6 @@
       }
     })
     error = undefined
-    isSubmitting = false
   }
 </script>
 
@@ -87,6 +88,7 @@
           bind:lang={event.lang}
           error={error?.isFormError() ? error.error.lang : undefined}
         />
+        <DatePicker bind:datetime={event.occuredOn} />
         <CoverSelect
           bind:cover={event.cover}
           error={error?.isFormError() ? error.error.cover : undefined}

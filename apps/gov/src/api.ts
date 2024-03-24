@@ -33,6 +33,7 @@ export async function fetchEvents(page: string = '1') {
   const url = new URL(apiURL + '/events')
   url.searchParams.set('page', page)
   url.searchParams.set('lang', 'ua')
+  url.searchParams.set('sort', '-occured_on')
   try {
     const response = await fetch(url)
     const json = await response.json()

@@ -16,7 +16,7 @@
     <p class="-mt-1.5 mb-1.5 text-red-500">{error}</p>
   {/if}
   <Select bind:selected={lang} defaultSelected={defaultValue}>
-    <SelectTrigger id="select-lang">Обрати мову</SelectTrigger>
+    <SelectTrigger>Обрати мову</SelectTrigger>
     <SelectMenu>
       {#each langOptions as { value, label }}
         <SelectItem {value} {label} />

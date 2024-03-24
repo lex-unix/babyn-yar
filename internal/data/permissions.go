@@ -40,12 +40,6 @@ func (m PermissionModel) GetAllForUser(userID int64) (Permissions, error) {
 
 	defer rows.Close()
 
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-
 	var permissions Permissions
 
 	for rows.Next() {
