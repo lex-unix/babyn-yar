@@ -6,7 +6,8 @@
     CoverSelect,
     PageHeader,
     Container,
-    Button
+    Button,
+    DatePicker
   } from '$components'
   import { createEvent } from '$lib'
   import type { JSONContent } from '@tiptap/core'
@@ -21,6 +22,7 @@
   let description = ''
   let lang = ''
   let cover = ''
+  let date = ''
   let error: ResponseError | undefined
 
   async function submit() {
@@ -30,7 +32,8 @@
       description,
       lang,
       cover,
-      content: JSON.stringify(content)
+      content: JSON.stringify(content),
+      occuredOn: new Date(date).toISOString()
     })
     const response = await createEvent(body)
     if (!response.ok) {
@@ -70,6 +73,7 @@
       bind:lang
       error={error?.isFormError() ? error.error.lang : undefined}
     />
+    <DatePicker bind:datetime={date} />
     <CoverSelect
       bind:cover
       error={error?.isFormError() ? error.error.cover : undefined}
