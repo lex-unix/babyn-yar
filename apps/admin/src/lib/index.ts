@@ -1,5 +1,5 @@
 export { extensions } from './editor-extensions'
-export { formatDate } from './format-date'
+export { formatDate, jsDateToCalendarDate } from './format-date'
 export {
   fetchEvent,
   fetchEvents,

@@ -1,3 +1,5 @@
+import { CalendarDate } from '@internationalized/date'
+
 export function formatDate(dateString: string) {
   const date = new Date(dateString)
 
@@ -10,4 +12,12 @@ export function formatDate(dateString: string) {
   } as const
 
   return new Intl.DateTimeFormat('uk-UA', dateOpts).format(date)
+}
+
+export function jsDateToCalendarDate(jsDate: Date) {
+  return new CalendarDate(
+    jsDate.getFullYear(),
+    jsDate.getMonth() + 1,
+    jsDate.getDate()
+  )
 }
