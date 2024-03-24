@@ -12,7 +12,8 @@
     TableSkeleton,
     SearchBar,
     Pagination,
-    EventSortMenu
+    EventSortMenu,
+    EmptySearchMessage
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
   import { formatDate, trimText } from '$lib'
@@ -124,8 +125,12 @@
     </SearchBar>
   </div>
   <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
-  {#if events.length === 0 || isLoading}
+  {#if events.length === 0 && isLoading}
     <TableSkeleton />
+  {:else if events.length === 0 && !isLoading}
+    <div class="mt-10">
+      <EmptySearchMessage />
+    </div>
   {:else}
     <Table>
       <thead>

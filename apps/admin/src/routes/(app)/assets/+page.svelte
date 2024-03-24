@@ -10,7 +10,8 @@
     Container,
     AssetGrid,
     DeleteAlertDialog,
-    Button
+    Button,
+    EmptySearchMessage
   } from '$components'
   import { RefreshCcw, Trash } from 'lucide-svelte'
   import { fetchAssetsWrapper, deleteAssets } from '$lib'
@@ -164,15 +165,21 @@
     </div>
   {/if}
 
-  <AssetGrid>
-    {#if loading && assets.length === 0}
+  {#if loading && assets.length === 0}
+    <AssetGrid>
       <AssetGridItemSkeleton />
       <AssetGridItemSkeleton />
       <AssetGridItemSkeleton />
       <AssetGridItemSkeleton />
       <AssetGridItemSkeleton />
       <AssetGridItemSkeleton />
-    {:else}
+    </AssetGrid>
+  {:else if !loading && assets.length === 0}
+    <div class="mt-10">
+      <EmptySearchMessage />
+    </div>
+  {:else}
+    <AssetGrid>
       {#each assets as asset}
         {@const selected = selectedAssets.includes(asset.id)}
         <li class="p-2.5">
@@ -200,8 +207,8 @@
           </div>
         </li>
       {/each}
-    {/if}
-  </AssetGrid>
+    </AssetGrid>
+  {/if}
   {#if metadata && metadata.currentPage !== metadata.lastPage}
     <div class="mt-8">
       <div class="flex min-w-full items-center justify-center">
