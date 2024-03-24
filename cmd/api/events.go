@@ -62,7 +62,8 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 
 func (app *application) listEventsHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Lang string
+		Title string
+		Lang  string
 		data.Filters
 	}
 
@@ -70,6 +71,7 @@ func (app *application) listEventsHandler(w http.ResponseWriter, r *http.Request
 
 	qs := r.URL.Query()
 
+	input.Title = app.readString(qs, "title", "")
 	input.Lang = app.readString(qs, "lang", "")
 
 	input.Filters.Page = app.readInt(qs, "page", 1, v)
@@ -83,7 +85,7 @@ func (app *application) listEventsHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	events, metadata, err := app.models.Events.GetAll(input.Lang, input.Filters)
+	events, metadata, err := app.models.Events.GetAll(input.Title, input.Lang, input.Filters)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
