@@ -3,8 +3,6 @@
   import { ChevronDown } from 'lucide-svelte'
   import { getContext } from 'svelte'
 
-  export let id: string = 'select-element'
-
   const {
     elements: { trigger },
     states: { selectedLabel }
@@ -13,7 +11,6 @@
 
 <button
   use:melt={$trigger}
-  {id}
   type="button"
   class="flex min-w-[220px] items-center justify-between rounded border bg-white px-3 py-2 leading-none outline-none hover:border-sky-400 focus:border-sky-400 focus:ring focus:ring-sky-100 data-[state=open]:border-sky-400 data-[state=open]:ring data-[state=open]:ring-sky-100"
 >
