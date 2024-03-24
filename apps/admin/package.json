@@ -42,6 +42,8 @@
     "@tiptap/extension-underline": "^2.1.11",
     "@tiptap/pm": "^2.1.11",
     "@tiptap/starter-kit": "^2.1.11",
-    "lucide-svelte": "^0.292.0"
+    "clsx": "^2.1.0",
+    "lucide-svelte": "^0.292.0",
+    "tailwind-merge": "^2.2.2"
   }
 }
