@@ -11,20 +11,18 @@
     AssetItem,
     Button
   } from '$components'
-  import { fetchAssetsWrapper } from '$lib/assets'
+  import { fetchAssetsWrapper, type Filters } from '$lib/assets'
   import type { Asset, Metadata } from '$lib/types'
   import { createEventDispatcher } from 'svelte'
   import { RefreshCcw } from 'lucide-svelte'
+  import { addToast } from './Toaster.svelte'
+  import { fetchErrorMsg } from '$lib/toast-messages'
 
   export async function open(type: string) {
     isLoading = true
     assets = []
     dialog.show()
-    const res = await fetchAssets({ contentType: type })
-    if (res.ok) {
-      assets = res.data.assets
-      metadata = res.data.metadata
-    }
+    await load(1, { contentType: type })
     contentType = type
     isLoading = false
   }
@@ -41,23 +39,27 @@
   let isLoadingMore = false
 
   const fetchAssets = fetchAssetsWrapper()
+
   const dispatch = createEventDispatcher<{
     select: { url: string; type: string; fileName: string }
   }>()
 
-  async function sort(e: CustomEvent<string>) {
-    const res = await fetchAssets({ sort: e.detail })
-    if (res.ok) {
-      assets = res.data.assets
+  async function load(pageNum = 1, filters: Filters | undefined = undefined) {
+    const response = await fetchAssets(pageNum, filters)
+    if (!response.ok) {
+      addToast(fetchErrorMsg)
+      return
     }
+    assets = response.data.assets
+    metadata = response.data?.metadata
+  }
+
+  async function sort(e: CustomEvent<string>) {
+    await load(1, { sort: e.detail })
   }
 
   async function search(e: CustomEvent<{ search: string }>) {
-    const res = await fetchAssets({ contentType, filename: e.detail.search })
-    if (res.ok) {
-      assets = res.data.assets
-      metadata = res.data.metadata
-    }
+    await load(1, { contentType, filename: e.detail.search })
   }
 
   function selectAsset(url: string, contentType: string, fileName: string) {
@@ -72,13 +74,14 @@
 
   async function loadMore() {
     isLoadingMore = true
-    const { currentPage } = metadata
-    const res = await fetchAssets(undefined, currentPage + 1)
-    if (res.ok) {
-      assets = [...assets, ...res.data.assets]
-      metadata = res.data.metadata
-    }
+    const res = await fetchAssets(metadata.currentPage + 1)
     isLoadingMore = false
+    if (!res.ok) {
+      addToast(fetchErrorMsg)
+      return
+    }
+    assets = [...assets, ...res.data.assets]
+    metadata = res.data.metadata
   }
 </script>
 

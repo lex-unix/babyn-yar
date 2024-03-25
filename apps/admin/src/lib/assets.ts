@@ -7,7 +7,7 @@ type PaginatedResponse = {
   metadata: Metadata
 }
 
-type Filters = {
+export type Filters = {
   contentType?: string
   filename?: string
   sort?: string
@@ -20,7 +20,7 @@ export function fetchAssetsWrapper() {
   const searchParams = new URLSearchParams()
   searchParams.set('page_size', '20')
 
-  return async (filters?: Filters, page: number = 1) => {
+  return async (page: number = 1, filters: Filters | undefined = undefined) => {
     searchParams.set('page', `${page}`)
 
     if (filters?.contentType !== undefined) {
