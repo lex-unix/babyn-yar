@@ -13,7 +13,8 @@
     Pagination
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
-  import { formatDate, trimText } from '$lib'
+  import { formatDate } from '$lib/format-date'
+  import { trimText } from '$lib/trim-text'
   import type { Metadata, VictimTestimony } from '$lib/types'
   import { onMount } from 'svelte'
   import { fetchTestimoniesWrapper, deleteTestimonies } from '$lib/testimonies'

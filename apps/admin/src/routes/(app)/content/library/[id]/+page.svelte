@@ -12,7 +12,8 @@
     NotFound
   } from '$components'
   import type { Book } from '$lib/types'
-  import { fetchBook, updateBook, ResponseError } from '$lib'
+  import type { ResponseError } from '$lib/response-error'
+  import { fetchBook, updateBook } from '$lib/books'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'

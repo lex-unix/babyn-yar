@@ -9,7 +9,8 @@
     PageHeader,
     Container
   } from '$components'
-  import { createTestimony, ResponseError } from '$lib'
+  import type { ResponseError } from '$lib/response-error'
+  import { createTestimony } from '$lib/testimonies'
   import type { JSONContent } from '@tiptap/core'
   import { PlusIcon } from 'lucide-svelte'
   import { addToast } from '$components/Toaster.svelte'

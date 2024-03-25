@@ -13,7 +13,8 @@
     Pagination
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
-  import { formatDate, trimText } from '$lib'
+  import { formatDate } from '$lib/format-date'
+  import { trimText } from '$lib/trim-text'
   import type { HolocaustDocument, Metadata } from '$lib/types'
   import { onMount } from 'svelte'
   import {

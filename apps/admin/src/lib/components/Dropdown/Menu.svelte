@@ -1,7 +1,7 @@
 <script lang="ts">
   import { getContext } from 'svelte'
   import { type DropdownMenu, melt } from '@melt-ui/svelte'
-  import { cn } from '$lib'
+  import { cn } from '$lib/cn'
 
   let className: string = ''
   export { className as class }

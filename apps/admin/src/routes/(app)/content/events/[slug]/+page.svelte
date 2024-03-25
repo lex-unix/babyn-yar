@@ -13,7 +13,8 @@
     DatePicker
   } from '$components'
   import type { Event } from '$lib/types'
-  import { fetchEvent, updateEvent, ResponseError } from '$lib'
+  import type { ResponseError } from '$lib/response-error'
+  import { fetchEvent, updateEvent } from '$lib/events'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SearchIcon } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
-  import { debounce } from '$lib'
+  import { debounce } from '$lib/debounce'
 
   const dispatch = createEventDispatcher()
 

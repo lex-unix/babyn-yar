@@ -8,8 +8,9 @@
     PageHeader,
     Container
   } from '$components'
-  import { createHolocaustDocument, ResponseError } from '$lib'
+  import type { ResponseError } from '$lib/response-error'
   import type { JSONContent } from '@tiptap/core'
+  import { createHolocaustDocument } from '$lib/holocaust-documents'
   import { PlusIcon } from 'lucide-svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { goto } from '$app/navigation'

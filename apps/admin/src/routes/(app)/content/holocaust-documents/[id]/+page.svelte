@@ -11,11 +11,11 @@
     NotFound
   } from '$components'
   import type { HolocaustDocument } from '$lib/types'
+  import type { ResponseError } from '$lib/response-error'
   import {
     fetchHolocaustDocument,
-    updateHolocaustDocument,
-    ResponseError
-  } from '$lib'
+    updateHolocaustDocument
+  } from '$lib/holocaust-documents'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'

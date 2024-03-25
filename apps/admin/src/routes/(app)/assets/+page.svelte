@@ -14,7 +14,7 @@
     EmptySearchMessage
   } from '$components'
   import { RefreshCcw, Trash } from 'lucide-svelte'
-  import { fetchAssetsWrapper, deleteAssets } from '$lib'
+  import { fetchAssetsWrapper, deleteAssets } from '$lib/assets'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
 

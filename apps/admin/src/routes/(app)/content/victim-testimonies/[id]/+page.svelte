@@ -12,7 +12,8 @@
     NotFound
   } from '$components'
   import type { VictimTestimony } from '$lib/types'
-  import { ResponseError, fetchTestimony, updateTestimony } from '$lib'
+  import type { ResponseError } from '$lib/response-error'
+  import { fetchTestimony, updateTestimony } from '$lib/testimonies'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'

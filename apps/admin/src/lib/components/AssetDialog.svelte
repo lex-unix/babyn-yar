@@ -11,7 +11,7 @@
     AssetItem,
     Button
   } from '$components'
-  import { fetchAssetsWrapper } from '$lib'
+  import { fetchAssetsWrapper } from '$lib/assets'
   import type { Asset, Metadata } from '$lib/types'
   import { createEventDispatcher } from 'svelte'
   import { RefreshCcw } from 'lucide-svelte'
