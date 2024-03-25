@@ -19,8 +19,13 @@
   import {
     deleteHolocaustDocuments,
     fetchHolocaustDocumentsWrapper
-  } from '$lib'
+  } from '$lib/holocaust-documents'
   import { addToast } from '$components/Toaster.svelte'
+  import {
+    fetchErrorMsg,
+    deleteErrorMsg,
+    deleteSuccessMsg
+  } from '$lib/toast-messages'
 
   const fetchHolocaustDocuments = fetchHolocaustDocumentsWrapper()
 
@@ -32,13 +37,19 @@
 
   onMount(async () => {
     isLoading = true
-    const response = await fetchHolocaustDocuments()
-    if (response.ok) {
-      documents = response.data.documents
-      metadata = response.data.metadata
-    }
+    await load()
     isLoading = false
   })
+
+  async function load(pageNum = 1) {
+    const response = await fetchHolocaustDocuments(pageNum)
+    if (!response.ok) {
+      addToast(fetchErrorMsg)
+      return
+    }
+    documents = response.data.documents
+    metadata = response.data.metadata
+  }
 
   function toggleSelect(id: number) {
     if (selected.includes(id)) {
@@ -59,38 +70,20 @@
   async function deleteSelected() {
     const { ok } = await deleteHolocaustDocuments(selected)
     if (!ok) {
-      addToast({
-        data: {
-          title: 'Щось пішло не так',
-          description: 'Спробуйте ще раз',
-          variant: 'error'
-        }
-      })
+      addToast(deleteErrorMsg)
       return
     }
+
     selected = []
     alertDialog.dismiss()
-    addToast({
-      data: {
-        title: 'Операція успішна',
-        description: 'Елементи було видалено',
-        variant: 'success'
-      }
-    })
-    const res = await fetchHolocaustDocuments()
-    if (res.ok) {
-      documents = res.data.documents
-      metadata = res.data.metadata
-    }
+    addToast(deleteSuccessMsg)
+
+    await load()
   }
 
   async function selectPage(e: CustomEvent<{ page: number }>) {
     const { page } = e.detail
-    const response = await fetchHolocaustDocuments(page)
-    if (response.ok) {
-      documents = response.data.documents
-      metadata = response.data.metadata
-    }
+    await load(page)
   }
 </script>
 

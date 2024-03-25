@@ -46,7 +46,7 @@
 
     const sortValue =
       item.sortValue === 'default' ? defaultSort : item.sortValue
-    dispatch('select', sortValue)
+    dispatch('select', { sortValue })
     selected = item
   }
 </script>

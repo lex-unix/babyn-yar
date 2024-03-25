@@ -16,8 +16,13 @@
   import { formatDate, trimText } from '$lib'
   import type { Metadata, VictimTestimony } from '$lib/types'
   import { onMount } from 'svelte'
-  import { fetchBooksWrapper, deleteBooks } from '$lib'
+  import { fetchBooksWrapper, deleteBooks } from '$lib/books'
   import { addToast } from '$components/Toaster.svelte'
+  import {
+    deleteErrorMsg,
+    deleteSuccessMsg,
+    fetchErrorMsg
+  } from '$lib/toast-messages'
 
   let books: VictimTestimony[] = []
   let metadata: Metadata
@@ -29,13 +34,19 @@
 
   onMount(async () => {
     isLoading = true
-    const res = await fetchBooks()
-    if (res.ok) {
-      books = res.data.books
-      metadata = res.data.metadata
-    }
+    await load()
     isLoading = false
   })
+
+  async function load(pageNum = 1) {
+    const response = await fetchBooks(pageNum)
+    if (!response.ok) {
+      addToast(fetchErrorMsg)
+      return
+    }
+    books = response.data.books
+    metadata = response.data.metadata
+  }
 
   function toggleSelect(id: number) {
     if (selected.includes(id)) {
@@ -56,38 +67,20 @@
   async function deleteSelected() {
     const { ok } = await deleteBooks(selected)
     if (!ok) {
-      addToast({
-        data: {
-          title: 'Щось пішло не так',
-          description: 'Спробуйте ще раз',
-          variant: 'error'
-        }
-      })
+      addToast(deleteErrorMsg)
       return
     }
+
     selected = []
     alertDialog.dismiss()
-    addToast({
-      data: {
-        title: 'Операція успішна',
-        description: 'Записи було видалено',
-        variant: 'success'
-      }
-    })
-    const res = await fetchBooks()
-    if (res.ok) {
-      books = res.data.books
-      metadata = res.data.metadata
-    }
+    addToast(deleteSuccessMsg)
+
+    await load()
   }
 
   async function selectPage(e: CustomEvent<{ page: number }>) {
     const { page } = e.detail
-    const response = await fetchBooks(page)
-    if (response.ok) {
-      books = response.data.books
-      metadata = response.data.metadata
-    }
+    await load(page)
   }
 </script>
 

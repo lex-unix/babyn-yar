@@ -7,7 +7,7 @@ type PaginatedResponse = {
   metadata: Metadata
 }
 
-type Filters = {
+export type Filters = {
   title?: string
   sort?: string
 }

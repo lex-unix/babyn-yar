@@ -16,8 +16,13 @@
   import { formatDate, trimText } from '$lib'
   import type { Metadata, VictimTestimony } from '$lib/types'
   import { onMount } from 'svelte'
-  import { fetchTestimoniesWrapper, deleteTestimonies } from '$lib'
+  import { fetchTestimoniesWrapper, deleteTestimonies } from '$lib/testimonies'
   import { addToast } from '$components/Toaster.svelte'
+  import {
+    deleteSuccessMsg,
+    deleteErrorMsg,
+    fetchErrorMsg
+  } from '$lib/toast-messages'
 
   let testimonies: VictimTestimony[] = []
   let metadata: Metadata
@@ -29,13 +34,19 @@
 
   onMount(async () => {
     isLoading = true
-    const res = await fetchTestimonies()
-    if (res.ok) {
-      testimonies = res.data.testimonies
-      metadata = res.data.metadata
-    }
+    await load()
     isLoading = false
   })
+
+  async function load(pageNum = 1) {
+    const response = await fetchTestimonies(pageNum)
+    if (!response.ok) {
+      addToast(fetchErrorMsg)
+      return
+    }
+    testimonies = response.data.testimonies
+    metadata = response.data.metadata
+  }
 
   function toggleSelect(id: number) {
     if (selected.includes(id)) {
@@ -56,38 +67,20 @@
   async function deleteSelected() {
     const ok = await deleteTestimonies(selected)
     if (!ok) {
-      addToast({
-        data: {
-          title: 'Щось пішло не так',
-          description: 'Спробуйте ще раз',
-          variant: 'error'
-        }
-      })
+      addToast(deleteErrorMsg)
       return
     }
+
+    addToast(deleteSuccessMsg)
     selected = []
     alertDialog.dismiss()
-    addToast({
-      data: {
-        title: 'Операція успішна',
-        description: 'Елементи було видалено',
-        variant: 'success'
-      }
-    })
-    const res = await fetchTestimonies()
-    if (res.ok) {
-      testimonies = res.data.testimonies
-      metadata = res.data.metadata
-    }
+
+    await load()
   }
 
   async function selectPage(e: CustomEvent<{ page: number }>) {
     const { page } = e.detail
-    const response = await fetchTestimonies(page)
-    if (response.ok) {
-      testimonies = response.data.testimonies
-      metadata = response.data.metadata
-    }
+    await load(page)
   }
 </script>
 
