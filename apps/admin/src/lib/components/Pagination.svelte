@@ -1,9 +1,14 @@
 <script lang="ts">
+  import { Select, SelectItem, SelectMenu, SelectTrigger } from '$components'
+  import { pageSizeOptions } from '$lib/select-options'
   import { MoveLeft, MoveRight } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
 
   export let currentPage: number
   export let lastPage: number
+
+  let pageSizeLabel: string = pageSizeOptions[0].label
+  let pageSizeValue: string = pageSizeOptions[0].value
 
   const delta = 3
   $: lower = Math.max(1, currentPage - delta)
@@ -15,6 +20,13 @@
   function selectPage(page: number) {
     dispatch('select', { page })
   }
+
+  function selectPageSize(size: string) {
+    dispatch('selectSize', { size: parseInt(size) })
+    console.log(size)
+  }
+
+  $: selectPageSize(pageSizeValue)
 </script>
 
 <div
@@ -29,6 +41,23 @@
       <MoveLeft size={16} />
       <span>Попередня</span>
     </button>
+    <div class="pl-4">
+      <Select
+        bind:selected={pageSizeValue}
+        defaultSelected={pageSizeOptions[0]}
+      >
+        <SelectTrigger
+          class="min-w-[100px] py-1 text-sm text-gray-600 hover:text-gray-800"
+        >
+          {pageSizeLabel}
+        </SelectTrigger>
+        <SelectMenu>
+          {#each pageSizeOptions as size}
+            <SelectItem {...size} class="p-1.5 text-sm" />
+          {/each}
+        </SelectMenu>
+      </Select>
+    </div>
   </div>
   <div class="-mt-[1px] flex items-center text-sm font-medium">
     {#each pages as page}

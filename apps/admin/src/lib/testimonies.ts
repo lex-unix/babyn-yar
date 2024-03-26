@@ -7,6 +7,11 @@ type PaginatedResponse = {
   metadata: Metadata
 }
 
+export type Filters = {
+  sort?: string
+  pageSize?: number
+}
+
 const baseUrl = PUBLIC_API_URL + '/victim-testimonies'
 
 export function fetchTestimoniesWrapper() {
@@ -14,10 +19,20 @@ export function fetchTestimoniesWrapper() {
   const searchParams = new URLSearchParams()
   searchParams.set('page_size', '10')
 
-  return async (page: number = 1) => {
+  return async (page: number = 1, filters: Filters | undefined = undefined) => {
+    searchParams.set('page', `${page}`)
+
+    if (filters?.sort !== undefined) {
+      searchParams.set('sort', filters.sort)
+    }
+
+    if (filters?.pageSize !== undefined) {
+      searchParams.set('page_size', filters.pageSize.toString())
+    }
+
+    url.search = searchParams.toString()
+
     try {
-      searchParams.set('page', `${page}`)
-      url.search = searchParams.toString()
       const response = await fetch(url)
       const json = await response.json()
       if (response.ok) {

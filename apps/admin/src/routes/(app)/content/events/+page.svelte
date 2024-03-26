@@ -27,6 +27,7 @@
     deleteErrorMsg,
     fetchErrorMsg
   } from '$lib/toast-messages'
+  import { calculateNewPage } from '$lib/pagination'
 
   let isLoading = false
   let events: Event[] = []
@@ -93,6 +94,17 @@
   async function selectPage(e: CustomEvent<{ page: number }>) {
     const { page } = e.detail
     await load(page)
+  }
+
+  async function selectPageSize(e: CustomEvent<{ size: number }>) {
+    const newPageSize = e.detail.size
+    const { currentPage, pageSize: currentPageSize } = metadata
+
+    if (newPageSize === currentPageSize) return
+
+    const page = calculateNewPage(currentPage, currentPageSize, newPageSize)
+
+    await load(page, { pageSize: newPageSize })
   }
 </script>
 
@@ -174,6 +186,7 @@
             currentPage={metadata.currentPage}
             lastPage={metadata.lastPage}
             on:select={selectPage}
+            on:selectSize={selectPageSize}
           />
         {/if}
       </svelte:fragment>

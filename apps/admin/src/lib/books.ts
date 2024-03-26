@@ -10,6 +10,7 @@ type PaginatedResponse = {
 export type Filters = {
   title?: string
   sort?: string
+  pageSize?: number
 }
 
 const baseUrl = PUBLIC_API_URL + '/books'
@@ -28,6 +29,10 @@ export function fetchBooksWrapper() {
 
     if (filters?.title !== undefined) {
       searchParams.set('title', filters.title)
+    }
+
+    if (filters?.pageSize !== undefined) {
+      searchParams.set('page_size', filters.pageSize.toString())
     }
 
     url.search = searchParams.toString()
