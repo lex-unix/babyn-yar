@@ -10,14 +10,17 @@
     LinkButton,
     RecordActionBar,
     TableSkeleton,
-    Pagination
+    Pagination,
+    SearchBar,
+    ContentSortMenu,
+    EmptySearchMessage
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
   import { formatDate } from '$lib/format-date'
   import { trimText } from '$lib/trim-text'
   import type { Metadata, VictimTestimony } from '$lib/types'
   import { onMount } from 'svelte'
-  import { fetchBooksWrapper, deleteBooks } from '$lib/books'
+  import { fetchBooksWrapper, deleteBooks, type Filters } from '$lib/books'
   import { addToast } from '$components/Toaster.svelte'
   import {
     deleteErrorMsg,
@@ -39,8 +42,8 @@
     isLoading = false
   })
 
-  async function load(pageNum = 1) {
-    const response = await fetchBooks(pageNum)
+  async function load(pageNum = 1, filters: Filters | undefined = undefined) {
+    const response = await fetchBooks(pageNum, filters)
     if (!response.ok) {
       addToast(fetchErrorMsg)
       return
@@ -79,6 +82,14 @@
     await load()
   }
 
+  async function search(e: CustomEvent<{ search: string }>) {
+    await load(1, { title: e.detail.search })
+  }
+
+  async function sort(e: CustomEvent<{ sortValue: string }>) {
+    await load(1, { sort: e.detail.sortValue })
+  }
+
   async function selectPage(e: CustomEvent<{ page: number }>) {
     const { page } = e.detail
     await load(page)
@@ -94,9 +105,16 @@
 </PageHeader>
 
 <Container title="Бібліотека">
+  <div class="mb-5">
+    <SearchBar on:search={search}>
+      <ContentSortMenu slot="filters" on:select={sort} />
+    </SearchBar>
+  </div>
   <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
-  {#if books.length === 0 || isLoading}
+  {#if isLoading}
     <TableSkeleton />
+  {:else if !isLoading && books.length === 0}
+    <EmptySearchMessage />
   {:else}
     <Table>
       <thead>

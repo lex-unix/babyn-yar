@@ -62,19 +62,20 @@ func (m BookModel) Insert(book *Book) error {
 	return m.DB.QueryRow(ctx, query, args...).Scan(&book.ID, &book.Version)
 }
 
-func (m BookModel) GetAll(lang string, filters Filters) ([]*Book, Metadata, error) {
+func (m BookModel) GetAll(lang, title string, filters Filters) ([]*Book, Metadata, error) {
 	query := fmt.Sprintf(`
 		SELECT count(*) OVER(), b.id, b.created_at, b.updated_at, b.title, b.description, b.cover, b.content, b.documents, b.version, u.full_name
 		FROM books b
 		INNER JOIN users u ON b.user_id = u.id
 		WHERE (b.lang = $1 OR $1 = '')
+		AND (STRPOS(LOWER(b.title), LOWER($2)) > 0 OR $2 = '')
 		ORDER BY %s %s, id ASC
-		LIMIT $2 OFFSET $3`, filters.sortColumn(), filters.sortDirection())
+		LIMIT $3 OFFSET $4`, filters.sortColumn(), filters.sortDirection())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	args := []interface{}{lang, filters.limit(), filters.offset()}
+	args := []interface{}{lang, title, filters.limit(), filters.offset()}
 
 	rows, err := m.DB.Query(ctx, query, args...)
 	if err != nil {

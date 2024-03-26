@@ -65,7 +65,8 @@ func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request
 
 func (app *application) listBooksHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Lang string
+		Title string
+		Lang  string
 		data.Filters
 	}
 
@@ -74,6 +75,7 @@ func (app *application) listBooksHandler(w http.ResponseWriter, r *http.Request)
 	qs := r.URL.Query()
 
 	input.Lang = app.readString(qs, "lang", "")
+	input.Title = app.readString(qs, "title", "")
 
 	input.Filters.Page = app.readInt(qs, "page", 1, v)
 	input.Filters.PageSize = app.readInt(qs, "page_size", 10, v)
@@ -86,7 +88,8 @@ func (app *application) listBooksHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	books, metadata, err := app.models.Books.GetAll(input.Lang, input.Filters)
+	books, metadata, err := app.models.Books.GetAll(input.Lang, input.Title, input.Filters)
+
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return

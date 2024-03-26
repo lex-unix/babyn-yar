@@ -12,7 +12,7 @@
     TableSkeleton,
     SearchBar,
     Pagination,
-    EventSortMenu,
+    ContentSortMenu,
     EmptySearchMessage
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
@@ -107,7 +107,7 @@
 <Container title="Події">
   <div class="mb-5">
     <SearchBar on:search={search}>
-      <EventSortMenu slot="filters" on:select={sort} />
+      <ContentSortMenu slot="filters" on:select={sort} />
     </SearchBar>
   </div>
   <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
