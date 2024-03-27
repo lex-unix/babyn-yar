@@ -23,7 +23,6 @@
 
   function selectPageSize(size: string) {
     dispatch('selectSize', { size: parseInt(size) })
-    console.log(size)
   }
 
   $: selectPageSize(pageSizeValue)

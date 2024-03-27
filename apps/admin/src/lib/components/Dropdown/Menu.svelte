@@ -10,8 +10,6 @@
     elements: { menu },
     states: { open }
   } = getContext<DropdownMenu>('dropdown')
-
-  $: console.log($open)
 </script>
 
 {#if $open}
