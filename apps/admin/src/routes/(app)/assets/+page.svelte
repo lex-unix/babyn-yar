@@ -78,8 +78,14 @@
 
   async function loadMore() {
     isLoadingMore = true
-    await load(metadata.currentPage + 1)
+    const response = await fetchAssets(metadata.currentPage + 1)
     isLoadingMore = false
+    if (!response.ok) {
+      addToast(fetchErrorMsg)
+      return
+    }
+    assets = [...assets, ...response.data.assets]
+    metadata = response.data.metadata
   }
 
   async function deleteSelected() {
