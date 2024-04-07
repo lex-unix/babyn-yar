@@ -46,7 +46,7 @@
         defaultSelected={pageSizeOptions[0]}
       >
         <SelectTrigger
-          class="min-w-[100px] py-1 text-sm text-gray-600 hover:text-gray-800"
+          class="min-w-[170px] py-1 text-sm text-gray-600 hover:text-gray-800"
         >
           {pageSizeLabel}
         </SelectTrigger>

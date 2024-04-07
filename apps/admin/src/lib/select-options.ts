@@ -9,8 +9,8 @@ export const langOptions = [
 ]
 
 export const pageSizeOptions = [
-  { value: '10', label: '10' },
-  { value: '20', label: '20' },
-  { value: '50', label: '50' },
-  { value: '100', label: '100' }
+  { value: '10', label: '10 на сторінку' },
+  { value: '20', label: '20 на сторінку' },
+  { value: '50', label: '50 на сторінку' },
+  { value: '100', label: '100 на сторінку' }
 ]
