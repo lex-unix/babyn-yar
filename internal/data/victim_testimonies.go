@@ -15,6 +15,7 @@ type VictimTestimony struct {
 	ID          int64     `json:"id"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
+	OccuredOn   time.Time `json:"occuredOn"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Content     string    `json:"content"`
@@ -37,12 +38,13 @@ func ValidateTestimony(v *validator.Validator, testimony *VictimTestimony) {
 	v.Check(testimony.Cover != "", "cover", "must not be empty")
 	v.Check(testimony.Lang != "", "lang", "must not be empty")
 	v.Check(validator.In(testimony.Lang, "ua", "en"), "lang", "must be either ua or en")
+	v.Check(!testimony.OccuredOn.IsZero(), "occuredOn", "must be a valid date")
 }
 
 func (m VictimTestimonyModel) Insert(testimony *VictimTestimony) error {
 	query := `
-		INSERT INTO victim_testimonies (title, description, content, lang, cover, documents, user_id)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO victim_testimonies (title, description, content, lang, cover, documents, occured_on, user_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING id, version`
 
 	args := []interface{}{
@@ -52,6 +54,7 @@ func (m VictimTestimonyModel) Insert(testimony *VictimTestimony) error {
 		testimony.Lang,
 		testimony.Cover,
 		testimony.Documents,
+		testimony.OccuredOn,
 		testimony.UserID,
 	}
 
@@ -116,7 +119,7 @@ func (m VictimTestimonyModel) Get(id int64) (*VictimTestimony, error) {
 	}
 
 	query := `
-		SELECT vt.id, vt.title, vt.description, vt.content, vt.lang, vt.cover, vt.documents, vt.version
+		SELECT vt.id, vt.occured_on, vt.title, vt.description, vt.content, vt.lang, vt.cover, vt.documents, vt.version
 		FROM victim_testimonies vt
 		WHERE id = $1`
 
@@ -126,6 +129,7 @@ func (m VictimTestimonyModel) Get(id int64) (*VictimTestimony, error) {
 	var testimony VictimTestimony
 	err := m.DB.QueryRow(ctx, query, id).Scan(
 		&testimony.ID,
+		&testimony.OccuredOn,
 		&testimony.Title,
 		&testimony.Description,
 		&testimony.Content,
@@ -149,8 +153,8 @@ func (m VictimTestimonyModel) Get(id int64) (*VictimTestimony, error) {
 func (m VictimTestimonyModel) Update(testimony *VictimTestimony) error {
 	query := `
 		UPDATE victim_testimonies
-		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, documents = $6, updated_at = now(), version = version + 1
-		WHERE id = $7 AND version = $8
+		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, documents = $6, occured_on = $7, updated_at = now(), version = version + 1
+		WHERE id = $8 AND version = $9
 		RETURNING version`
 
 	args := []interface{}{
@@ -160,6 +164,7 @@ func (m VictimTestimonyModel) Update(testimony *VictimTestimony) error {
 		testimony.Lang,
 		testimony.Cover,
 		testimony.Documents,
+		testimony.OccuredOn,
 		testimony.ID,
 		testimony.Version,
 	}
