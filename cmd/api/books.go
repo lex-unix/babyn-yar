@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/lex-unix/babyn-yar/internal/data"
 	"github.com/lex-unix/babyn-yar/internal/validator"
@@ -11,12 +12,13 @@ import (
 
 func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Title       string   `json:"title"`
-		Description string   `json:"description"`
-		Content     string   `json:"content"`
-		Cover       string   `json:"cover"`
-		Lang        string   `json:"lang"`
-		Documents   []string `json:"documents"`
+		Title       string    `json:"title"`
+		Description string    `json:"description"`
+		Content     string    `json:"content"`
+		Cover       string    `json:"cover"`
+		Lang        string    `json:"lang"`
+		Documents   []string  `json:"documents"`
+		OccuredOn   time.Time `json:"occuredOn"`
 	}
 
 	err := app.readJson(w, r, &input)
@@ -34,6 +36,7 @@ func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request
 		Cover:       input.Cover,
 		Lang:        input.Lang,
 		Documents:   []string{},
+		OccuredOn:   input.OccuredOn,
 		UserID:      user.ID,
 	}
 
@@ -81,7 +84,7 @@ func (app *application) listBooksHandler(w http.ResponseWriter, r *http.Request)
 	input.Filters.PageSize = app.readInt(qs, "page_size", 10, v)
 
 	input.Filters.Sort = app.readString(qs, "sort", "-created_at")
-	input.Filters.SortSafelist = []string{"created_at", "-created_at"}
+	input.Filters.SortSafelist = []string{"created_at", "-created_at", "occured_on", "-occured_on"}
 
 	if data.ValidateFilters(v, input.Filters); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
@@ -144,12 +147,13 @@ func (app *application) updateBookHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	var input struct {
-		Title       *string  `json:"title"`
-		Description *string  `json:"description"`
-		Content     *string  `json:"content"`
-		Lang        *string  `json:"lang"`
-		Cover       *string  `json:"cover"`
-		Documents   []string `json:"documents"`
+		Title       *string    `json:"title"`
+		Description *string    `json:"description"`
+		Content     *string    `json:"content"`
+		Lang        *string    `json:"lang"`
+		Cover       *string    `json:"cover"`
+		Documents   []string   `json:"documents"`
+		OccuredOn   *time.Time `json:"occuredOn"`
 	}
 
 	err = app.readJson(w, r, &input)
@@ -180,6 +184,10 @@ func (app *application) updateBookHandler(w http.ResponseWriter, r *http.Request
 
 	if input.Documents != nil {
 		book.Documents = input.Documents
+	}
+
+	if input.OccuredOn != nil {
+		book.OccuredOn = *input.OccuredOn
 	}
 
 	v := validator.New()

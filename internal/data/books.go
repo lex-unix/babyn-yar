@@ -15,6 +15,7 @@ type Book struct {
 	ID          int64     `json:"id"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
+	OccuredOn   time.Time `json:"occuredOn"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Content     string    `json:"content"`
@@ -37,7 +38,7 @@ func ValidateBook(v *validator.Validator, book *Book) {
 	v.Check(book.Cover != "", "cover", "must not be empty")
 	v.Check(book.Lang != "", "lang", "must not be empty")
 	v.Check(validator.In(book.Lang, "ua", "en"), "lang", "must be either ua or en")
-
+	v.Check(!book.OccuredOn.IsZero(), "occuredOn", "must be a valid date")
 }
 
 func (m BookModel) Insert(book *Book) error {
@@ -118,7 +119,7 @@ func (m BookModel) Get(id int64) (*Book, error) {
 	}
 
 	query := `
-		SELECT b.id, b.title, b.description, b.content, b.lang, b.cover, b.documents, b.version
+		SELECT b.id, b.created_at, b.occured_on, b.title, b.description, b.content, b.lang, b.cover, b.documents, b.version
 		FROM books b
 		WHERE id = $1`
 
@@ -128,6 +129,8 @@ func (m BookModel) Get(id int64) (*Book, error) {
 	var book Book
 	err := m.DB.QueryRow(ctx, query, id).Scan(
 		&book.ID,
+		&book.CreatedAt,
+		&book.OccuredOn,
 		&book.Title,
 		&book.Description,
 		&book.Content,
@@ -151,8 +154,8 @@ func (m BookModel) Get(id int64) (*Book, error) {
 func (m BookModel) Update(book *Book) error {
 	query := `
 		UPDATE books
-		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, documents = $6, updated_at = now(), version = version + 1
-		WHERE id = $7 AND version = $8
+		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, documents = $6, occured_on = $7, updated_at = now(), version = version + 1
+		WHERE id = $8 AND version = $9
 		RETURNING version`
 
 	args := []interface{}{
@@ -162,6 +165,7 @@ func (m BookModel) Update(book *Book) error {
 		book.Lang,
 		book.Cover,
 		book.Documents,
+		book.OccuredOn,
 		book.ID,
 		book.Version,
 	}

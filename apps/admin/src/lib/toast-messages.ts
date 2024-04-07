@@ -29,3 +29,20 @@ export const fetchErrorMsg: ToastMessage = {
     variant: 'error'
   }
 }
+
+export const createRecordSuccessMsg: ToastMessage = {
+  data: {
+    title: 'Успіх!',
+    description:
+      'Новий запис було успішно створено і вже доступний для перегляду.',
+    variant: 'success'
+  }
+}
+
+export const updateRecordSuccessMsg: ToastMessage = {
+  data: {
+    title: 'Збережено!',
+    description: 'Всі зміни успішно збережено.',
+    variant: 'success'
+  }
+}
