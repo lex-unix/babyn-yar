@@ -8,7 +8,8 @@
     Button,
     PageHeader,
     Container,
-    NotFound
+    NotFound,
+    DatePicker
   } from '$components'
   import type { HolocaustDocument } from '$lib/types'
   import type { ResponseError } from '$lib/response-error'
@@ -19,6 +20,7 @@
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'
+  import { updateRecordSuccessMsg } from '$lib/toast-messages'
 
   let isSubmitting = false
   let doc: HolocaustDocument
@@ -37,6 +39,7 @@
     isSubmitting = true
     const body = JSON.stringify({
       title: doc.title,
+      occuredOn: new Date(doc.occuredOn).toISOString(),
       description: doc.description,
       lang: doc.lang,
       cover: doc.cover,
@@ -48,13 +51,7 @@
       isSubmitting = false
       return
     }
-    addToast({
-      data: {
-        title: 'Чудово!',
-        description: 'Ваші зміни було збережено',
-        variant: 'success'
-      }
-    })
+    addToast(updateRecordSuccessMsg)
     isSubmitting = false
     error = undefined
   }
@@ -80,6 +77,7 @@
           bind:lang={doc.lang}
           error={error?.isFormError() ? error.error.lang : undefined}
         />
+        <DatePicker bind:datetime={doc.occuredOn} />
         <CoverSelect
           bind:cover={doc.cover}
           error={error?.isFormError() ? error.error.cover : undefined}

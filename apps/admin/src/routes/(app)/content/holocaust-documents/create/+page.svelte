@@ -6,7 +6,8 @@
     CoverSelect,
     Button,
     PageHeader,
-    Container
+    Container,
+    DatePicker
   } from '$components'
   import type { ResponseError } from '$lib/response-error'
   import type { JSONContent } from '@tiptap/core'
@@ -14,6 +15,7 @@
   import { PlusIcon } from 'lucide-svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { goto } from '$app/navigation'
+  import { createRecordSuccessMsg } from '$lib/toast-messages'
 
   let isSubmitting = false
   let content: JSONContent
@@ -21,6 +23,7 @@
   let description = ''
   let lang = ''
   let cover = ''
+  let occuredOn = ''
   let error: ResponseError | undefined
 
   async function submit() {
@@ -30,7 +33,8 @@
       description,
       lang,
       cover,
-      content: JSON.stringify(content)
+      content: JSON.stringify(content),
+      occuredOn: new Date(occuredOn).toISOString()
     })
     const response = await createHolocaustDocument(body)
     if (!response.ok) {
@@ -38,13 +42,7 @@
       isSubmitting = false
       return
     }
-    addToast({
-      data: {
-        title: 'Чудово!',
-        description: 'Новий запис було успішно створено',
-        variant: 'success'
-      }
-    })
+    addToast(createRecordSuccessMsg)
     isSubmitting = false
     error = undefined
     goto('/content/holocaust-documents')
@@ -74,6 +72,7 @@
       bind:lang
       error={error?.isFormError() ? error.error.lang : undefined}
     />
+    <DatePicker bind:datetime={occuredOn} />
     <CoverSelect
       bind:cover
       error={error?.isFormError() ? error.error.cover : undefined}
