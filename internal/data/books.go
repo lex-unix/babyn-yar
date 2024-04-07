@@ -43,8 +43,8 @@ func ValidateBook(v *validator.Validator, book *Book) {
 
 func (m BookModel) Insert(book *Book) error {
 	query := `
-		INSERT INTO books (title, description, content, lang, cover, documents, user_id)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO books (title, description, content, lang, cover, documents, occured_on, user_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING id, version`
 
 	args := []interface{}{
@@ -54,6 +54,7 @@ func (m BookModel) Insert(book *Book) error {
 		book.Lang,
 		book.Cover,
 		book.Documents,
+		book.OccuredOn,
 		book.UserID,
 	}
 
