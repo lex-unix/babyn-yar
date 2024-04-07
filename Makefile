@@ -1,4 +1,7 @@
- include .env
+include .env
+
+MAIN_PACKAGE_PATH := ./cmd/api
+BINARY_NAME := api
 
 # ==================================================================================== #
 # HELPERS
@@ -21,7 +24,9 @@ confirm:
 ## run/api: run cmd/api application
 .PHONY: run/api
 run/api:
-	@go run ./cmd/api  -db-dsn=${DATABASE_URL}  -port=${API_PORT} \
+	@go run ${MAIN_PACKAGE_PATH} \
+		-db-dsn=${DATABASE_URL} \
+		-port=${API_PORT} \
 		-storage-account-id=${STORAGE_ACCOUNT_ID} \
 		-storage-access-key-id=${STORAGE_ACCESS_KEY_ID} \
 		-storage-access-key-secret=${STORAGE_SECRET_ACCESS_KEY} \
@@ -31,6 +36,32 @@ run/api:
 		-session-store-secret=${SESSION_SECRET} \
 		-cors-trusted-origins=${CORS_ORIGINS} \
 		-seed=${SEED_USER}
+
+## build: build the application
+.PHONY: build
+build:
+	@go build -o=/tmp/bin/${BINARY_NAME} ${MAIN_PACKAGE_PATH}
+
+## run/live: run the application with reloading on file changes
+.PHONY: run/live
+run/live:
+	@go run github.com/cosmtrek/air@v1.43.0 \
+		--build.cmd "make build" --build.bin "/tmp/bin/${BINARY_NAME}" --build.delay "100" \
+		--build.include_dir "internal,cmd" \
+		--misc.clean_on_exit "true" \
+		-- \
+		-db-dsn=${DATABASE_URL} \
+		-port=${API_PORT} \
+		-storage-account-id=${STORAGE_ACCOUNT_ID} \
+		-storage-access-key-id=${STORAGE_ACCESS_KEY_ID} \
+		-storage-access-key-secret=${STORAGE_SECRET_ACCESS_KEY} \
+		-storage-bucket=${STORAGE_BUCKET_NAME} \
+		-storage-public-url=${STORAGE_PUBLIC_ACCESS_URL} \
+		-session-store-dsn=${REDIS_URL} \
+		-session-store-secret=${SESSION_SECRET} \
+		-cors-trusted-origins=${CORS_ORIGINS} \
+		-seed=${SEED_USER}
+
 
 ## db/psql: connect to the database using psql
 .PHONY: db/psql
