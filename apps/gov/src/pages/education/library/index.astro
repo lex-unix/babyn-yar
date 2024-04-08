@@ -40,7 +40,7 @@ if (response.error && response.error.isNotFoundError()) {
           <MediaListItem href={`/education/library/${book.id}`}>
             <div slot="header" class="">
               <h2 class="text-2xl font-bold">{book.title}</h2>
-              <p class="text-base opacity-40">{formatDate(book.createdAt)}</p>
+              <p class="text-base opacity-40">{formatDate(book.occuredOn)}</p>
             </div>
             <FloatImage slot="left" src={book.cover} alt={book.title} />
             <p slot="right">{book.description}</p>

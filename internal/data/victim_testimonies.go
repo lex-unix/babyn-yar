@@ -66,7 +66,7 @@ func (m VictimTestimonyModel) Insert(testimony *VictimTestimony) error {
 
 func (m VictimTestimonyModel) GetAll(lang string, filters Filters) ([]*VictimTestimony, Metadata, error) {
 	query := fmt.Sprintf(`
-		SELECT count(*) OVER(), vt.id, vt.created_at, vt.updated_at, vt.title, vt.description, vt.cover, vt.content, vt.documents, vt.version, u.full_name
+		SELECT count(*) OVER(), vt.id, vt.created_at, vt.updated_at, vt.occured_on, vt.title, vt.description, vt.cover, vt.content, vt.documents, vt.version, u.full_name
 		FROM victim_testimonies vt
 		INNER JOIN users u ON vt.user_id = u.id
 		WHERE (vt.lang = $1 OR $1 = '')
@@ -92,6 +92,7 @@ func (m VictimTestimonyModel) GetAll(lang string, filters Filters) ([]*VictimTes
 			&testimony.ID,
 			&testimony.CreatedAt,
 			&testimony.UpdatedAt,
+			&testimony.OccuredOn,
 			&testimony.Title,
 			&testimony.Description,
 			&testimony.Cover,

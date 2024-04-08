@@ -88,4 +88,4 @@ db/migrations/up:
 .PHONY migrate-up: confirm
 migrate-up:
 	@echo 'Running migrations...'
-	docker-compose --profile tools run --rm migrate up
+	docker compose --profile tools run --rm migrate up

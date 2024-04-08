@@ -43,7 +43,7 @@ if (response.error && response.error.isNotFoundError()) {
           <MediaListItem href={`/holocaust/testimonies/${t.id}`}>
             <div slot="header" class="">
               <h2 class="text-2xl font-bold">{t.title}</h2>
-              <p class="text-base opacity-40">{formatDate(t.createdAt)}</p>
+              <p class="text-base opacity-40">{formatDate(t.occuredOn)}</p>
             </div>
             <FloatImage slot="left" src={t.cover} alt={t.title} />
             <p slot="right">{t.description}</p>
