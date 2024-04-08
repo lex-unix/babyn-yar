@@ -70,6 +70,7 @@ export async function fetchBooks(page: string = '1') {
   const url = new URL(apiURL + '/books')
   url.searchParams.set('page', `${page}`)
   url.searchParams.set('lang', 'ua')
+  url.searchParams.set('sort', '-occured_on')
   try {
     const response = await fetch(url)
     const json = await response.json()
@@ -107,6 +108,7 @@ export async function fetchHolocaustDocuments(page: string = '1') {
   const url = new URL(apiURL + '/holocaust-documents')
   url.searchParams.set('page', `${page}`)
   url.searchParams.set('lang', 'ua')
+  url.searchParams.set('sort', '-occured_on')
   try {
     const response = await fetch(url)
     const json = await response.json()
@@ -144,6 +146,7 @@ export async function fetchVictimTestimonies(page: string = '1') {
   const url = new URL(apiURL + '/victim-testimonies')
   url.searchParams.set('page', `${page}`)
   url.searchParams.set('lang', 'ua')
+  url.searchParams.set('sort', '-occured_on')
   try {
     const response = await fetch(url)
     const json = await response.json()

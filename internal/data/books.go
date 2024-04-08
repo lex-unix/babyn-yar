@@ -66,7 +66,7 @@ func (m BookModel) Insert(book *Book) error {
 
 func (m BookModel) GetAll(lang, title string, filters Filters) ([]*Book, Metadata, error) {
 	query := fmt.Sprintf(`
-		SELECT count(*) OVER(), b.id, b.created_at, b.updated_at, b.title, b.description, b.cover, b.content, b.documents, b.version, u.full_name
+		SELECT count(*) OVER(), b.id, b.created_at, b.updated_at, b.occured_on, b.title, b.description, b.cover, b.content, b.documents, b.version, u.full_name
 		FROM books b
 		INNER JOIN users u ON b.user_id = u.id
 		WHERE (b.lang = $1 OR $1 = '')
@@ -93,6 +93,7 @@ func (m BookModel) GetAll(lang, title string, filters Filters) ([]*Book, Metadat
 			&book.ID,
 			&book.CreatedAt,
 			&book.UpdatedAt,
+			&book.OccuredOn,
 			&book.Title,
 			&book.Description,
 			&book.Cover,

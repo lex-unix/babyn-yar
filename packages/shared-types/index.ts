@@ -2,6 +2,7 @@ type BaseContent = {
   id: number
   createdAt: string
   updatedAt: string
+  occuredOn: string
   title: string
   description: string
   content: string

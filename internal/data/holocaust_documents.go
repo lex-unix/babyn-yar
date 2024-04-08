@@ -64,7 +64,7 @@ func (m HolocaustDocumentModel) Insert(document *HolocaustDocument) error {
 
 func (m HolocaustDocumentModel) GetAll(lang string, filters Filters) ([]*HolocaustDocument, Metadata, error) {
 	query := fmt.Sprintf(`
-		SELECT count(*) OVER(), d.id, d.created_at, d.updated_at, d.title, d.description, d.cover, d.content, d.version, u.full_name
+		SELECT count(*) OVER(), d.id, d.created_at, d.updated_at, d.occured_on, d.title, d.description, d.cover, d.content, d.version, u.full_name
 		FROM holocaust_documents d
 		INNER JOIN users u ON d.user_id = u.id
 		WHERE (d.lang = $1 OR $1 = '')
@@ -90,6 +90,7 @@ func (m HolocaustDocumentModel) GetAll(lang string, filters Filters) ([]*Holocau
 			&document.ID,
 			&document.CreatedAt,
 			&document.UpdatedAt,
+			&document.OccuredOn,
 			&document.Title,
 			&document.Description,
 			&document.Cover,
