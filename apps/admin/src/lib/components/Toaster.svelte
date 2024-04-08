@@ -32,7 +32,7 @@
       animate:flip={{ duration: 500 }}
       in:fly={{ duration: 150, x: '100%' }}
       out:fly={{ duration: 150, x: '100%' }}
-      class="rounded-lg bg-neutral-700 text-white shadow-md"
+      class="rounded-lg"
       class:success={data.variant === 'success'}
       class:error={data.variant === 'error'}
     >
@@ -40,10 +40,7 @@
         class="relative flex w-[24rem] max-w-[calc(100vw-2rem)] items-center justify-between gap-4 p-5"
       >
         <div>
-          <h3
-            use:melt={$title(id)}
-            class="flex items-center gap-2 font-semibold"
-          >
+          <h3 use:melt={$title(id)} class="flex items-center gap-2 font-medium">
             {data.title}
             <span class="square-1.5 rounded-full" />
           </h3>
@@ -64,10 +61,34 @@
 
 <style lang="postcss">
   .success {
-    @apply bg-green-100 text-green-800 shadow-green-200;
+    @apply border border-emerald-600/10 bg-emerald-100 shadow-lg shadow-emerald-100;
+
+    & [data-melt-toast-close] {
+      @apply text-emerald-600 transition-colors hover:bg-emerald-200 hover:text-emerald-700;
+    }
+
+    & [data-melt-toast-title] {
+      @apply text-emerald-800;
+    }
+
+    & [data-melt-toast-description] {
+      @apply text-emerald-700;
+    }
   }
 
   .error {
-    @apply bg-red-100 text-red-800 shadow-red-300;
+    @apply border border-rose-600/10 bg-rose-100 shadow-lg shadow-rose-100;
+
+    & [data-melt-toast-close] {
+      @apply text-rose-600 transition-colors hover:bg-rose-200 hover:text-rose-700;
+    }
+
+    & [data-melt-toast-title] {
+      @apply text-rose-800;
+    }
+
+    & [data-melt-toast-description] {
+      @apply text-rose-700;
+    }
   }
 </style>

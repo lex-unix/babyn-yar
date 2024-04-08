@@ -9,13 +9,16 @@
     Button,
     PageHeader,
     Container,
-    NotFound
+    NotFound,
+    DatePicker
   } from '$components'
   import type { Book } from '$lib/types'
-  import { fetchBook, updateBook, ResponseError } from '$lib'
+  import type { ResponseError } from '$lib/response-error'
+  import { fetchBook, updateBook } from '$lib/books'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'
+  import { updateRecordSuccessMsg } from '$lib/toast-messages'
 
   let isSubmitting = false
   let book: Book
@@ -33,6 +36,7 @@
   async function submit() {
     isSubmitting = true
     const body = JSON.stringify({
+      occuredOn: new Date(book.occuredOn).toISOString(),
       title: book.title,
       description: book.description,
       lang: book.lang,
@@ -46,13 +50,7 @@
       isSubmitting = false
       return
     }
-    addToast({
-      data: {
-        title: 'Чудово!',
-        description: 'Ваші зміни було збережено',
-        variant: 'success'
-      }
-    })
+    addToast(updateRecordSuccessMsg)
     isSubmitting = false
     error = undefined
   }
@@ -78,6 +76,7 @@
           bind:lang={book.lang}
           error={error?.isFormError() ? error.error.lang : undefined}
         />
+        <DatePicker bind:datetime={book.occuredOn} />
         <CoverSelect
           bind:cover={book.cover}
           error={error?.isFormError() ? error.error.cover : undefined}

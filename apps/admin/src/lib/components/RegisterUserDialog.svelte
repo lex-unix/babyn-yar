@@ -13,9 +13,11 @@
     DialogDescription,
     DialogContent
   } from '$components'
+  import type { ResponseError } from '$lib/response-error'
   import { PlusIcon } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
-  import { ResponseError, permissionOptions, register } from '$lib'
+  import { register } from '$lib/user'
+  import { permissionOptions } from '$lib/select-options'
   import { addToast } from './Toaster.svelte'
 
   export function open() {

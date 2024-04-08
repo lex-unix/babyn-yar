@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Select, SelectTrigger, SelectMenu, SelectItem } from '$components'
-  import { langOptions } from '$lib/select-option'
+  import { langOptions } from '$lib/select-options'
 
   export let lang: string
   export let error: string | undefined = undefined

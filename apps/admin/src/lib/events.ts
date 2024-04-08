@@ -7,9 +7,10 @@ type PaginatedResponse = {
   metadata: Metadata
 }
 
-type Filters = {
+export type Filters = {
   title?: string
   sort?: string
+  pageSize?: number
 }
 
 const baseUrl = PUBLIC_API_URL + '/events'
@@ -28,6 +29,10 @@ export function fetchEventsWrapper() {
 
     if (filters?.sort !== undefined) {
       searchParams.set('sort', filters.sort)
+    }
+
+    if (filters?.pageSize !== undefined) {
+      searchParams.set('page_size', filters.pageSize.toString())
     }
 
     url.search = searchParams.toString()

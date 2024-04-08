@@ -10,12 +10,18 @@
     Container,
     AssetGrid,
     DeleteAlertDialog,
-    Button
+    Button,
+    EmptySearchMessage
   } from '$components'
   import { RefreshCcw, Trash } from 'lucide-svelte'
-  import { fetchAssetsWrapper, deleteAssets } from '$lib'
+  import { fetchAssetsWrapper, deleteAssets, type Filters } from '$lib/assets'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
+  import {
+    deleteErrorMsg,
+    deleteSuccessMsg,
+    fetchErrorMsg
+  } from '$lib/toast-messages'
 
   let loading = false
   let assets: Asset[] = []
@@ -36,20 +42,22 @@
     loading = false
   })
 
-  async function sort(e: CustomEvent<string>) {
-    const res = await fetchAssets({ sort: e.detail })
-    if (res.ok) {
-      assets = res.data.assets
-      metadata = res.data.metadata
+  async function load(pageNum = 1, filters: Filters | undefined = undefined) {
+    const res = await fetchAssets(pageNum, filters)
+    if (!res.ok) {
+      addToast(fetchErrorMsg)
+      return
     }
+    assets = res.data.assets
+    metadata = res.data.metadata
+  }
+
+  async function sort(e: CustomEvent<string>) {
+    await load(1, { sort: e.detail })
   }
 
   async function search(e: CustomEvent<{ search: string }>) {
-    const res = await fetchAssets({ filename: e.detail.search })
-    if (res.ok) {
-      assets = res.data?.assets
-      metadata = res.data.metadata
-    }
+    await load(1, { filename: e.detail.search })
   }
 
   function clear() {
@@ -70,50 +78,33 @@
 
   async function loadMore() {
     isLoadingMore = true
-    const { currentPage } = metadata
-    const res = await fetchAssets(undefined, currentPage + 1)
-    if (res.ok) {
-      assets = [...assets, ...res.data.assets]
-      metadata = res.data.metadata
-    }
+    const response = await fetchAssets(metadata.currentPage + 1)
     isLoadingMore = false
+    if (!response.ok) {
+      addToast(fetchErrorMsg)
+      return
+    }
+    assets = [...assets, ...response.data.assets]
+    metadata = response.data.metadata
   }
 
   async function deleteSelected() {
     const { ok } = await deleteAssets(selectedAssets)
     if (!ok) {
-      addToast({
-        data: {
-          title: 'Щось пішло не так',
-          description: 'Спробуйте ще раз',
-          variant: 'error'
-        }
-      })
+      addToast(deleteErrorMsg)
       return
     }
+
+    addToast(deleteSuccessMsg)
     selectedAssets = []
     alertDialog.dismiss()
-    addToast({
-      data: {
-        title: 'Операція успішна',
-        description: 'Елементи було видалено',
-        variant: 'success'
-      }
-    })
-    const res = await fetchAssets()
-    if (res.ok) {
-      assets = res.data.assets
-      metadata = res.data.metadata
-    }
+
+    await load()
   }
 
   async function onUpload() {
     loading = true
-    const res = await fetchAssets()
-    if (res.ok) {
-      assets = res.data.assets
-      metadata = res.data.metadata
-    }
+    await load()
     loading = false
   }
 </script>
@@ -164,15 +155,21 @@
     </div>
   {/if}
 
-  <AssetGrid>
-    {#if loading && assets.length === 0}
+  {#if loading && assets.length === 0}
+    <AssetGrid>
       <AssetGridItemSkeleton />
       <AssetGridItemSkeleton />
       <AssetGridItemSkeleton />
       <AssetGridItemSkeleton />
       <AssetGridItemSkeleton />
       <AssetGridItemSkeleton />
-    {:else}
+    </AssetGrid>
+  {:else if !loading && assets.length === 0}
+    <div class="mt-10">
+      <EmptySearchMessage />
+    </div>
+  {:else}
+    <AssetGrid>
       {#each assets as asset}
         {@const selected = selectedAssets.includes(asset.id)}
         <li class="p-2.5">
@@ -200,8 +197,8 @@
           </div>
         </li>
       {/each}
-    {/if}
-  </AssetGrid>
+    </AssetGrid>
+  {/if}
   {#if metadata && metadata.currentPage !== metadata.lastPage}
     <div class="mt-8">
       <div class="flex min-w-full items-center justify-center">

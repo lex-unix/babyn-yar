@@ -26,33 +26,29 @@
       icon: ArrowDownIcon
     },
     {
-      sortValue: 'file_name',
-      name: 'Назва файлу',
+      sortValue: 'occured_on',
+      name: 'Дата проведення',
       icon: ArrowUpIcon
     },
     {
-      sortValue: '-file_name',
-      name: 'Назва файлу',
+      sortValue: '-occured_on',
+      name: 'Дата проведення',
       icon: ArrowDownIcon
     }
   ]
 
-  type EventDispatcher = {
-    select: string
-  }
+  const dispatch = createEventDispatcher()
 
   let selected = menuItems[0]
 
   function select(item: (typeof menuItems)[number]) {
     if (selected.sortValue === item.sortValue) return
 
-    const sortsortValue =
+    const sortValue =
       item.sortValue === 'default' ? defaultSort : item.sortValue
-    dispatch('select', sortsortValue)
+    dispatch('select', { sortValue })
     selected = item
   }
-
-  const dispatch = createEventDispatcher<EventDispatcher>()
 </script>
 
 <SortDropdown>

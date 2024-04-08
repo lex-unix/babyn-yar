@@ -9,12 +9,12 @@
     Button,
     DatePicker
   } from '$components'
-  import { createEvent } from '$lib'
+  import type { ResponseError } from '$lib/response-error'
   import type { JSONContent } from '@tiptap/core'
+  import { createEvent } from '$lib/events'
   import { PlusIcon } from 'lucide-svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { goto } from '$app/navigation'
-  import type { ResponseError } from '$lib/response-error'
 
   let isSubmitting = false
   let content: JSONContent

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import { Editor, type JSONContent } from '@tiptap/core'
-  import { extensions } from '$lib'
+  import { extensions } from '$lib/editor-extensions'
   import {
     BoldIcon,
     PilcrowIcon,

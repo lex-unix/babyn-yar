@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createDatePicker, melt } from '@melt-ui/svelte'
-  import { jsDateToCalendarDate } from '$lib'
+  import { jsDateToCalendarDate } from '$lib/format-date'
   import {
     ChevronLeftIcon,
     ChevronRightIcon,

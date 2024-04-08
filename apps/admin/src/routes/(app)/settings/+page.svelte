@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Input, PageHeader, Container, Button } from '$components'
   import { addToast } from '$components/Toaster.svelte'
-  import { updateUser } from '$lib'
+  import { updateUser } from '$lib/user'
   import { user } from '$lib/stores'
   import type { UserErrorResponse } from '$lib/types'
 

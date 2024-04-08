@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { cn } from '$lib'
+  import { cn } from '$lib/cn'
 
   let className: string = ''
   export { className as class }

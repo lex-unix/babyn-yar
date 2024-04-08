@@ -9,13 +9,16 @@
     Button,
     PageHeader,
     Container,
-    NotFound
+    NotFound,
+    DatePicker
   } from '$components'
   import type { VictimTestimony } from '$lib/types'
-  import { ResponseError, fetchTestimony, updateTestimony } from '$lib'
+  import type { ResponseError } from '$lib/response-error'
+  import { fetchTestimony, updateTestimony } from '$lib/testimonies'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'
+  import { updateRecordSuccessMsg } from '$lib/toast-messages'
 
   let isSubmitting = false
   let testimony: VictimTestimony
@@ -38,7 +41,8 @@
       lang: testimony.lang,
       cover: testimony.cover,
       documents: testimony.documents,
-      content: JSON.stringify(testimony.content)
+      content: JSON.stringify(testimony.content),
+      occuredOn: new Date(testimony.occuredOn).toISOString()
     })
     const response = await updateTestimony($page.params.id, body)
     if (!response.ok) {
@@ -46,13 +50,7 @@
       isSubmitting = false
       return
     }
-    addToast({
-      data: {
-        title: 'Чудово!',
-        description: 'Новий запис було успішно створено',
-        variant: 'success'
-      }
-    })
+    addToast(updateRecordSuccessMsg)
     isSubmitting = false
     error = undefined
   }
@@ -83,6 +81,7 @@
           bind:lang={testimony.lang}
           error={error?.isFormError() ? error.error.lang : undefined}
         />
+        <DatePicker bind:datetime={testimony.occuredOn} />
         <CoverSelect
           bind:cover={testimony.cover}
           error={error?.isFormError() ? error.error.cover : undefined}

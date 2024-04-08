@@ -10,14 +10,24 @@
     LinkButton,
     RecordActionBar,
     TableSkeleton,
-    Pagination
+    Pagination,
+    SearchBar,
+    ContentSortMenu,
+    EmptySearchMessage
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
-  import { formatDate, trimText } from '$lib'
+  import { formatDate } from '$lib/format-date'
+  import { trimText } from '$lib/trim-text'
   import type { Metadata, VictimTestimony } from '$lib/types'
   import { onMount } from 'svelte'
-  import { fetchBooksWrapper, deleteBooks } from '$lib'
+  import { fetchBooksWrapper, deleteBooks, type Filters } from '$lib/books'
   import { addToast } from '$components/Toaster.svelte'
+  import {
+    deleteErrorMsg,
+    deleteSuccessMsg,
+    fetchErrorMsg
+  } from '$lib/toast-messages'
+  import { calculateNewPage } from '$lib/pagination'
 
   let books: VictimTestimony[] = []
   let metadata: Metadata
@@ -29,13 +39,19 @@
 
   onMount(async () => {
     isLoading = true
-    const res = await fetchBooks()
-    if (res.ok) {
-      books = res.data.books
-      metadata = res.data.metadata
-    }
+    await load()
     isLoading = false
   })
+
+  async function load(pageNum = 1, filters: Filters | undefined = undefined) {
+    const response = await fetchBooks(pageNum, filters)
+    if (!response.ok) {
+      addToast(fetchErrorMsg)
+      return
+    }
+    books = response.data.books
+    metadata = response.data.metadata
+  }
 
   function toggleSelect(id: number) {
     if (selected.includes(id)) {
@@ -56,38 +72,39 @@
   async function deleteSelected() {
     const { ok } = await deleteBooks(selected)
     if (!ok) {
-      addToast({
-        data: {
-          title: 'Щось пішло не так',
-          description: 'Спробуйте ще раз',
-          variant: 'error'
-        }
-      })
+      addToast(deleteErrorMsg)
       return
     }
+
     selected = []
     alertDialog.dismiss()
-    addToast({
-      data: {
-        title: 'Операція успішна',
-        description: 'Записи було видалено',
-        variant: 'success'
-      }
-    })
-    const res = await fetchBooks()
-    if (res.ok) {
-      books = res.data.books
-      metadata = res.data.metadata
-    }
+    addToast(deleteSuccessMsg)
+
+    await load()
+  }
+
+  async function search(e: CustomEvent<{ search: string }>) {
+    await load(1, { title: e.detail.search })
+  }
+
+  async function sort(e: CustomEvent<{ sortValue: string }>) {
+    await load(1, { sort: e.detail.sortValue })
   }
 
   async function selectPage(e: CustomEvent<{ page: number }>) {
     const { page } = e.detail
-    const response = await fetchBooks(page)
-    if (response.ok) {
-      books = response.data.books
-      metadata = response.data.metadata
-    }
+    await load(page)
+  }
+
+  async function selectPageSize(e: CustomEvent<{ size: number }>) {
+    const newPageSize = e.detail.size
+    const { currentPage, pageSize: currentPageSize } = metadata
+
+    if (newPageSize === currentPageSize) return
+
+    const page = calculateNewPage(currentPage, currentPageSize, newPageSize)
+
+    await load(page, { pageSize: newPageSize })
   }
 </script>
 
@@ -100,9 +117,16 @@
 </PageHeader>
 
 <Container title="Бібліотека">
+  <div class="mb-5">
+    <SearchBar on:search={search}>
+      <ContentSortMenu slot="filters" on:select={sort} />
+    </SearchBar>
+  </div>
   <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
-  {#if books.length === 0 || isLoading}
+  {#if isLoading}
     <TableSkeleton />
+  {:else if !isLoading && books.length === 0}
+    <EmptySearchMessage />
   {:else}
     <Table>
       <thead>
@@ -158,6 +182,7 @@
             currentPage={metadata.currentPage}
             lastPage={metadata.lastPage}
             on:select={selectPage}
+            on:selectSize={selectPageSize}
           />
         {/if}
       </svelte:fragment>

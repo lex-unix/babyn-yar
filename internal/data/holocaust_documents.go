@@ -15,6 +15,7 @@ type HolocaustDocument struct {
 	ID          int64     `json:"id"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
+	OccuredOn   time.Time `json:"occuredOn"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Content     string    `json:"content"`
@@ -36,12 +37,13 @@ func ValidateHolocaustDocument(v *validator.Validator, document *HolocaustDocume
 	v.Check(document.Lang != "", "lang", "must not be empty")
 	v.Check(validator.In(document.Lang, "ua", "en"), "lang", "must be either ua or en")
 	v.Check(document.Cover != "", "cover", "must not be empty")
+	v.Check(!document.OccuredOn.IsZero(), "occuredOn", "must be a valid date")
 }
 
 func (m HolocaustDocumentModel) Insert(document *HolocaustDocument) error {
 	query := `
-		INSERT INTO holocaust_documents (title, description, content, lang, cover, user_id)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		INSERT INTO holocaust_documents (title, description, content, lang, cover, occured_on, user_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id, version`
 
 	args := []interface{}{
@@ -50,6 +52,7 @@ func (m HolocaustDocumentModel) Insert(document *HolocaustDocument) error {
 		document.Content,
 		document.Lang,
 		document.Cover,
+		document.OccuredOn,
 		document.UserID,
 	}
 
@@ -113,7 +116,7 @@ func (m HolocaustDocumentModel) Get(id int64) (*HolocaustDocument, error) {
 	}
 
 	query := `
-		SELECT d.id, d.title, d.description, d.content, d.lang, d.cover, d.version
+		SELECT d.id, d.occured_on, d.title, d.description, d.content, d.lang, d.cover, d.version
 		FROM holocaust_documents d
 		WHERE id = $1`
 
@@ -123,6 +126,7 @@ func (m HolocaustDocumentModel) Get(id int64) (*HolocaustDocument, error) {
 	var document HolocaustDocument
 	err := m.DB.QueryRow(ctx, query, id).Scan(
 		&document.ID,
+		&document.OccuredOn,
 		&document.Title,
 		&document.Description,
 		&document.Content,
@@ -145,8 +149,8 @@ func (m HolocaustDocumentModel) Get(id int64) (*HolocaustDocument, error) {
 func (m HolocaustDocumentModel) Update(document *HolocaustDocument) error {
 	query := `
 		UPDATE holocaust_documents
-		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, updated_at = now(), version = version + 1
-		WHERE id = $6 AND version = $7
+		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, occured_on = $6, updated_at = now(), version = version + 1
+		WHERE id = $7 AND version = $8
 		RETURNING version`
 
 	args := []interface{}{
@@ -155,6 +159,7 @@ func (m HolocaustDocumentModel) Update(document *HolocaustDocument) error {
 		document.Content,
 		document.Lang,
 		document.Cover,
+		document.OccuredOn,
 		document.ID,
 		document.Version,
 	}

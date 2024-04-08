@@ -12,12 +12,13 @@
     TableSkeleton,
     Pagination
   } from '$components'
+  import { UserIcon, AtSignIcon, CalendarIcon, KeyIcon } from 'lucide-svelte'
   import type { Metadata, User } from '$lib/types'
   import { admin } from '$lib/stores'
   import { onMount } from 'svelte'
-  import { deleteUsers, formatDate, fetchUsersWrapper } from '$lib'
+  import { deleteUsers, fetchUsersWrapper } from '$lib/user'
+  import { formatDate } from '$lib/format-date'
   import { addToast } from '$components/Toaster.svelte'
-  import { UserIcon, AtSignIcon, CalendarIcon, KeyIcon } from 'lucide-svelte'
 
   let users: User[] = []
   let metadata: Metadata

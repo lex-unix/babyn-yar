@@ -7,6 +7,12 @@ type PaginatedResponse = {
   metadata: Metadata
 }
 
+export type Filters = {
+  title?: string
+  sort?: string
+  pageSize?: number
+}
+
 const baseUrl = PUBLIC_API_URL + '/books'
 
 export function fetchBooksWrapper() {
@@ -14,17 +20,31 @@ export function fetchBooksWrapper() {
   const searchParams = new URLSearchParams()
   searchParams.set('page_size', '10')
 
-  return async (page: number = 1) => {
+  return async (page: number = 1, filters: Filters | undefined = undefined) => {
+    searchParams.set('page', `${page}`)
+
+    if (filters?.sort !== undefined) {
+      searchParams.set('sort', filters.sort)
+    }
+
+    if (filters?.title !== undefined) {
+      searchParams.set('title', filters.title)
+    }
+
+    if (filters?.pageSize !== undefined) {
+      searchParams.set('page_size', filters.pageSize.toString())
+    }
+
+    url.search = searchParams.toString()
+
     try {
-      searchParams.set('page', `${page}`)
-      url.search = searchParams.toString()
       const response = await fetch(url)
       const json = await response.json()
-      if (response.ok) {
-        return { ok: true as const, data: json as PaginatedResponse }
+      if (!response.ok) {
+        const error = new ResponseError(response.status, json.error)
+        return { ok: false as const, error }
       }
-      const error = new ResponseError(response.status, json.error)
-      return { ok: false as const, error }
+      return { ok: true as const, data: json as PaginatedResponse }
     } catch (e) {
       console.log(e)
       const error = new ResponseError(500, 'the server encountered an error')

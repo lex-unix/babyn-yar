@@ -72,6 +72,7 @@
     if (response.ok) {
       dispatch('submit')
       isSubmitting = false
+      dialog.dissmis()
       return
     }
     let errMsg = 'Спробуйте, будь ласка, ще раз'
@@ -96,7 +97,7 @@
   }
 </script>
 
-<Dialog size="md">
+<Dialog bind:this={dialog} size="md">
   <DialogTrigger>
     <UploadCloudIcon slot="icon" size={16} />
     <svelte:fragment slot="text">Завантажити</svelte:fragment>

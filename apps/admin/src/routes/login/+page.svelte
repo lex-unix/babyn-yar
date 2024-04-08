@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { login } from '$lib'
+  import { login } from '$lib/user'
   import { user } from '$lib/stores'
   import { goto } from '$app/navigation'
   import { Button, Input } from '$components'

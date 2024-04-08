@@ -12,14 +12,22 @@
     TableSkeleton,
     SearchBar,
     Pagination,
-    EventSortMenu
+    ContentSortMenu,
+    EmptySearchMessage
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
-  import { formatDate, trimText } from '$lib'
+  import { formatDate } from '$lib/format-date'
+  import { trimText } from '$lib/trim-text'
   import type { Event, Metadata } from '$lib/types'
   import { onMount } from 'svelte'
-  import { deleteEvents, fetchEventsWrapper } from '$lib'
+  import { deleteEvents, fetchEventsWrapper, type Filters } from '$lib/events'
   import { addToast } from '$components/Toaster.svelte'
+  import {
+    deleteSuccessMsg,
+    deleteErrorMsg,
+    fetchErrorMsg
+  } from '$lib/toast-messages'
+  import { calculateNewPage } from '$lib/pagination'
 
   let isLoading = false
   let events: Event[] = []
@@ -31,28 +39,26 @@
 
   onMount(async () => {
     isLoading = true
-    const response = await fetchEvents()
-    if (response.ok) {
-      events = response.data.events
-      metadata = response.data.metadata
-    }
+    await load()
     isLoading = false
   })
 
-  async function search(e: CustomEvent<{ search: string }>) {
-    const res = await fetchEvents(1, { title: e.detail.search })
-    if (res.ok) {
-      events = res.data.events
-      metadata = res.data.metadata
+  async function load(pageNum = 1, filters: Filters | undefined = undefined) {
+    const res = await fetchEvents(pageNum, filters)
+    if (!res.ok) {
+      addToast(fetchErrorMsg)
+      return
     }
+    events = res.data.events
+    metadata = res.data.metadata
   }
 
-  async function sort(e: CustomEvent<string>) {
-    const res = await fetchEvents(1, { sort: e.detail })
-    if (res.ok) {
-      events = res.data.events
-      metadata = res.data.metadata
-    }
+  async function search(e: CustomEvent<{ search: string }>) {
+    await load(1, { title: e.detail.search })
+  }
+
+  async function sort(e: CustomEvent<{ sortValue: string }>) {
+    await load(1, { sort: e.detail.sortValue })
   }
 
   function toggleSelect(id: number) {
@@ -74,38 +80,31 @@
   async function deleteSelected() {
     const ok = await deleteEvents(selected)
     if (!ok) {
-      addToast({
-        data: {
-          title: 'Щось пішло не так',
-          description: 'Спробуйте ще раз',
-          variant: 'error'
-        }
-      })
+      addToast(deleteErrorMsg)
       return
     }
+
+    addToast(deleteSuccessMsg)
     selected = []
     alertDialog.dismiss()
-    addToast({
-      data: {
-        title: 'Операція успішна',
-        description: 'Елементи було видалено',
-        variant: 'success'
-      }
-    })
-    const res = await fetchEvents()
-    if (res.ok) {
-      events = res.data.events
-      metadata = res.data.metadata
-    }
+
+    await load()
   }
 
   async function selectPage(e: CustomEvent<{ page: number }>) {
     const { page } = e.detail
-    const response = await fetchEvents(page)
-    if (response.ok) {
-      events = response.data.events
-      metadata = response.data.metadata
-    }
+    await load(page)
+  }
+
+  async function selectPageSize(e: CustomEvent<{ size: number }>) {
+    const newPageSize = e.detail.size
+    const { currentPage, pageSize: currentPageSize } = metadata
+
+    if (newPageSize === currentPageSize) return
+
+    const page = calculateNewPage(currentPage, currentPageSize, newPageSize)
+
+    await load(page, { pageSize: newPageSize })
   }
 </script>
 
@@ -120,12 +119,16 @@
 <Container title="Події">
   <div class="mb-5">
     <SearchBar on:search={search}>
-      <EventSortMenu slot="filters" on:select={sort} />
+      <ContentSortMenu slot="filters" on:select={sort} />
     </SearchBar>
   </div>
   <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
-  {#if events.length === 0 || isLoading}
+  {#if events.length === 0 && isLoading}
     <TableSkeleton />
+  {:else if events.length === 0 && !isLoading}
+    <div class="mt-10">
+      <EmptySearchMessage />
+    </div>
   {:else}
     <Table>
       <thead>
@@ -183,6 +186,7 @@
             currentPage={metadata.currentPage}
             lastPage={metadata.lastPage}
             on:select={selectPage}
+            on:selectSize={selectPageSize}
           />
         {/if}
       </svelte:fragment>

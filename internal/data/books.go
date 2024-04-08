@@ -15,6 +15,7 @@ type Book struct {
 	ID          int64     `json:"id"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
+	OccuredOn   time.Time `json:"occuredOn"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Content     string    `json:"content"`
@@ -37,13 +38,13 @@ func ValidateBook(v *validator.Validator, book *Book) {
 	v.Check(book.Cover != "", "cover", "must not be empty")
 	v.Check(book.Lang != "", "lang", "must not be empty")
 	v.Check(validator.In(book.Lang, "ua", "en"), "lang", "must be either ua or en")
-
+	v.Check(!book.OccuredOn.IsZero(), "occuredOn", "must be a valid date")
 }
 
 func (m BookModel) Insert(book *Book) error {
 	query := `
-		INSERT INTO books (title, description, content, lang, cover, documents, user_id)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO books (title, description, content, lang, cover, documents, occured_on, user_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING id, version`
 
 	args := []interface{}{
@@ -53,6 +54,7 @@ func (m BookModel) Insert(book *Book) error {
 		book.Lang,
 		book.Cover,
 		book.Documents,
+		book.OccuredOn,
 		book.UserID,
 	}
 
@@ -62,19 +64,20 @@ func (m BookModel) Insert(book *Book) error {
 	return m.DB.QueryRow(ctx, query, args...).Scan(&book.ID, &book.Version)
 }
 
-func (m BookModel) GetAll(lang string, filters Filters) ([]*Book, Metadata, error) {
+func (m BookModel) GetAll(lang, title string, filters Filters) ([]*Book, Metadata, error) {
 	query := fmt.Sprintf(`
 		SELECT count(*) OVER(), b.id, b.created_at, b.updated_at, b.title, b.description, b.cover, b.content, b.documents, b.version, u.full_name
 		FROM books b
 		INNER JOIN users u ON b.user_id = u.id
 		WHERE (b.lang = $1 OR $1 = '')
+		AND (STRPOS(LOWER(b.title), LOWER($2)) > 0 OR $2 = '')
 		ORDER BY %s %s, id ASC
-		LIMIT $2 OFFSET $3`, filters.sortColumn(), filters.sortDirection())
+		LIMIT $3 OFFSET $4`, filters.sortColumn(), filters.sortDirection())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	args := []interface{}{lang, filters.limit(), filters.offset()}
+	args := []interface{}{lang, title, filters.limit(), filters.offset()}
 
 	rows, err := m.DB.Query(ctx, query, args...)
 	if err != nil {
@@ -117,7 +120,7 @@ func (m BookModel) Get(id int64) (*Book, error) {
 	}
 
 	query := `
-		SELECT b.id, b.title, b.description, b.content, b.lang, b.cover, b.documents, b.version
+		SELECT b.id, b.created_at, b.occured_on, b.title, b.description, b.content, b.lang, b.cover, b.documents, b.version
 		FROM books b
 		WHERE id = $1`
 
@@ -127,6 +130,8 @@ func (m BookModel) Get(id int64) (*Book, error) {
 	var book Book
 	err := m.DB.QueryRow(ctx, query, id).Scan(
 		&book.ID,
+		&book.CreatedAt,
+		&book.OccuredOn,
 		&book.Title,
 		&book.Description,
 		&book.Content,
@@ -150,8 +155,8 @@ func (m BookModel) Get(id int64) (*Book, error) {
 func (m BookModel) Update(book *Book) error {
 	query := `
 		UPDATE books
-		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, documents = $6, updated_at = now(), version = version + 1
-		WHERE id = $7 AND version = $8
+		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, documents = $6, occured_on = $7, updated_at = now(), version = version + 1
+		WHERE id = $8 AND version = $9
 		RETURNING version`
 
 	args := []interface{}{
@@ -161,6 +166,7 @@ func (m BookModel) Update(book *Book) error {
 		book.Lang,
 		book.Cover,
 		book.Documents,
+		book.OccuredOn,
 		book.ID,
 		book.Version,
 	}

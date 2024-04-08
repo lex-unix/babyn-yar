@@ -10,17 +10,27 @@
     LinkButton,
     RecordActionBar,
     TableSkeleton,
-    Pagination
+    Pagination,
+    SearchBar,
+    ContentSortMenu
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
-  import { formatDate, trimText } from '$lib'
+  import { formatDate } from '$lib/format-date'
+  import { trimText } from '$lib/trim-text'
   import type { HolocaustDocument, Metadata } from '$lib/types'
   import { onMount } from 'svelte'
   import {
     deleteHolocaustDocuments,
-    fetchHolocaustDocumentsWrapper
-  } from '$lib'
+    fetchHolocaustDocumentsWrapper,
+    type Filters
+  } from '$lib/holocaust-documents'
   import { addToast } from '$components/Toaster.svelte'
+  import {
+    fetchErrorMsg,
+    deleteErrorMsg,
+    deleteSuccessMsg
+  } from '$lib/toast-messages'
+  import { calculateNewPage } from '$lib/pagination'
 
   const fetchHolocaustDocuments = fetchHolocaustDocumentsWrapper()
 
@@ -32,13 +42,19 @@
 
   onMount(async () => {
     isLoading = true
-    const response = await fetchHolocaustDocuments()
-    if (response.ok) {
-      documents = response.data.documents
-      metadata = response.data.metadata
-    }
+    await load()
     isLoading = false
   })
+
+  async function load(pageNum = 1, filters: Filters | undefined = undefined) {
+    const response = await fetchHolocaustDocuments(pageNum, filters)
+    if (!response.ok) {
+      addToast(fetchErrorMsg)
+      return
+    }
+    documents = response.data.documents
+    metadata = response.data.metadata
+  }
 
   function toggleSelect(id: number) {
     if (selected.includes(id)) {
@@ -59,38 +75,35 @@
   async function deleteSelected() {
     const { ok } = await deleteHolocaustDocuments(selected)
     if (!ok) {
-      addToast({
-        data: {
-          title: 'Щось пішло не так',
-          description: 'Спробуйте ще раз',
-          variant: 'error'
-        }
-      })
+      addToast(deleteErrorMsg)
       return
     }
+
     selected = []
     alertDialog.dismiss()
-    addToast({
-      data: {
-        title: 'Операція успішна',
-        description: 'Елементи було видалено',
-        variant: 'success'
-      }
-    })
-    const res = await fetchHolocaustDocuments()
-    if (res.ok) {
-      documents = res.data.documents
-      metadata = res.data.metadata
-    }
+    addToast(deleteSuccessMsg)
+
+    await load()
+  }
+
+  async function sort(e: CustomEvent<{ sortValue: string }>) {
+    await load(1, { sort: e.detail.sortValue })
   }
 
   async function selectPage(e: CustomEvent<{ page: number }>) {
     const { page } = e.detail
-    const response = await fetchHolocaustDocuments(page)
-    if (response.ok) {
-      documents = response.data.documents
-      metadata = response.data.metadata
-    }
+    await load(page)
+  }
+
+  async function selectPageSize(e: CustomEvent<{ size: number }>) {
+    const newPageSize = e.detail.size
+    const { currentPage, pageSize: currentPageSize } = metadata
+
+    if (newPageSize === currentPageSize) return
+
+    const page = calculateNewPage(currentPage, currentPageSize, newPageSize)
+
+    await load(page, { pageSize: newPageSize })
   }
 </script>
 
@@ -103,6 +116,11 @@
 </PageHeader>
 
 <Container title="Документи Голокосту">
+  <div class="mb-5">
+    <SearchBar>
+      <ContentSortMenu slot="filters" on:select={sort} />
+    </SearchBar>
+  </div>
   <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
   {#if documents.length === 0 || isLoading}
     <TableSkeleton />
@@ -164,6 +182,7 @@
             currentPage={metadata.currentPage}
             lastPage={metadata.lastPage}
             on:select={selectPage}
+            on:selectSize={selectPageSize}
           />
         {/if}
       </svelte:fragment>

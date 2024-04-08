@@ -32,9 +32,11 @@
       />
     </div>
   </div>
-  <div class="flex flex-[0_1_40%] items-center justify-end gap-4">
-    <slot name="filters" />
-  </div>
+  {#if $$slots.filters}
+    <div class="flex flex-[0_1_40%] items-center justify-end gap-4">
+      <slot name="filters" />
+    </div>
+  {/if}
 </div>
 
 <style>
