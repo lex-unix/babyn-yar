@@ -27,3 +27,5 @@ export { default as MobileNavContent } from './src/Header/MobileNavContent.astro
 export { default as MobileNavToggle } from './src/Header/MobileNavToggle'
 export { default as LanugagePicker } from './src/Header/LanguagePicker'
 export { default as SSRPagination } from './src/SSRPagination.astro'
+export { default as ContentGrid } from './src/ContentGrid.astro'
+export { default as ContentGridItem } from './src/ContentGridItem.astro'
