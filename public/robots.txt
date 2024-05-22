@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://babynyar.org.ua/sitemap-index.xml
-
