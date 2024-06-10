@@ -1,9 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDotEnv": [
+  "globalDependencies": [
     ".env"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": [
         "^build"
@@ -17,7 +17,8 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "dotEnv": [
+      "inputs": [
+        "$TURBO_DEFAULT$",
         ".env"
       ]
     }
