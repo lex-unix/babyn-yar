@@ -3,6 +3,7 @@ import tailwind from '@astrojs/tailwind'
 import react from '@astrojs/react'
 import mdx from '@astrojs/mdx'
 import node from '@astrojs/node'
+import robots from 'astro-robots'
 import sitemap from '@astrojs/sitemap'
 
 const isProd = import.meta.env.PROD
@@ -11,7 +12,7 @@ const isProd = import.meta.env.PROD
 export default defineConfig({
   site: 'https://babynyar.org.ua',
   publicDir: isProd ? './public' : '../../public',
-  integrations: [tailwind(), react(), mdx(), sitemap()],
+  integrations: [tailwind(), react(), mdx(), sitemap(), robots()],
   adapter: node({
     mode: 'standalone'
   }),
