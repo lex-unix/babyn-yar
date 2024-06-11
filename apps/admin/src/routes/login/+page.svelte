@@ -22,7 +22,7 @@
     if (res.error.isUnauthorized()) {
       addToast({
         data: {
-          title: 'Непавильно ввдені дані',
+          title: 'Неправильно ввдені дані',
           description: 'Email або пароль введено неправильно',
           variant: 'error'
         }
