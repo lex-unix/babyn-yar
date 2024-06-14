@@ -1,8 +1,9 @@
 import { ResponseError } from './response-error'
 import { PUBLIC_API_URL } from '$env/static/public'
-import type { Book, Metadata } from './types'
+import type { Book, Metadata, MediaArticle } from './types'
 
 const BOOKS_ENDPOINT = `${PUBLIC_API_URL}/books`
+const MEDIA_ARTICLES_ENDPOINT = `${PUBLIC_API_URL}/media-articles`
 
 export type Filters = {
   page?: number
@@ -148,6 +149,29 @@ export function updateBook(id: string, body: string) {
 }
 export function deleteBooks(ids: number[]) {
   const url = new URL(BOOKS_ENDPOINT)
+  url.searchParams.set('ids', ids.join(','))
+  return sendDeleteRequest(url.toString())
+}
+
+export const fetchArticlesWrapper = sendGetWithFilters<
+  PaginatedResponse<MediaArticle, 'articles'>
+>(MEDIA_ARTICLES_ENDPOINT)
+export function fetchArticle(id: string) {
+  return sendGetRequest<DynamicKey<MediaArticle, 'article'>>(
+    `${MEDIA_ARTICLES_ENDPOINT}/${id}`
+  )
+}
+export function createArticle(body: string) {
+  return sendPostRequest<MediaArticle>(MEDIA_ARTICLES_ENDPOINT, body)
+}
+export function updateArticle(id: string, body: string) {
+  return sendPatchRequest<MediaArticle>(
+    `${MEDIA_ARTICLES_ENDPOINT}/${id}`,
+    body
+  )
+}
+export function deleteArticles(ids: number[]) {
+  const url = new URL(MEDIA_ARTICLES_ENDPOINT)
   url.searchParams.set('ids', ids.join(','))
   return sendDeleteRequest(url.toString())
 }

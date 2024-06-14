@@ -13,7 +13,6 @@ type BaseContent = {
 }
 
 export type Event = BaseContent & {
-  occuredOn: string
   version: number
   user: User
 }
@@ -29,6 +28,11 @@ export type Book = BaseContent & {
 }
 
 export type HolocaustDocument = BaseContent & {
+  version: number
+  user: User
+}
+
+export type MediaArticle = BaseContent & {
   version: number
   user: User
 }
