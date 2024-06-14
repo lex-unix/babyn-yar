@@ -11,6 +11,7 @@ type BaseContent = {
 }
 
 export type Event = BaseContent
+export type MediaArticle = BaseContent
 
 export type HolocaustDocument = BaseContent
 
