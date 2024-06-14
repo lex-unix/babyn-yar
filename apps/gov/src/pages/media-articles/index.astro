@@ -1,6 +1,6 @@
 ---
 import MainLayout from '@/layouts/MainLayout.astro'
-import { FloatImage, MediaListItem, SSRPagination } from 'ui'
+import { ContentGrid, SSRPagination, ContentGridItem } from 'ui'
 import type { MediaArticle, Metadata } from 'shared-types'
 import { ResponseError } from 'shared'
 import { fetchArticles } from '@/api'
@@ -36,31 +36,18 @@ if (response.error && response.error.isNotFoundError()) {
   ) : (
     <MainLayout title="Події" description="Переглянути всі події">
       <div class="not-prose">
-        {articles.map((a, i) => (
-          <MediaListItem
-            href={`/media-articles/${a.id}`}
-            maxImgWidth={`${i === 0 ? 'md:max-w-[480px]' : 'md:max-w-[400px]'}`}
-          >
-            <h2
-              slot="header"
-              class={`${
-                i === 0 ? 'text-3xl' : 'text-2xl'
-              } font-bold text-black`}
-            >
-              {a.title}
-            </h2>
-            <FloatImage slot="left" src={a.cover} alt={a.title} />
-
-            <p
-              slot="right"
-              class={`${
-                i === 0 ? 'line-clamp-4' : 'line-clamp-2'
-              } italic hover:underline hover:underline-offset-4`}
-            >
-              {a.description}
-            </p>
-          </MediaListItem>
-        ))}
+        <ContentGrid>
+          {articles.map(a => (
+            <ContentGridItem
+              href={`/media-articles/${a.id}`}
+              title={a.title}
+              description={a.description}
+              cover={a.cover}
+              coverAlt={a.title}
+              date={a.occuredOn}
+            />
+          ))}
+        </ContentGrid>
         <div class="mt-10">
           {articles.length > 0 && metadata && (
             <SSRPagination
