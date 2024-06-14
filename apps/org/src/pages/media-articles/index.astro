@@ -1,0 +1,62 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro'
+import { ContentGrid, SSRPagination, ContentGridItem } from 'ui'
+import type { MediaArticle, Metadata } from 'shared-types'
+import { ResponseError } from 'shared'
+import { fetchArticles } from '@/api'
+import InternalError from '@/components/InternalError.astro'
+
+export const prerender = false
+
+let articles: MediaArticle[] = []
+let metadata: Metadata | undefined = undefined
+let error: ResponseError | undefined = undefined
+
+const currentPage = Astro.url.searchParams.get('page') || '1'
+const response = await fetchArticles(currentPage)
+
+if (response.ok) {
+  articles = response.data.articles
+  metadata = response.data.metadata
+}
+
+if (!response.ok) {
+  error = response.error
+  console.log(response.error)
+}
+
+if (response.error && response.error.isNotFoundError()) {
+  return new Response(null, { status: 404 })
+}
+---
+
+{
+  error ? (
+    <InternalError />
+  ) : (
+    <MainLayout title="Події" description="Переглянути всі події">
+      <div class="not-prose">
+        <ContentGrid>
+          {articles.map(a => (
+            <ContentGridItem
+              href={`/media-articles/${a.id}`}
+              title={a.title}
+              description={a.description}
+              cover={a.cover}
+              coverAlt={a.title}
+              date={a.occuredOn}
+            />
+          ))}
+        </ContentGrid>
+        <div class="mt-10">
+          {articles.length > 0 && metadata && (
+            <SSRPagination
+              current={metadata.currentPage}
+              total={metadata.lastPage}
+            />
+          )}
+        </div>
+      </div>
+    </MainLayout>
+  )
+}
