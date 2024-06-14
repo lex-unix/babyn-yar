@@ -1,41 +1,45 @@
 <script lang="ts">
   import {
-    DeleteAlertDialog,
     Table,
     TableData,
     TableHeader,
     TableRow,
-    PageHeader,
+    DeleteAlertDialog,
     Container,
+    PageHeader,
     LinkButton,
     RecordActionBar,
     TableSkeleton,
-    Pagination,
     SearchBar,
+    Pagination,
     ContentSortMenu,
     EmptySearchMessage
   } from '$components'
   import { File, Plus, History, User } from 'lucide-svelte'
   import { formatDate } from '$lib/format-date'
   import { trimText } from '$lib/trim-text'
-  import type { Metadata, VictimTestimony } from '$lib/types'
+  import type { MediaArticle, Metadata } from '$lib/types'
   import { onMount } from 'svelte'
-  import { fetchBooksWrapper, type Filters, deleteBooks } from '$lib/api-utils'
+  import {
+    deleteArticles,
+    fetchArticlesWrapper,
+    type Filters
+  } from '$lib/api-utils'
   import { addToast } from '$components/Toaster.svelte'
   import {
-    deleteErrorMsg,
     deleteSuccessMsg,
+    deleteErrorMsg,
     fetchErrorMsg
   } from '$lib/toast-messages'
   import { calculateNewPage } from '$lib/pagination'
 
-  let books: VictimTestimony[] = []
+  let isLoading = false
+  let articles: MediaArticle[] = []
   let metadata: Metadata
   let selected: number[] = []
   let alertDialog: DeleteAlertDialog
-  let isLoading = false
 
-  const fetchBooks = fetchBooksWrapper()
+  const fetchArticles = fetchArticlesWrapper()
 
   onMount(async () => {
     isLoading = true
@@ -45,43 +49,13 @@
 
   async function load(filters: Filters = {}) {
     filters = { page: 1, ...filters }
-    const response = await fetchBooks(filters)
-    if (!response.ok) {
+    const res = await fetchArticles(filters)
+    if (!res.ok) {
       addToast(fetchErrorMsg)
       return
     }
-    books = response.data.books
-    metadata = response.data.metadata
-  }
-
-  function toggleSelect(id: number) {
-    if (selected.includes(id)) {
-      selected = selected.filter(t => t !== id)
-    } else {
-      selected = [...selected, id]
-    }
-  }
-
-  function toggleSelectAll() {
-    if (selected.length === books.length) {
-      selected = []
-    } else {
-      selected = books.map(t => t.id)
-    }
-  }
-
-  async function deleteSelected() {
-    const { ok } = await deleteBooks(selected)
-    if (!ok) {
-      addToast(deleteErrorMsg)
-      return
-    }
-
-    selected = []
-    alertDialog.dismiss()
-    addToast(deleteSuccessMsg)
-
-    await load()
+    articles = res.data.articles
+    metadata = res.data.metadata
   }
 
   async function search(e: CustomEvent<{ search: string }>) {
@@ -90,6 +64,36 @@
 
   async function sort(e: CustomEvent<{ sortValue: string }>) {
     await load({ page: 1, sort: e.detail.sortValue })
+  }
+
+  function toggleSelect(id: number) {
+    if (selected.includes(id)) {
+      selected = selected.filter(e => e !== id)
+    } else {
+      selected = [...selected, id]
+    }
+  }
+
+  function toggleSelectAll() {
+    if (selected.length === articles.length) {
+      selected = []
+    } else {
+      selected = articles.map(e => e.id)
+    }
+  }
+
+  async function deleteSelected() {
+    const ok = await deleteArticles(selected)
+    if (!ok) {
+      addToast(deleteErrorMsg)
+      return
+    }
+
+    addToast(deleteSuccessMsg)
+    selected = []
+    alertDialog.dismiss()
+
+    await load()
   }
 
   async function selectPage(e: CustomEvent<{ page: number }>) {
@@ -109,24 +113,26 @@
 </script>
 
 <PageHeader>
-  <svelte:fragment slot="heading">Бібліотека</svelte:fragment>
-  <LinkButton slot="right-items" href="/content/library/create">
+  <svelte:fragment slot="heading">ЗМІ про заповідник</svelte:fragment>
+  <LinkButton slot="right-items" href="/content/media-articles/create">
     <Plus slot="icon" size={16} />
     Cтворити
   </LinkButton>
 </PageHeader>
 
-<Container title="Бібліотека">
+<Container title="Події">
   <div class="mb-5">
     <SearchBar on:search={search}>
       <ContentSortMenu slot="filters" on:select={sort} />
     </SearchBar>
   </div>
   <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
-  {#if isLoading}
+  {#if articles.length === 0 && isLoading}
     <TableSkeleton />
-  {:else if !isLoading && books.length === 0}
-    <EmptySearchMessage />
+  {:else if articles.length === 0 && !isLoading}
+    <div class="mt-10">
+      <EmptySearchMessage />
+    </div>
   {:else}
     <Table>
       <thead>
@@ -134,7 +140,8 @@
           <TableHeader>
             <input
               type="checkbox"
-              checked={selected.length === books.length && selected.length > 0}
+              checked={selected.length === articles.length &&
+                selected.length > 0}
               on:input={toggleSelectAll}
             />
           </TableHeader>
@@ -159,20 +166,25 @@
         </tr>
       </thead>
       <tbody>
-        {#each books as book}
+        {#each articles as article}
           <TableRow>
             <TableData>
               <input
                 type="checkbox"
-                on:input={() => toggleSelect(book.id)}
-                checked={selected.includes(book.id)}
+                on:input={() => toggleSelect(article.id)}
+                checked={selected.includes(article.id)}
               />
             </TableData>
             <TableData class="w-full">
-              <a href={`/content/library/${book.id}`}>{trimText(book.title)}</a>
+              <a
+                href={`/content/media-articles/${article.id}`}
+                class="block w-full"
+              >
+                {trimText(article.title)}
+              </a>
             </TableData>
-            <TableData>{formatDate(book.updatedAt)}</TableData>
-            <TableData>{book.user.fullName}</TableData>
+            <TableData>{formatDate(article.updatedAt)}</TableData>
+            <TableData>{article.user.fullName}</TableData>
           </TableRow>
         {/each}
       </tbody>

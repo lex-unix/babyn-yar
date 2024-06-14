@@ -4,7 +4,6 @@
     RichTextEditor,
     LangSelect,
     CoverSelect,
-    DocumentsSelect,
     Button,
     PageHeader,
     Container,
@@ -12,7 +11,7 @@
   } from '$components'
   import type { ResponseError } from '$lib/response-error'
   import type { JSONContent } from '@tiptap/core'
-  import { createBook } from '$lib/api-utils'
+  import { createArticle } from '$lib/api-utils'
   import { PlusIcon } from 'lucide-svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { goto } from '$app/navigation'
@@ -24,7 +23,6 @@
   let description = ''
   let lang = ''
   let cover = ''
-  let documents: string[] = []
   let occuredOn = ''
   let error: ResponseError | undefined
 
@@ -35,11 +33,10 @@
       description,
       lang,
       cover,
-      documents,
       occuredOn: new Date(occuredOn).toISOString(),
       content: JSON.stringify(content)
     })
-    const response = await createBook(body)
+    const response = await createArticle(body)
     if (!response.ok) {
       error = response.error
       isSubmitting = false
@@ -48,7 +45,7 @@
     addToast(createRecordSuccessMsg)
     isSubmitting = false
     error = undefined
-    goto('/content/library')
+    goto('/content/media-articles')
   }
 </script>
 
@@ -94,7 +91,6 @@
       bind:value={description}
       required
     />
-    <DocumentsSelect bind:documents />
     <div>
       <p class="mb-1.5 text-gray-500">Контент</p>
       {#if error?.isFormError() && error?.error.content}

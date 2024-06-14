@@ -4,7 +4,8 @@ import type {
   Event,
   HolocaustDocument,
   VictimTestimony,
-  Metadata
+  Metadata,
+  MediaArticle
 } from 'shared-types'
 
 type PaginatedResponse = {
@@ -25,6 +26,10 @@ type PaginatedHolocaustDocuments = PaginatedResponse & {
 
 type PaginatedVictimTestimonies = PaginatedResponse & {
   testimonies: VictimTestimony[]
+}
+
+type PaginatedArticles = PaginatedResponse & {
+  articles: MediaArticle[]
 }
 
 const apiURL = import.meta.env.API_URL
@@ -169,6 +174,44 @@ export async function fetchVictimTestimony(id: string) {
     const { testimony } = (await res.json()) as { testimony: VictimTestimony }
     testimony.content = JSON.parse(testimony.content as unknown as string)
     return { ok: true as const, testimony }
+  } catch (e) {
+    console.log(e)
+    const error = new ResponseError(500, 'the server encountered an error')
+    return { ok: false as const, error }
+  }
+}
+
+export async function fetchArticles(page: string = '1') {
+  const url = new URL(apiURL + '/media-articles')
+  url.searchParams.set('page', page)
+  url.searchParams.set('lang', 'en')
+  url.searchParams.set('sort', '-occurred_on')
+  try {
+    const response = await fetch(url)
+    const json = await response.json()
+    if (response.ok) {
+      return { ok: true as const, data: json as PaginatedArticles }
+    }
+    const error = new ResponseError(response.status, json.error)
+    return { ok: false as const, error }
+  } catch (e) {
+    console.log(e)
+    const error = new ResponseError(500, 'the server encountered an error')
+    return { ok: false as const, error }
+  }
+}
+
+export async function fetchArticle(id: string) {
+  try {
+    const res = await fetch(`${apiURL}/media-articles/${id}`)
+    if (!res.ok) {
+      const json = await res.json()
+      const error = new ResponseError(res.status, json.error)
+      return { ok: false as const, error }
+    }
+    const { article } = (await res.json()) as { article: MediaArticle }
+    article.content = JSON.parse(article.content as unknown as string)
+    return { ok: true as const, article }
   } catch (e) {
     console.log(e)
     const error = new ResponseError(500, 'the server encountered an error')

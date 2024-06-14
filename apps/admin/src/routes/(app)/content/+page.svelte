@@ -17,6 +17,10 @@
     {
       href: '/content/victim-testimonies',
       text: 'Свідчення очевидців трагедії'
+    },
+    {
+      href: '/content/media-articles',
+      text: 'ЗМІ про заповідник'
     }
   ]
 </script>

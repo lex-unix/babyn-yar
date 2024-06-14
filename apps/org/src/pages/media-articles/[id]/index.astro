@@ -1,0 +1,41 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro'
+import InternalError from '@/components/InternalError.astro'
+import type { MediaArticle } from 'shared-types'
+import { fetchArticle } from '@/api'
+import { generateHTML } from 'tip-tap-utils'
+
+export const prerender = false
+
+let article: MediaArticle | undefined = undefined
+let content: string | undefined = undefined
+
+const id = Astro.params.id
+const response = await fetchArticle(id as string)
+
+if (response.ok) {
+  article = response.article
+  content = generateHTML(article.content)
+}
+
+if (response.error && response.error.isNotFoundError()) {
+  return new Response(null, { status: 404 })
+}
+---
+
+{
+  response.error || !article ? (
+    <InternalError />
+  ) : (
+    <MainLayout title={article.title} description={article.description}>
+      <Fragment set:html={content} />
+    </MainLayout>
+  )
+}
+
+<style is:global>
+  div > img,
+  div > video {
+    @apply !-mx-4 !h-auto !w-[calc(100%+2rem)] !max-w-[calc(100%+2rem)] md:!-mx-[calc(39px+2rem)] md:!w-[calc(100%+((2rem+39px)*2))] md:!max-w-[calc(100%+((2rem+39px)*2))] lg:!-mx-[calc(39px+3rem)] lg:!w-[calc(100%+((3rem+39px)*2))] lg:!max-w-[calc(100%+((3rem+39px)*2))];
+  }
+</style>

@@ -5,30 +5,29 @@
     LangSelect,
     CoverSelect,
     RichTextEditor,
-    DocumentsSelect,
     Button,
     PageHeader,
     Container,
     NotFound,
     DatePicker
   } from '$components'
-  import type { Book } from '$lib/types'
+  import type { MediaArticle } from '$lib/types'
   import type { ResponseError } from '$lib/response-error'
-  import { fetchBook, updateBook } from '$lib/api-utils'
+  import { fetchArticle, updateArticle } from '$lib/api-utils'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'
   import { updateRecordSuccessMsg } from '$lib/toast-messages'
 
   let isSubmitting = false
-  let book: Book
+  let article: MediaArticle
   let error: ResponseError | undefined
 
   onMount(async function () {
-    const res = await fetchBook($page.params.id)
+    const res = await fetchArticle($page.params.id)
     if (res.ok) {
-      book = res.data.book
-      book.content = JSON.parse(book.content as unknown as string)
+      article = res.data.article
+      article.content = JSON.parse(article.content as unknown as string)
     } else {
       error = res.error
     }
@@ -37,15 +36,14 @@
   async function submit() {
     isSubmitting = true
     const body = JSON.stringify({
-      occuredOn: new Date(book.occuredOn).toISOString(),
-      title: book.title,
-      description: book.description,
-      lang: book.lang,
-      cover: book.cover,
-      documents: book.documents,
-      content: JSON.stringify(book.content)
+      occuredOn: new Date(article.occuredOn).toISOString(),
+      title: article.title,
+      description: article.description,
+      lang: article.lang,
+      cover: article.cover,
+      content: JSON.stringify(article.content)
     })
-    const response = await updateBook($page.params.id, body)
+    const response = await updateArticle($page.params.id, body)
     if (!response.ok) {
       error = response.error
       isSubmitting = false
@@ -67,42 +65,41 @@
   </PageHeader>
 
   <Container title="Редагувати запис">
-    {#if book}
+    {#if article}
       <form
         on:submit|preventDefault={submit}
         id="edit-record"
         class="space-y-5"
       >
         <LangSelect
-          bind:lang={book.lang}
+          bind:lang={article.lang}
           error={error?.isFormError() ? error.error.lang : undefined}
         />
-        <DatePicker bind:datetime={book.occuredOn} />
+        <DatePicker bind:datetime={article.occuredOn} />
         <CoverSelect
-          bind:cover={book.cover}
+          bind:cover={article.cover}
           error={error?.isFormError() ? error.error.cover : undefined}
         />
         <Input
-          bind:value={book.title}
+          bind:value={article.title}
           name="title"
           label="Назва"
           error={error?.isFormError() ? error.error.title : undefined}
           required
         />
         <Input
-          bind:value={book.description}
+          bind:value={article.description}
           name="description"
           label="Опис"
           error={error?.isFormError() ? error.error.description : undefined}
           required
         />
-        <DocumentsSelect bind:documents={book.documents} />
         <div>
           <p class="mb-1.5 text-gray-500">Контент</p>
           {#if error?.isFormError() && error?.error.content}
             <p class="text-red-500">{error.error.content}</p>
           {/if}
-          <RichTextEditor bind:content={book.content} />
+          <RichTextEditor bind:content={article.content} />
         </div>
       </form>
     {/if}

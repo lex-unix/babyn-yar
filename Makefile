@@ -89,3 +89,8 @@ db/migrations/up:
 migrate-up:
 	@echo 'Running migrations...'
 	docker compose --profile tools run --rm migrate up
+
+.PHONY: build/dbbackup
+build/dbbackup:
+	@echo "building cmd/dbbackup..."
+	GOOS=linux GOARCH=amd64 go build -o=./bin/linux_amd64/dbbackup ./cmd/dbbackup
