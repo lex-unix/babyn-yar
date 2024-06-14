@@ -78,7 +78,7 @@ func (app *application) listMediaArticlesHandler(w http.ResponseWriter, r *http.
 	input.Filters.PageSize = app.readInt(qs, "page_size", 10, v)
 
 	input.Filters.Sort = app.readString(qs, "sort", "-created_at")
-	input.Filters.SortSafelist = []string{"created_at", "-created_at", "occured_on", "-occured_on"}
+	input.Filters.SortSafelist = []string{"created_at", "-created_at", "occurred_on", "-occurred_on"}
 
 	if data.ValidateFilters(v, input.Filters); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
