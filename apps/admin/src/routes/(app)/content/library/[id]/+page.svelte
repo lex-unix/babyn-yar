@@ -14,7 +14,7 @@
   } from '$components'
   import type { Book } from '$lib/types'
   import type { ResponseError } from '$lib/response-error'
-  import { fetchBook, updateBook } from '$lib/books'
+  import { fetchBook, updateBook } from '$lib/api-utils'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'
@@ -27,7 +27,8 @@
   onMount(async function () {
     const res = await fetchBook($page.params.id)
     if (res.ok) {
-      book = res.book
+      book = res.data.book
+      book.content = JSON.parse(book.content as unknown as string)
     } else {
       error = res.error
     }

@@ -20,7 +20,7 @@
   import { trimText } from '$lib/trim-text'
   import type { Metadata, VictimTestimony } from '$lib/types'
   import { onMount } from 'svelte'
-  import { fetchBooksWrapper, deleteBooks, type Filters } from '$lib/books'
+  import { fetchBooksWrapper, type Filters, deleteBooks } from '$lib/api-utils'
   import { addToast } from '$components/Toaster.svelte'
   import {
     deleteErrorMsg,
@@ -43,8 +43,9 @@
     isLoading = false
   })
 
-  async function load(pageNum = 1, filters: Filters | undefined = undefined) {
-    const response = await fetchBooks(pageNum, filters)
+  async function load(filters: Filters = {}) {
+    filters = { page: 1, ...filters }
+    const response = await fetchBooks(filters)
     if (!response.ok) {
       addToast(fetchErrorMsg)
       return
@@ -84,16 +85,15 @@
   }
 
   async function search(e: CustomEvent<{ search: string }>) {
-    await load(1, { title: e.detail.search })
+    await load({ page: 1, title: e.detail.search })
   }
 
   async function sort(e: CustomEvent<{ sortValue: string }>) {
-    await load(1, { sort: e.detail.sortValue })
+    await load({ page: 1, sort: e.detail.sortValue })
   }
 
   async function selectPage(e: CustomEvent<{ page: number }>) {
-    const { page } = e.detail
-    await load(page)
+    await load({ page: e.detail.page })
   }
 
   async function selectPageSize(e: CustomEvent<{ size: number }>) {
@@ -104,7 +104,7 @@
 
     const page = calculateNewPage(currentPage, currentPageSize, newPageSize)
 
-    await load(page, { pageSize: newPageSize })
+    await load({ page, pageSize: newPageSize })
   }
 </script>
 
