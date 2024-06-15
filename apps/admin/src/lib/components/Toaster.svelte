@@ -33,6 +33,7 @@
       class="rounded-lg"
       class:success={data.variant === 'success'}
       class:error={data.variant === 'error'}
+      class:warning={data.variant === 'warning'}
     >
       <div
         class="relative flex w-[24rem] max-w-[calc(100vw-2rem)] items-center justify-between gap-4 p-5"
@@ -87,6 +88,22 @@
 
     & [data-melt-toast-description] {
       @apply text-rose-700;
+    }
+  }
+
+  .warning {
+    @apply border border-amber-600/10 bg-amber-100;
+
+    & [data-melt-toast-close] {
+      @apply text-amber-600 transition-colors hover:bg-amber-200 hover:text-amber-700;
+    }
+
+    & [data-melt-toast-title] {
+      @apply text-amber-800;
+    }
+
+    & [data-melt-toast-description] {
+      @apply text-amber-700;
     }
   }
 </style>
