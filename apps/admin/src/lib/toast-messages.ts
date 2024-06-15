@@ -1,8 +1,8 @@
-type ToastMessage = {
+export type ToastMessage = {
   data: {
     title: string
     description: string
-    variant: 'success' | 'error'
+    variant: 'success' | 'error' | 'warning'
   }
 }
 

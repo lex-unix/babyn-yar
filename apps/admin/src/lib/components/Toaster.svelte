@@ -1,9 +1,7 @@
 <script lang="ts" context="module">
-  export type ToastData = {
-    title: string
-    description: string
-    variant: 'success' | 'error'
-  }
+  import type { ToastMessage } from '$lib/toast-messages'
+
+  export type ToastData = ToastMessage['data']
 
   const {
     elements: { content, title, description, close },
