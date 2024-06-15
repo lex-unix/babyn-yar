@@ -2,7 +2,7 @@
 import MainLayout from '@/layouts/MainLayout.astro'
 import InternalError from '@/components/InternalError.astro'
 import type { Event } from 'shared-types'
-import { fetchEvent } from '@/api'
+import { getEvent } from '@/api'
 import { generateHTML } from 'tip-tap-utils'
 
 export const prerender = false
@@ -11,20 +11,20 @@ let event: Event | undefined = undefined
 let content: string | undefined = undefined
 
 const id = Astro.params.id
-const response = await fetchEvent(id as string)
+const response = await getEvent(id as string)
 
 if (response.ok) {
-  event = response.event
-  content = generateHTML(event.content)
+  event = response.data.event
+  content = generateHTML(JSON.parse(event.content))
 }
 
-if (response.error && response.error.isNotFoundError()) {
+if (!response.ok && response.error.isNotFoundError()) {
   return new Response(null, { status: 404 })
 }
 ---
 
 {
-  response.error || !event ? (
+  !response.ok || !event ? (
     <InternalError />
   ) : (
     <MainLayout title={event.title} description={event.description}>

@@ -2,7 +2,7 @@
 import MainLayout from '@/layouts/MainLayout.astro'
 import InternalError from '@/components/InternalError.astro'
 import type { MediaArticle } from 'shared-types'
-import { fetchArticle } from '@/api'
+import { getArticle } from '@/api'
 import { generateHTML } from 'tip-tap-utils'
 
 export const prerender = false
@@ -11,20 +11,20 @@ let article: MediaArticle | undefined = undefined
 let content: string | undefined = undefined
 
 const id = Astro.params.id
-const response = await fetchArticle(id as string)
+const response = await getArticle(id as string)
 
 if (response.ok) {
-  article = response.article
-  content = generateHTML(article.content)
+  article = response.data.article
+  content = generateHTML(JSON.parse(article.content))
 }
 
-if (response.error && response.error.isNotFoundError()) {
+if (!response.ok && response.error.isNotFoundError()) {
   return new Response(null, { status: 404 })
 }
 ---
 
 {
-  response.error || !article ? (
+  !response.ok || !article ? (
     <InternalError />
   ) : (
     <MainLayout title={article.title} description={article.description}>
