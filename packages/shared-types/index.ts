@@ -37,3 +37,9 @@ export type Victim = {
   info: string
   version: string
 }
+
+export type GalleryImage = {
+  id: number
+  createdAt: string
+  url: string
+}
