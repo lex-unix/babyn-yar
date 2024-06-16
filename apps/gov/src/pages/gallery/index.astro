@@ -5,6 +5,8 @@ import type { GalleryImage } from 'shared-types'
 import { getGalleryImages } from '@/api'
 import InternalError from '@/components/InternalError.astro'
 
+export const prerender = false
+
 let images: GalleryImage[] = []
 let urls: string[] = []
 const response = await getGalleryImages()
