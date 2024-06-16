@@ -32,7 +32,7 @@ export function getArticles(page = '1') {
   const url = new URL(apiURL + '/media-articles')
   url.searchParams.set('page', page)
   url.searchParams.set('lang', 'ua')
-  url.searchParams.set('sort', '-occurred_on')
+  url.searchParams.set('sort', '-occured_on')
   return fetcher<PaginatedResponse<MediaArticle, 'articles'>>(url)
 }
 
