@@ -1,4 +1,3 @@
-export { data as victimsData } from './victims'
 export { ResponseError } from './src/response-error'
 export { formatDate, formatDateWithTime } from './src/format-data'
 export {
@@ -8,5 +7,6 @@ export {
   getLangFromSlug,
   stripLangFromSlug
 } from './src/util'
+export { fetcher } from './src/fetcher'
 
 export const EMAIL = 'babinyar@ukr.net'
