@@ -2,36 +2,29 @@
 import MainLayout from '@/layouts/MainLayout.astro'
 import { ContentGrid, SSRPagination, ContentGridItem } from 'ui'
 import type { MediaArticle, Metadata } from 'shared-types'
-import { ResponseError } from 'shared'
-import { fetchArticles } from '@/api'
+import { getArticles } from '@/api'
 import InternalError from '@/components/InternalError.astro'
 
 export const prerender = false
 
 let articles: MediaArticle[] = []
 let metadata: Metadata | undefined = undefined
-let error: ResponseError | undefined = undefined
 
 const currentPage = Astro.url.searchParams.get('page') || '1'
-const response = await fetchArticles(currentPage)
+const response = await getArticles(currentPage)
 
 if (response.ok) {
   articles = response.data.articles
   metadata = response.data.metadata
 }
 
-if (!response.ok) {
-  error = response.error
-  console.log(response.error)
-}
-
-if (response.error && response.error.isNotFoundError()) {
+if (!response.ok && response.error.isNotFoundError()) {
   return new Response(null, { status: 404 })
 }
 ---
 
 {
-  error ? (
+  !response.ok ? (
     <InternalError />
   ) : (
     <MainLayout title="Події" description="Переглянути всі події">

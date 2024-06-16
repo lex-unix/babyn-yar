@@ -64,5 +64,10 @@ func (app *application) routes() http.Handler {
 	router.Patch("/v1/media-articles/{id}", app.requireAuthenticatedUser(app.updateMediaArticleHandler))
 	router.Delete("/v1/media-articles", app.requireAuthenticatedUser(app.deleteMediaArticlesHandler))
 
+	// gallery
+	router.Get("/v1/gallery", app.listGalleryImagesHandler)
+	router.Post("/v1/gallery", app.requireAuthenticatedUser(app.createGalleryImageHandler))
+	router.Delete("/v1/gallery/{id}", app.requireAuthenticatedUser(app.deleteGalleryImageHandler))
+
 	return router
 }

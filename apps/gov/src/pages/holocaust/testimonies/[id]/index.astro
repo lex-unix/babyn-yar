@@ -2,7 +2,7 @@
 import MainLayout from '@/layouts/MainLayout.astro'
 import InternalError from '@/components/InternalError.astro'
 import { generateHTML } from 'tip-tap-utils'
-import { fetchVictimTestimony } from '@/api'
+import { getTestimony } from '@/api'
 import type { VictimTestimony } from 'shared-types'
 import { Document } from 'ui'
 
@@ -12,20 +12,20 @@ let testimony: VictimTestimony | undefined = undefined
 let content: string | undefined = undefined
 
 const id = Astro.params.id
-const response = await fetchVictimTestimony(id as string)
+const response = await getTestimony(id as string)
 
 if (response.ok) {
-  testimony = response.testimony
-  content = generateHTML(testimony.content)
+  testimony = response.data.testimony
+  content = generateHTML(JSON.parse(testimony.content))
 }
 
-if (response.error && response.error.isNotFoundError()) {
+if (!response.ok && response.error.isNotFoundError()) {
   return new Response(null, { status: 404 })
 }
 ---
 
 {
-  response.error || !testimony ? (
+  !response.ok || !testimony ? (
     <InternalError />
   ) : (
     <MainLayout title={testimony.title} description={testimony.description}>

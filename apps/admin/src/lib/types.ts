@@ -67,3 +67,9 @@ export type UserErrorResponse = {
   email?: string
   password?: string
 }
+
+export type GalleryImage = {
+  id: number
+  createdAt: string
+  url: string
+}

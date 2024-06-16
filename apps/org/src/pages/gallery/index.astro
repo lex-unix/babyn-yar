@@ -1,0 +1,33 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro'
+import { MultiCarousel } from 'ui'
+import type { GalleryImage } from 'shared-types'
+import { getGalleryImages } from '@/api'
+import InternalError from '@/components/InternalError.astro'
+
+let images: GalleryImage[] = []
+let urls: string[] = []
+const response = await getGalleryImages()
+
+if (response.ok) {
+  images = response.data.images
+  urls = images.map(i => i.url)
+}
+---
+
+{
+  !response.ok ? (
+    <InternalError />
+  ) : (
+    <MainLayout
+      title='Photo of monuments and commemorative signs, which are situated on the territory of National Historical Memorial Reserve "Babyn Yar"'
+      description='Photo of monuments and commemorative signs, which are situated on the territory of National Historical Memorial Reserve "Babyn Yar"'
+    >
+      <h2>
+        Photo of monuments and commemorative signs, which are situated on the
+        territory of National Historical Memorial Reserve "Babyn Yar"
+      </h2>
+      <MultiCarousel client:load slides={urls} />
+    </MainLayout>
+  )
+}

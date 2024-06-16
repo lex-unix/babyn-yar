@@ -2,35 +2,30 @@
 import MainLayout from '@/layouts/MainLayout.astro'
 import { FloatImage, MediaListItem, SSRPagination } from 'ui'
 import type { HolocaustDocument, Metadata } from 'shared-types'
-import { ResponseError, formatDate } from 'shared'
+import { formatDate } from 'shared'
 import InternalError from '@/components/InternalError.astro'
-import { fetchHolocaustDocuments } from '@/api'
+import { getHolocaustDocuments } from '@/api'
 
 export const prerender = false
 
 let docs: HolocaustDocument[] = []
 let metadata: Metadata | undefined = undefined
-let error: ResponseError | undefined = undefined
 
 const currentPage = Astro.url.searchParams.get('page') || '1'
-const response = await fetchHolocaustDocuments(currentPage)
+const response = await getHolocaustDocuments(currentPage)
 
 if (response.ok) {
   docs = response.data.documents
   metadata = response.data.metadata
 }
 
-if (!response.ok) {
-  error = response.error
-}
-
-if (response.error && response.error.isNotFoundError()) {
+if (!response.ok && response.error.isNotFoundError()) {
   return new Response(null, { status: 404 })
 }
 ---
 
 {
-  error ? (
+  !response.ok ? (
     <InternalError />
   ) : (
     <MainLayout title="Документи Голокосту" description="Документи Голокосту">

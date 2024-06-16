@@ -36,5 +36,8 @@
         <svelte:fragment slot="title">{text}</svelte:fragment>
       </ContentCard>
     {/each}
+    <ContentCard href="/content/gallery" showCreate={false}>
+      <svelte:fragment slot="title">Галерея</svelte:fragment>
+    </ContentCard>
   </ul>
 </Container>

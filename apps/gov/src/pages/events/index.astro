@@ -3,7 +3,7 @@ import MainLayout from '@/layouts/MainLayout.astro'
 import { FloatImage, MediaListItem, SSRPagination } from 'ui'
 import type { Event, Metadata } from 'shared-types'
 import { ResponseError } from 'shared'
-import { fetchEvents } from '@/api'
+import { fetchEvents, getEvents } from '@/api'
 import InternalError from '@/components/InternalError.astro'
 
 export const prerender = false
@@ -13,19 +13,17 @@ let metadata: Metadata | undefined = undefined
 let error: ResponseError | undefined = undefined
 
 const currentPage = Astro.url.searchParams.get('page') || '1'
-const response = await fetchEvents(currentPage)
+const response = await getEvents(currentPage)
 
-if (response.ok) {
-  events = response.data.events
-  metadata = response.data.metadata
+if (!response.ok && response.error.isNotFoundError()) {
+  return new Response(null, { status: 404 })
 }
 
 if (!response.ok) {
   error = response.error
-}
-
-if (response.error && response.error.isNotFoundError()) {
-  return new Response(null, { status: 404 })
+} else {
+  events = response.data.events
+  metadata = response.data.metadata
 }
 ---
 

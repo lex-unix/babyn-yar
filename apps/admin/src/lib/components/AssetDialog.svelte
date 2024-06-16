@@ -41,7 +41,7 @@
   const fetchAssets = fetchAssetsWrapper()
 
   const dispatch = createEventDispatcher<{
-    select: { url: string; type: string; fileName: string }
+    select: { id: number; url: string; type: string; fileName: string }
   }>()
 
   async function load(pageNum = 1, filters: Filters | undefined = undefined) {
@@ -62,14 +62,19 @@
     await load(1, { contentType, filename: e.detail.search })
   }
 
-  function selectAsset(url: string, contentType: string, fileName: string) {
+  function selectAsset(asset: Asset) {
     let type = ''
-    if (contentType.startsWith('image')) {
+    if (asset.contentType.startsWith('image')) {
       type = 'image'
-    } else if (contentType.startsWith('video')) {
+    } else if (asset.contentType.startsWith('video')) {
       type = 'video'
     }
-    dispatch('select', { url, type, fileName })
+    dispatch('select', {
+      type,
+      id: asset.id,
+      url: asset.url,
+      fileName: asset.fileName
+    })
   }
 
   async function loadMore() {
@@ -102,8 +107,7 @@
           <li class="p-2.5">
             <button
               class="group relative w-full"
-              on:click={() =>
-                selectAsset(asset.url, asset.contentType, asset.fileName)}
+              on:click={() => selectAsset(asset)}
             >
               <AssetItem
                 src={asset.url}

@@ -1,8 +1,8 @@
-type ToastMessage = {
+export type ToastMessage = {
   data: {
     title: string
     description: string
-    variant: 'success' | 'error'
+    variant: 'success' | 'error' | 'warning'
   }
 }
 
@@ -44,5 +44,22 @@ export const updateRecordSuccessMsg: ToastMessage = {
     title: 'Збережено!',
     description: 'Всі зміни успішно збережено.',
     variant: 'success'
+  }
+}
+
+export const galleryImageExistsWarnMsg: ToastMessage = {
+  data: {
+    title: 'Вже додана!',
+    description: 'Ця фотографія вже додана до галереї.',
+    variant: 'warning'
+  }
+}
+
+export const gallertImageCreateErrorMsg: ToastMessage = {
+  data: {
+    title: 'Помилка!',
+    description:
+      'Не вдалося додати зображення до галереї. Спробуйте, будь ласка, ще раз.',
+    variant: 'error'
   }
 }

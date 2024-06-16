@@ -2,7 +2,7 @@
 import MainLayout from '@/layouts/MainLayout.astro'
 import InternalError from '@/components/InternalError.astro'
 import { generateHTML } from 'tip-tap-utils'
-import { fetchHolocaustDocument } from '@/api'
+import { getHolocaustDocument } from '@/api'
 import type { HolocaustDocument } from 'shared-types'
 
 export const prerender = false
@@ -11,20 +11,20 @@ let doc: HolocaustDocument | undefined = undefined
 let content: string | undefined = undefined
 
 const id = Astro.params.id
-const response = await fetchHolocaustDocument(id as string)
+const response = await getHolocaustDocument(id as string)
 
 if (response.ok) {
-  doc = response.document
-  content = generateHTML(doc.content)
+  doc = response.data.document
+  content = generateHTML(JSON.parse(doc.content))
 }
 
-if (response.error && response.error.isNotFoundError()) {
+if (!response.ok && response.error.isNotFoundError()) {
   return new Response(null, { status: 404 })
 }
 ---
 
 {
-  response.error || !doc ? (
+  !response.ok || !doc ? (
     <InternalError />
   ) : (
     <MainLayout title={doc.title} description={doc.description}>
