@@ -1,5 +1,7 @@
 <script lang="ts">
   import { ArrowUpLeft, PlusCircle } from 'lucide-svelte'
+
+  export let showCreate = true
   export let href: string
 
   $: createHref = href + '/create'
@@ -26,14 +28,16 @@
         <span>Переглянути</span>
       </a>
     </div>
-    <div class="flex-1">
-      <a
-        href={createHref}
-        class="flex items-center justify-center gap-1.5 rounded-br-md py-4 text-sm font-semibold hover:bg-gray-50"
-      >
-        <PlusCircle class="h-5 w-5 text-gray-400" />
-        <span>Створити</span>
-      </a>
-    </div>
+    {#if showCreate}
+      <div class="flex-1">
+        <a
+          href={createHref}
+          class="flex items-center justify-center gap-1.5 rounded-br-md py-4 text-sm font-semibold hover:bg-gray-50"
+        >
+          <PlusCircle class="h-5 w-5 text-gray-400" />
+          <span>Створити</span>
+        </a>
+      </div>
+    {/if}
   </div>
 </div>

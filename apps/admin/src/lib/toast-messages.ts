@@ -46,3 +46,20 @@ export const updateRecordSuccessMsg: ToastMessage = {
     variant: 'success'
   }
 }
+
+export const galleryImageExistsWarnMsg: ToastMessage = {
+  data: {
+    title: 'Вже додана!',
+    description: 'Ця фотографія вже додана до галереї.',
+    variant: 'warning'
+  }
+}
+
+export const gallertImageCreateErrorMsg: ToastMessage = {
+  data: {
+    title: 'Помилка!',
+    description:
+      'Не вдалося додати зображення до галереї. Спробуйте, будь ласка, ще раз.',
+    variant: 'error'
+  }
+}

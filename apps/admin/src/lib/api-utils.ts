@@ -1,9 +1,10 @@
 import { ResponseError } from './response-error'
 import { PUBLIC_API_URL } from '$env/static/public'
-import type { Book, Metadata, MediaArticle } from './types'
+import type { Book, Metadata, MediaArticle, GalleryImage } from './types'
 
 const BOOKS_ENDPOINT = `${PUBLIC_API_URL}/books`
 const MEDIA_ARTICLES_ENDPOINT = `${PUBLIC_API_URL}/media-articles`
+const GALLERY_IMGS_ENDPOINT = `${PUBLIC_API_URL}/gallery`
 
 export type Filters = {
   page?: number
@@ -174,4 +175,16 @@ export function deleteArticles(ids: number[]) {
   const url = new URL(MEDIA_ARTICLES_ENDPOINT)
   url.searchParams.set('ids', ids.join(','))
   return sendDeleteRequest(url.toString())
+}
+
+export function fetchGalleryImages() {
+  return sendGetRequest<DynamicKey<GalleryImage[], 'images'>>(
+    GALLERY_IMGS_ENDPOINT
+  )
+}
+export function createGalleryImage(body: string) {
+  return sendPostRequest<GalleryImage>(GALLERY_IMGS_ENDPOINT, body)
+}
+export function deleteGalleryImage(id: number) {
+  return sendDeleteRequest(`${GALLERY_IMGS_ENDPOINT}/${id}`)
 }
