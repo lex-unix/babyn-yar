@@ -42,7 +42,7 @@ func ValidateMediaArticle(v *validator.Validator, article *MediaArticle) {
 
 func (m MediaArticleModel) Insert(article *MediaArticle) error {
 	query := `
-		INSERT INTO media_articles (title, description, content, lang, cover, occurred_on, user_id)
+		INSERT INTO media_articles (title, description, content, lang, cover, occured_on, user_id)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id, version`
 
@@ -117,7 +117,7 @@ func (m MediaArticleModel) Get(id int64) (*MediaArticle, error) {
 	}
 
 	query := `
-		SELECT a.id, a.created_at, a.occurred_on, a.updated_at, a.title, a.description, a.content, a.lang, a.cover, a.version
+		SELECT a.id, a.created_at, a.occured_on, a.updated_at, a.title, a.description, a.content, a.lang, a.cover, a.version
 		FROM media_articles a
 		WHERE id = $1`
 
@@ -152,7 +152,7 @@ func (m MediaArticleModel) Get(id int64) (*MediaArticle, error) {
 func (m MediaArticleModel) Update(article *MediaArticle) error {
 	query := `
 		UPDATE media_articles
-		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, occurred_on = $6, updated_at = now(), version = version + 1
+		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, occured_on = $6, updated_at = now(), version = version + 1
 		WHERE id = $7 AND version = $8
 		RETURNING version`
 
