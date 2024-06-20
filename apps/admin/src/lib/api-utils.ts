@@ -1,4 +1,4 @@
-import { ResponseError, fetcher } from 'shared'
+import { fetcher } from 'shared'
 import { PUBLIC_API_URL } from '$env/static/public'
 import type {
   Book,
