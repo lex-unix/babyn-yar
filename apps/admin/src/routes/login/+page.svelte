@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { login } from '$lib/user'
+  import { login } from '$lib/api-utils'
   import { user } from '$lib/stores'
   import { goto } from '$app/navigation'
   import { Button, Input } from '$components'
   import { addToast } from '$components/Toaster.svelte'
+  import { invalidCredentialsMsg, serverErrorMsg } from '$lib/toast-messages'
 
   let email: string
   let password: string
@@ -13,28 +14,14 @@
 
   async function submit() {
     isSubmitting = true
-    const res = await login(email, password)
+    const res = await login(JSON.stringify({ email, password }))
     if (res.ok) {
-      $user = res.user
+      $user = res.data.user
       goto('/')
-      return
-    }
-    if (res.error.isUnauthorized()) {
-      addToast({
-        data: {
-          title: 'Неправильно ввдені дані',
-          description: 'Email або пароль введено неправильно',
-          variant: 'error'
-        }
-      })
+    } else if (res.error.isUnauthorized()) {
+      addToast(invalidCredentialsMsg)
     } else if (res.error.isServerError()) {
-      addToast({
-        data: {
-          title: 'Помилка',
-          description: 'Сталася помикла. Cпробуйте, будь-ласка, ще раз',
-          variant: 'error'
-        }
-      })
+      addToast(serverErrorMsg)
     }
     isSubmitting = false
   }

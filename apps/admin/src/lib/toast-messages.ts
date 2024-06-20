@@ -63,3 +63,19 @@ export const gallertImageCreateErrorMsg: ToastMessage = {
     variant: 'error'
   }
 }
+
+export const invalidCredentialsMsg: ToastMessage = {
+  data: {
+    title: 'Неправильно ввдені дані',
+    description: 'Email або пароль введено неправильно',
+    variant: 'error'
+  }
+}
+
+export const serverErrorMsg: ToastMessage = {
+  data: {
+    title: 'Помилка',
+    description: 'Сталася помикла. Cпробуйте, будь-ласка, ще раз',
+    variant: 'error'
+  }
+}

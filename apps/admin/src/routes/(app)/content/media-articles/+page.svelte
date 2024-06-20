@@ -1,114 +1,59 @@
 <script lang="ts">
-  import {
-    Table,
-    TableData,
-    TableHeader,
-    TableRow,
-    DeleteAlertDialog,
-    Container,
-    PageHeader,
-    LinkButton,
-    RecordActionBar,
-    TableSkeleton,
-    SearchBar,
-    Pagination,
-    ContentSortMenu,
-    EmptySearchMessage
-  } from '$components'
-  import { File, Plus, History, User } from 'lucide-svelte'
-  import { formatDate } from '$lib/format-date'
-  import { trimText } from '$lib/trim-text'
-  import type { MediaArticle, Metadata } from '$lib/types'
+  import { ContentPage, LinkButton, PageHeader } from '$components'
+  import type { ContentData, Metadata } from '$lib/types'
   import { onMount } from 'svelte'
-  import {
-    deleteArticles,
-    fetchArticlesWrapper,
-    type Filters
-  } from '$lib/api-utils'
+  import { deleteArticles, getArticles } from '$lib/api-utils'
   import { addToast } from '$components/Toaster.svelte'
-  import {
-    deleteSuccessMsg,
-    deleteErrorMsg,
-    fetchErrorMsg
-  } from '$lib/toast-messages'
-  import { calculateNewPage } from '$lib/pagination'
+  import { deleteErrorMsg, fetchErrorMsg } from '$lib/toast-messages'
+  import { page } from '$app/stores'
+  import { Plus } from 'lucide-svelte'
 
-  let isLoading = false
-  let articles: MediaArticle[] = []
+  let data: ContentData[] = []
   let metadata: Metadata
-  let selected: number[] = []
-  let alertDialog: DeleteAlertDialog
-
-  const fetchArticles = fetchArticlesWrapper()
+  let isLoading = false
 
   onMount(async () => {
     isLoading = true
-    await load()
+    const params = Object.fromEntries($page.url.searchParams)
+    await load(replaceSearch(params))
     isLoading = false
   })
 
-  async function load(filters: Filters = {}) {
-    filters = { page: 1, ...filters }
-    const res = await fetchArticles(filters)
-    if (!res.ok) {
+  function replaceSearch(params: Record<string, string>) {
+    if (params.search) {
+      params.title = params.search
+    }
+    return params
+  }
+
+  async function load(params: Record<string, string> = {}) {
+    const response = await getArticles(params)
+    if (!response.ok) {
       addToast(fetchErrorMsg)
       return
     }
-    articles = res.data.articles
-    metadata = res.data.metadata
+    data = response.data.articles.map(a => ({
+      id: a.id,
+      title: a.title,
+      author: a.user.fullName,
+      lastChange: a.updatedAt
+    }))
+    metadata = response.data.metadata
   }
 
-  async function search(e: CustomEvent<{ search: string }>) {
-    await load({ page: 1, title: e.detail.search })
-  }
-
-  async function sort(e: CustomEvent<{ sortValue: string }>) {
-    await load({ page: 1, sort: e.detail.sortValue })
-  }
-
-  function toggleSelect(id: number) {
-    if (selected.includes(id)) {
-      selected = selected.filter(e => e !== id)
-    } else {
-      selected = [...selected, id]
-    }
-  }
-
-  function toggleSelectAll() {
-    if (selected.length === articles.length) {
-      selected = []
-    } else {
-      selected = articles.map(e => e.id)
-    }
-  }
-
-  async function deleteSelected() {
-    const ok = await deleteArticles(selected)
+  async function _delete(e: CustomEvent<{ selected: number[] }>) {
+    const { ok } = await deleteArticles(e.detail.selected)
     if (!ok) {
       addToast(deleteErrorMsg)
       return
     }
-
-    addToast(deleteSuccessMsg)
-    selected = []
-    alertDialog.dismiss()
-
-    await load()
+    const params = Object.fromEntries($page.url.searchParams)
+    await load(replaceSearch(params))
   }
 
-  async function selectPage(e: CustomEvent<{ page: number }>) {
-    await load({ page: e.detail.page })
-  }
-
-  async function selectPageSize(e: CustomEvent<{ size: number }>) {
-    const newPageSize = e.detail.size
-    const { currentPage, pageSize: currentPageSize } = metadata
-
-    if (newPageSize === currentPageSize) return
-
-    const page = calculateNewPage(currentPage, currentPageSize, newPageSize)
-
-    await load({ page, pageSize: newPageSize })
+  async function filter(e: CustomEvent<Record<string, string>>) {
+    const filters = replaceSearch(e.detail)
+    await load({ ...filters })
   }
 </script>
 
@@ -120,86 +65,12 @@
   </LinkButton>
 </PageHeader>
 
-<Container title="Події">
-  <div class="mb-5">
-    <SearchBar on:search={search}>
-      <ContentSortMenu slot="filters" on:select={sort} />
-    </SearchBar>
-  </div>
-  <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
-  {#if articles.length === 0 && isLoading}
-    <TableSkeleton />
-  {:else if articles.length === 0 && !isLoading}
-    <div class="mt-10">
-      <EmptySearchMessage />
-    </div>
-  {:else}
-    <Table>
-      <thead>
-        <tr>
-          <TableHeader>
-            <input
-              type="checkbox"
-              checked={selected.length === articles.length &&
-                selected.length > 0}
-              on:input={toggleSelectAll}
-            />
-          </TableHeader>
-          <TableHeader>
-            <div class="inline-flex items-center gap-2">
-              <File size={16} />
-              <span>Сторінка</span>
-            </div>
-          </TableHeader>
-          <TableHeader>
-            <div class="flex items-center gap-2">
-              <History size={16} />
-              <span>Остання зміна</span>
-            </div>
-          </TableHeader>
-          <TableHeader>
-            <div class="inline-flex items-center gap-2">
-              <User size={16} />
-              <span>Автор</span>
-            </div>
-          </TableHeader>
-        </tr>
-      </thead>
-      <tbody>
-        {#each articles as article}
-          <TableRow>
-            <TableData>
-              <input
-                type="checkbox"
-                on:input={() => toggleSelect(article.id)}
-                checked={selected.includes(article.id)}
-              />
-            </TableData>
-            <TableData class="w-full">
-              <a
-                href={`/content/media-articles/${article.id}`}
-                class="block w-full"
-              >
-                {trimText(article.title)}
-              </a>
-            </TableData>
-            <TableData>{formatDate(article.updatedAt)}</TableData>
-            <TableData>{article.user.fullName}</TableData>
-          </TableRow>
-        {/each}
-      </tbody>
-      <svelte:fragment slot="pagination">
-        {#if metadata}
-          <Pagination
-            currentPage={metadata.currentPage}
-            lastPage={metadata.lastPage}
-            on:select={selectPage}
-            on:selectSize={selectPageSize}
-          />
-        {/if}
-      </svelte:fragment>
-    </Table>
-  {/if}
-</Container>
-
-<DeleteAlertDialog bind:this={alertDialog} on:confirm={deleteSelected} />
+<ContentPage
+  {metadata}
+  {data}
+  {isLoading}
+  title="ЗМІ про заповідник"
+  entryHref="/content/media-articles"
+  on:filter={filter}
+  on:delete={_delete}
+/>

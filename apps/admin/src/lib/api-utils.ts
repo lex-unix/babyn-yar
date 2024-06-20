@@ -1,10 +1,24 @@
-import { ResponseError } from './response-error'
+import { ResponseError, fetcher } from 'shared'
 import { PUBLIC_API_URL } from '$env/static/public'
-import type { Book, Metadata, MediaArticle, GalleryImage } from './types'
+import type {
+  Book,
+  MediaArticle,
+  GalleryImage,
+  Event,
+  HolocaustDocument,
+  VictimTestimony,
+  User
+} from './types'
+import type { PaginatedResponse, DynamicTypedKey } from 'shared-types'
 
 const BOOKS_ENDPOINT = `${PUBLIC_API_URL}/books`
 const MEDIA_ARTICLES_ENDPOINT = `${PUBLIC_API_URL}/media-articles`
 const GALLERY_IMGS_ENDPOINT = `${PUBLIC_API_URL}/gallery`
+const EVENTS_ENDPOINT = `${PUBLIC_API_URL}/events`
+const HOLOCAUST_DOCS_ENDPOINT = `${PUBLIC_API_URL}/holocaust-documents`
+const TESTIMONIES_ENDPOINT = `${PUBLIC_API_URL}/victim-testimonies`
+const USERS_ENDPOINT = `${PUBLIC_API_URL}/users`
+const ASSETS_ENDPOINT = `${PUBLIC_API_URL}/assets`
 
 export type Filters = {
   page?: number
@@ -13,178 +27,200 @@ export type Filters = {
   [key: string]: string | number | undefined
 }
 
-type PaginatedResponse<T, K extends string> = {
-  metadata: Metadata
-} & Record<K, T[]>
-
-function camelToSnakeCase(str: string): string {
-  return str.replace(/([A-Z])/g, match => `_${match.toLowerCase()}`)
-}
-
-function sendGetWithFilters<T>(endpoint: string) {
-  return () => {
-    const url = new URL(endpoint)
-    const searchParams = new URLSearchParams()
-
-    searchParams.set('page_size', '10')
-
-    return async (
-      filters: Filters = {}
-    ): Promise<{ ok: true; data: T } | { ok: false; error: ResponseError }> => {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined) {
-          searchParams.set(camelToSnakeCase(key), `${value}`)
-        }
-      })
-      url.search = searchParams.toString()
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          credentials: 'include'
-        })
-        const json = await response.json()
-        if (!response.ok) {
-          const error = new ResponseError(response.status, json.error)
-          return { ok: false, error }
-        }
-        return { ok: true, data: json }
-      } catch (e) {
-        console.error(e)
-        const error = new ResponseError(500, 'the server encountered an error')
-        return { ok: false, error }
-      }
-    }
+export function getBooks(params: Record<string, string> = {}) {
+  const url = new URL(BOOKS_ENDPOINT)
+  for (const param in params) {
+    url.searchParams.set(param, `${params[param]}`)
   }
+  return fetcher<PaginatedResponse<Book, 'books'>>(url)
 }
 
-type DynamicKey<T, K extends string> = Record<K, T>
-async function sendGetRequest<T>(
-  endpoint: string
-): Promise<{ ok: true; data: T } | { ok: false; error: ResponseError }> {
-  try {
-    const response = await fetch(endpoint, {
-      method: 'GET',
-      credentials: 'include'
-    })
-    const json = await response.json()
-    if (!response.ok) {
-      const error = new ResponseError(response.status, json.detail)
-      return { ok: false, error }
-    }
-    return { ok: true, data: json }
-  } catch (e) {
-    console.error(e)
-    const error = new ResponseError(500, 'The server encountered an error')
-    return { ok: false, error }
-  }
-}
-
-async function sendPostRequest<T>(
-  endpoint: string,
-  body: string
-): Promise<{ ok: true; data: T } | { ok: false; error: ResponseError }> {
-  try {
-    const response = await fetch(endpoint, {
-      credentials: 'include',
-      method: 'POST',
-      body
-    })
-    const json = await response.json()
-    if (!response.ok) {
-      const error = new ResponseError(response.status, json.detail)
-      return { ok: false, error }
-    }
-    return { ok: true, data: json }
-  } catch (e) {
-    console.error(e)
-    const error = new ResponseError(500, 'The server encountered an error')
-    return { ok: false, error }
-  }
-}
-
-async function sendPatchRequest<T>(
-  endpoint: string,
-  body: string
-): Promise<{ ok: true; data: T } | { ok: false; error: ResponseError }> {
-  try {
-    const response = await fetch(endpoint, {
-      credentials: 'include',
-      method: 'PATCH',
-      body
-    })
-    const json = await response.json()
-    if (!response.ok) {
-      const error = new ResponseError(response.status, json.detail)
-      return { ok: false, error }
-    }
-    return { ok: true, data: json }
-  } catch (e) {
-    console.error(e)
-    const error = new ResponseError(500, 'The server encountered an error')
-    return { ok: false, error }
-  }
-}
-
-async function sendDeleteRequest(endpoint: string) {
-  try {
-    const response = await fetch(endpoint, {
-      method: 'DELETE',
-      credentials: 'include'
-    })
-    return { ok: response.ok }
-  } catch (e) {
-    return { ok: false }
-  }
-}
-
-export const fetchBooksWrapper =
-  sendGetWithFilters<PaginatedResponse<Book, 'books'>>(BOOKS_ENDPOINT)
 export function fetchBook(id: string) {
-  return sendGetRequest<DynamicKey<Book, 'book'>>(`${BOOKS_ENDPOINT}/${id}`)
+  return fetcher<DynamicTypedKey<Book, 'book'>>(`${BOOKS_ENDPOINT}/${id}`)
 }
+
 export function createBook(body: string) {
-  return sendPostRequest<Book>(BOOKS_ENDPOINT, body)
+  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
+  return fetcher<Book>(BOOKS_ENDPOINT, opts)
 }
+
 export function updateBook(id: string, body: string) {
-  return sendPatchRequest<Book>(`${BOOKS_ENDPOINT}/${id}`, body)
+  const opts: RequestInit = { method: 'PATCH', credentials: 'include', body }
+  return fetcher<Book>(`${BOOKS_ENDPOINT}/${id}`, opts)
 }
+
 export function deleteBooks(ids: number[]) {
+  const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
   const url = new URL(BOOKS_ENDPOINT)
   url.searchParams.set('ids', ids.join(','))
-  return sendDeleteRequest(url.toString())
+  return fetcher(url, opts)
 }
 
-export const fetchArticlesWrapper = sendGetWithFilters<
-  PaginatedResponse<MediaArticle, 'articles'>
->(MEDIA_ARTICLES_ENDPOINT)
+export function getArticles(params: Record<string, string> = {}) {
+  const url = new URL(MEDIA_ARTICLES_ENDPOINT)
+  for (const param in params) {
+    url.searchParams.set(param, `${params[param]}`)
+  }
+  return fetcher<PaginatedResponse<MediaArticle, 'articles'>>(url)
+}
+
 export function fetchArticle(id: string) {
-  return sendGetRequest<DynamicKey<MediaArticle, 'article'>>(
-    `${MEDIA_ARTICLES_ENDPOINT}/${id}`
-  )
+  const url = `${MEDIA_ARTICLES_ENDPOINT}/${id}`
+  return fetcher<DynamicTypedKey<MediaArticle, 'article'>>(url)
 }
+
 export function createArticle(body: string) {
-  return sendPostRequest<MediaArticle>(MEDIA_ARTICLES_ENDPOINT, body)
+  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
+  return fetcher<MediaArticle>(MEDIA_ARTICLES_ENDPOINT, opts)
 }
+
 export function updateArticle(id: string, body: string) {
-  return sendPatchRequest<MediaArticle>(
-    `${MEDIA_ARTICLES_ENDPOINT}/${id}`,
-    body
-  )
+  const opts: RequestInit = { method: 'PATCH', credentials: 'include', body }
+  return fetcher<MediaArticle>(`${MEDIA_ARTICLES_ENDPOINT}/${id}`, opts)
 }
+
 export function deleteArticles(ids: number[]) {
+  const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
   const url = new URL(MEDIA_ARTICLES_ENDPOINT)
   url.searchParams.set('ids', ids.join(','))
-  return sendDeleteRequest(url.toString())
+  return fetcher(url, opts)
 }
 
 export function fetchGalleryImages() {
-  return sendGetRequest<DynamicKey<GalleryImage[], 'images'>>(
+  return fetcher<DynamicTypedKey<GalleryImage[], 'images'>>(
     GALLERY_IMGS_ENDPOINT
   )
 }
+
 export function createGalleryImage(body: string) {
-  return sendPostRequest<GalleryImage>(GALLERY_IMGS_ENDPOINT, body)
+  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
+  return fetcher<GalleryImage>(GALLERY_IMGS_ENDPOINT, opts)
 }
+
 export function deleteGalleryImage(id: number) {
-  return sendDeleteRequest(`${GALLERY_IMGS_ENDPOINT}/${id}`)
+  const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
+  return fetcher(`${GALLERY_IMGS_ENDPOINT}/${id}`, opts)
+}
+
+export function getEvents(params: Record<string, string>) {
+  const url = new URL(EVENTS_ENDPOINT)
+  for (const param in params) {
+    url.searchParams.set(param, params[param])
+  }
+  return fetcher<PaginatedResponse<Event, 'events'>>(url)
+}
+
+export function getEvent(id: string) {
+  return fetcher<DynamicTypedKey<Event, 'event'>>(`${EVENTS_ENDPOINT}/${id}`)
+}
+
+export function createEvent(body: string) {
+  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
+  return fetcher<Event>(EVENTS_ENDPOINT, opts)
+}
+
+export function updateEvent(id: string, body: string) {
+  const opts: RequestInit = { method: 'PATCH', credentials: 'include', body }
+  return fetcher<Event>(`${EVENTS_ENDPOINT}/${id}`, opts)
+}
+
+export function deleteEvents(ids: number[]) {
+  const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
+  const url = new URL(EVENTS_ENDPOINT)
+  url.searchParams.set('ids', ids.join(','))
+  return fetcher(url, opts)
+}
+
+export function getHolocaustDocs(params: Record<string, string>) {
+  const url = new URL(HOLOCAUST_DOCS_ENDPOINT)
+  for (const param in params) {
+    url.searchParams.set(param, params[param])
+  }
+  return fetcher<PaginatedResponse<HolocaustDocument, 'documents'>>(url)
+}
+
+export function getHolocaustDoc(id: string) {
+  return fetcher<DynamicTypedKey<HolocaustDocument, 'document'>>(
+    `${HOLOCAUST_DOCS_ENDPOINT}/${id}`
+  )
+}
+
+export function createHolocaustDoc(body: string) {
+  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
+  return fetcher<HolocaustDocument>(HOLOCAUST_DOCS_ENDPOINT, opts)
+}
+
+export function updateHolocaustDoc(id: string, body: string) {
+  const opts: RequestInit = { method: 'PATCH', credentials: 'include', body }
+  return fetcher<HolocaustDocument>(`${HOLOCAUST_DOCS_ENDPOINT}/${id}`, opts)
+}
+
+export function deleteHolocaustDocs(ids: number[]) {
+  const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
+  const url = new URL(HOLOCAUST_DOCS_ENDPOINT)
+  url.searchParams.set('ids', ids.join(','))
+  return fetcher(url, opts)
+}
+
+export function getTestimonies(params: Record<string, string>) {
+  const url = new URL(TESTIMONIES_ENDPOINT)
+  for (const param in params) {
+    url.searchParams.set(param, params[param])
+  }
+  return fetcher<PaginatedResponse<VictimTestimony, 'testimonies'>>(url)
+}
+
+export function getTestimony(id: string) {
+  return fetcher<DynamicTypedKey<VictimTestimony, 'testimony'>>(
+    `${TESTIMONIES_ENDPOINT}/${id}`
+  )
+}
+
+export function createTestimony(body: string) {
+  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
+  return fetcher<VictimTestimony>(TESTIMONIES_ENDPOINT, opts)
+}
+
+export function updateTestimony(id: string, body: string) {
+  const opts: RequestInit = { method: 'PATCH', credentials: 'include', body }
+  return fetcher<VictimTestimony>(`${TESTIMONIES_ENDPOINT}/${id}`, opts)
+}
+
+export function deleteTestimonies(ids: number[]) {
+  const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
+  const url = new URL(TESTIMONIES_ENDPOINT)
+  url.searchParams.set('ids', ids.join(','))
+  return fetcher(url, opts)
+}
+
+export function login(body: string) {
+  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
+  return fetcher<DynamicTypedKey<User, 'user'>>(`${USERS_ENDPOINT}/login`, opts)
+}
+
+export function register(body: string) {
+  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
+  return fetcher<DynamicTypedKey<User, 'user'>>(
+    `${USERS_ENDPOINT}/register`,
+    opts
+  )
+}
+
+export function deleteUsers(ids: number[]) {
+  const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
+  const url = new URL(USERS_ENDPOINT)
+  url.searchParams.set('ids', ids.join(','))
+  return fetcher(url, opts)
+}
+
+export function createAssets(body: FormData) {
+  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
+  return fetcher(ASSETS_ENDPOINT, opts)
+}
+
+export function deleteAssets(ids: number[]) {
+  const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
+  const url = new URL(ASSETS_ENDPOINT)
+  url.searchParams.set('ids', ids.join(','))
+  return fetcher(url, opts)
 }

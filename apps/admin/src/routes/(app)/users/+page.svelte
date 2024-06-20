@@ -16,9 +16,11 @@
   import type { Metadata, User } from '$lib/types'
   import { admin } from '$lib/stores'
   import { onMount } from 'svelte'
-  import { deleteUsers, fetchUsersWrapper } from '$lib/user'
+  import { fetchUsersWrapper } from '$lib/user'
+  import { deleteUsers } from '$lib/api-utils'
   import { formatDate } from '$lib/format-date'
   import { addToast } from '$components/Toaster.svelte'
+  import { deleteErrorMsg, deleteSuccessMsg } from '$lib/toast-messages'
 
   let users: User[] = []
   let metadata: Metadata
@@ -62,26 +64,14 @@
   }
 
   async function deleteSelected() {
-    const ok = await deleteUsers(selectedUsers)
+    const { ok } = await deleteUsers(selectedUsers)
     if (!ok) {
-      addToast({
-        data: {
-          title: 'Щось пішло не так',
-          description: 'Спробуйте ще раз',
-          variant: 'error'
-        }
-      })
+      addToast(deleteErrorMsg)
       return
     }
     selectedUsers = []
     alertDialog.dismiss()
-    addToast({
-      data: {
-        title: 'Операція успішна',
-        description: 'Елементи було видалено',
-        variant: 'success'
-      }
-    })
+    addToast(deleteSuccessMsg)
     const res = await fetchUsers()
     if (res.ok) {
       users = res.data.users

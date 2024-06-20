@@ -11,7 +11,7 @@
   } from '$components'
   import type { ResponseError } from '$lib/response-error'
   import type { JSONContent } from '@tiptap/core'
-  import { createHolocaustDocument } from '$lib/holocaust-documents'
+  import { createHolocaustDoc } from '$lib/api-utils'
   import { PlusIcon } from 'lucide-svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { goto } from '$app/navigation'
@@ -36,7 +36,7 @@
       content: JSON.stringify(content),
       occuredOn: new Date(occuredOn).toISOString()
     })
-    const response = await createHolocaustDocument(body)
+    const response = await createHolocaustDoc(body)
     if (!response.ok) {
       error = response.error
       isSubmitting = false

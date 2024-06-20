@@ -2,6 +2,9 @@
   import { SearchIcon } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
   import { debounce } from '$lib/debounce'
+  import { page } from '$app/stores'
+
+  let searchParam = $page.url.searchParams.get('search') || ''
 
   const dispatch = createEventDispatcher()
 
@@ -23,6 +26,7 @@
       <input
         type="search"
         placeholder="Пошук..."
+        value={searchParam}
         on:input={debounce(search)}
         class="w-full border-none bg-transparent py-3.5 pl-10 outline-none placeholder:text-gray-400"
       />

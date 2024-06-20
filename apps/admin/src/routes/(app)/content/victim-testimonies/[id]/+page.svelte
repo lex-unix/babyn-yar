@@ -14,7 +14,7 @@
   } from '$components'
   import type { VictimTestimony } from '$lib/types'
   import type { ResponseError } from '$lib/response-error'
-  import { fetchTestimony, updateTestimony } from '$lib/testimonies'
+  import { getTestimony, updateTestimony } from '$lib/api-utils'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'
@@ -25,9 +25,10 @@
   let error: ResponseError | undefined
 
   onMount(async function () {
-    const res = await fetchTestimony($page.params.id)
+    const res = await getTestimony($page.params.id)
     if (res.ok) {
-      testimony = res.testimony
+      testimony = res.data.testimony
+      testimony.content = JSON.parse(testimony.content as unknown as string)
     } else {
       error = res.error
     }

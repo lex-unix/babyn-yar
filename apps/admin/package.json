@@ -44,6 +44,8 @@
     "@tiptap/starter-kit": "^2.1.11",
     "clsx": "^2.1.0",
     "lucide-svelte": "^0.292.0",
+    "shared": "*",
+    "shared-types": "*",
     "tailwind-merge": "^2.2.2"
   }
 }

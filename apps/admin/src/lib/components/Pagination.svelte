@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores'
   import { Select, SelectItem, SelectMenu, SelectTrigger } from '$components'
   import { pageSizeOptions } from '$lib/select-options'
   import { MoveLeft, MoveRight } from 'lucide-svelte'
@@ -7,8 +8,13 @@
   export let currentPage: number
   export let lastPage: number
 
-  let pageSizeLabel: string = pageSizeOptions[0].label
-  let pageSizeValue: string = pageSizeOptions[0].value
+  let pageSize = $page.url.searchParams.get('page_size') || ''
+
+  let pageOption =
+    pageSizeOptions.find(o => o.value === pageSize) || pageSizeOptions[0]
+
+  let pageSizeLabel: string = pageOption.label
+  let pageSizeValue: string = pageOption.value
 
   const delta = 3
   $: lower = Math.max(1, currentPage - delta)
@@ -41,10 +47,7 @@
       <span>Попередня</span>
     </button>
     <div class="pl-4">
-      <Select
-        bind:selected={pageSizeValue}
-        defaultSelected={pageSizeOptions[0]}
-      >
+      <Select bind:selected={pageSizeValue} defaultSelected={pageOption}>
         <SelectTrigger
           class="min-w-[170px] py-1 text-sm text-gray-600 hover:text-gray-800"
         >

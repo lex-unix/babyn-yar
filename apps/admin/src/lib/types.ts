@@ -73,3 +73,10 @@ export type GalleryImage = {
   createdAt: string
   url: string
 }
+
+export type ContentData = {
+  id: number
+  title: string
+  author: string
+  lastChange: string
+}

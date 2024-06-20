@@ -16,7 +16,7 @@
   import type { ResponseError } from '$lib/response-error'
   import { PlusIcon } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
-  import { register } from '$lib/user'
+  import { register } from '$lib/api-utils'
   import { permissionOptions } from '$lib/select-options'
   import { addToast } from './Toaster.svelte'
 
@@ -54,7 +54,7 @@
       })
       return
     }
-    dispatch('register', { user: response.user })
+    dispatch('register', { user: response.data.user })
     reset()
     dialog.dissmis()
   }
@@ -107,7 +107,7 @@
           bind:selected={permission}
           defaultSelected={permissionOptions[0]}
         >
-          <SelectTrigger id="select-role">Обрати роль</SelectTrigger>
+          <SelectTrigger>Обрати роль</SelectTrigger>
           <SelectMenu>
             {#each permissionOptions as { value, label }}
               <SelectItem {value} {label} />
