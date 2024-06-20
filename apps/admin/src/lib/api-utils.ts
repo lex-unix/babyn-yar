@@ -20,13 +20,6 @@ const TESTIMONIES_ENDPOINT = `${PUBLIC_API_URL}/victim-testimonies`
 const USERS_ENDPOINT = `${PUBLIC_API_URL}/users`
 const ASSETS_ENDPOINT = `${PUBLIC_API_URL}/assets`
 
-export type Filters = {
-  page?: number
-  pageSize?: number
-  sort?: string
-  [key: string]: string | number | undefined
-}
-
 export function getBooks(params: Record<string, string> = {}) {
   const url = new URL(BOOKS_ENDPOINT)
   for (const param in params) {
