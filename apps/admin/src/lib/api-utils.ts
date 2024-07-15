@@ -7,6 +7,9 @@ import type {
   Event,
   HolocaustDocument,
   VictimTestimony,
+  Partner,
+  LegalDocument,
+  DevConcept,
   User
 } from './types'
 import type { PaginatedResponse, DynamicTypedKey } from 'shared-types'
@@ -19,6 +22,9 @@ const HOLOCAUST_DOCS_ENDPOINT = `${PUBLIC_API_URL}/holocaust-documents`
 const TESTIMONIES_ENDPOINT = `${PUBLIC_API_URL}/victim-testimonies`
 const USERS_ENDPOINT = `${PUBLIC_API_URL}/users`
 const ASSETS_ENDPOINT = `${PUBLIC_API_URL}/assets`
+const PARTNERS_ENDPOINT = `${PUBLIC_API_URL}/partners`
+const LEGAL_DOCUMENTS_ENDPOINT = `${PUBLIC_API_URL}/legal-documents`
+const DEV_CONCEPT_ENDPOINT = `${PUBLIC_API_URL}/development-concepts`
 
 export function getBooks(params: Record<string, string> = {}) {
   const url = new URL(BOOKS_ENDPOINT)
@@ -214,6 +220,99 @@ export function createAssets(body: FormData) {
 export function deleteAssets(ids: number[]) {
   const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
   const url = new URL(ASSETS_ENDPOINT)
+  url.searchParams.set('ids', ids.join(','))
+  return fetcher(url, opts)
+}
+
+export function getPartners(params: Record<string, string>) {
+  const url = new URL(PARTNERS_ENDPOINT)
+  for (const param in params) {
+    url.searchParams.set(param, params[param])
+  }
+  return fetcher<PaginatedResponse<Partner, 'partners'>>(url)
+}
+
+export function getPartner(id: string) {
+  return fetcher<DynamicTypedKey<Partner, 'partner'>>(
+    `${PARTNERS_ENDPOINT}/${id}`
+  )
+}
+
+export function createPartner(body: string) {
+  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
+  return fetcher<Partner>(PARTNERS_ENDPOINT, opts)
+}
+
+export function updatePartner(id: string, body: string) {
+  const opts: RequestInit = { method: 'PATCH', credentials: 'include', body }
+  return fetcher<Partner>(`${PARTNERS_ENDPOINT}/${id}`, opts)
+}
+
+export function deletePartners(ids: number[]) {
+  const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
+  const url = new URL(PARTNERS_ENDPOINT)
+  url.searchParams.set('ids', ids.join(','))
+  return fetcher(url, opts)
+}
+
+export function getLegalDocuments(params: Record<string, string>) {
+  const url = new URL(LEGAL_DOCUMENTS_ENDPOINT)
+  for (const param in params) {
+    url.searchParams.set(param, params[param])
+  }
+  return fetcher<PaginatedResponse<LegalDocument, 'documents'>>(url)
+}
+
+export function getLegalDocument(id: string) {
+  return fetcher<DynamicTypedKey<LegalDocument, 'document'>>(
+    `${LEGAL_DOCUMENTS_ENDPOINT}/${id}`
+  )
+}
+
+export function createLegalDocument(body: string) {
+  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
+  return fetcher<LegalDocument>(LEGAL_DOCUMENTS_ENDPOINT, opts)
+}
+
+export function updateLegalDocument(id: string, body: string) {
+  const opts: RequestInit = { method: 'PATCH', credentials: 'include', body }
+  return fetcher<LegalDocument>(`${LEGAL_DOCUMENTS_ENDPOINT}/${id}`, opts)
+}
+
+export function deleteLegalDocuments(ids: number[]) {
+  const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
+  const url = new URL(LEGAL_DOCUMENTS_ENDPOINT)
+  url.searchParams.set('ids', ids.join(','))
+  return fetcher(url, opts)
+}
+
+export function getDevConcepts(params: Record<string, string>) {
+  const url = new URL(DEV_CONCEPT_ENDPOINT)
+  for (const param in params) {
+    url.searchParams.set(param, params[param])
+  }
+  return fetcher<PaginatedResponse<DevConcept, 'concepts'>>(url)
+}
+
+export function getDevConcept(id: string) {
+  return fetcher<DynamicTypedKey<DevConcept, 'concept'>>(
+    `${DEV_CONCEPT_ENDPOINT}/${id}`
+  )
+}
+
+export function createDevConcept(body: string) {
+  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
+  return fetcher<DevConcept>(DEV_CONCEPT_ENDPOINT, opts)
+}
+
+export function updateDevConcept(id: string, body: string) {
+  const opts: RequestInit = { method: 'PATCH', credentials: 'include', body }
+  return fetcher<DevConcept>(`${DEV_CONCEPT_ENDPOINT}/${id}`, opts)
+}
+
+export function deleteDevConcepts(ids: number[]) {
+  const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
+  const url = new URL(DEV_CONCEPT_ENDPOINT)
   url.searchParams.set('ids', ids.join(','))
   return fetcher(url, opts)
 }
