@@ -76,5 +76,12 @@ func (app *application) routes() http.Handler {
 	router.Patch("/v1/partners/{id}", app.requireAuthenticatedUser(app.updatePartnerHandler))
 	router.Delete("/v1/partners", app.requireAuthenticatedUser(app.deletePartnersHandler))
 
+	// legal documents
+	router.Get("/v1/legal-documents", app.listLegalDocumentsHandler)
+	router.Get("/v1/legal-documents/{id}", app.showLegalDocumentHandler)
+	router.Post("/v1/legal-documents", app.requireAuthenticatedUser(app.createLegalDocumentHandler))
+	router.Patch("/v1/legal-documents/{id}", app.requireAuthenticatedUser(app.updateLegalDocumentHandler))
+	router.Delete("/v1/legal-documents", app.requireAuthenticatedUser(app.deleteLegalDocumentsHandler))
+
 	return router
 }

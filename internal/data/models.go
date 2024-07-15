@@ -24,6 +24,7 @@ type Models struct {
 	MediaArticles      MediaArticleModel
 	GalleryImages      GalleryModel
 	Partners           PartnerModel
+	LegalDocuments     LegalDocumentModel
 }
 
 func NewModels(db *pgxpool.Pool) Models {
@@ -39,5 +40,6 @@ func NewModels(db *pgxpool.Pool) Models {
 		MediaArticles:      MediaArticleModel{DB: db},
 		GalleryImages:      GalleryModel{DB: db},
 		Partners:           PartnerModel{DB: db},
+		LegalDocuments:     LegalDocumentModel{DB: db},
 	}
 }
