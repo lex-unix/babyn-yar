@@ -6,6 +6,7 @@ import type {
   VictimTestimony,
   MediaArticle,
   GalleryImage,
+  Partner,
   DynamicTypedKey,
   PaginatedResponse
 } from 'shared-types'
@@ -52,6 +53,14 @@ export function getHolocaustDocuments(page = '1') {
   return fetcher<PaginatedResponse<HolocaustDocument, 'documents'>>(url)
 }
 
+export function getPartners(page = '1') {
+  const url = new URL(apiURL + '/partners')
+  url.searchParams.set('page', `${page}`)
+  url.searchParams.set('lang', 'ua')
+  url.searchParams.set('sort', '-occured_on')
+  return fetcher<PaginatedResponse<Partner, 'partners'>>(url)
+}
+
 export function getEvent(id: string) {
   return fetcher<DynamicTypedKey<Event, 'event'>>(`${apiURL}/events/${id}`)
 }
@@ -79,5 +88,11 @@ export function getTestimony(id: string) {
 export function getHolocaustDocument(id: string) {
   return fetcher<DynamicTypedKey<Book, 'document'>>(
     `${apiURL}/holocaust-documents/${id}`
+  )
+}
+
+export function getPartner(id: string) {
+  return fetcher<DynamicTypedKey<Partner, 'partner'>>(
+    `${apiURL}/partners/${id}`
   )
 }

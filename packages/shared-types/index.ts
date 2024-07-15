@@ -18,6 +18,7 @@ export type PaginatedResponse<T, K extends string> = {
 export type Event = BaseContent
 export type MediaArticle = BaseContent
 export type HolocaustDocument = BaseContent
+export type Partner = BaseContent
 export type VictimTestimony = BaseContent & {
   documents: string[]
 }
