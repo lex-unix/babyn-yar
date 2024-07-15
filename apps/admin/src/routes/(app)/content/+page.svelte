@@ -26,6 +26,10 @@
       href: '/content/partners',
       text: 'Партнери'
     },
+    {
+      href: '/content/legal-documents',
+      text: 'Документи'
+    },
     }
   ]
 </script>
