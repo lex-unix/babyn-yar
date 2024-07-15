@@ -42,7 +42,7 @@ func ValidatePartner(v *validator.Validator, partner *Partner) {
 
 func (m PartnerModel) Insert(partner *Partner) error {
 	query := `
-		INSERT INTO partners (title, description, content, lang, cover, occurred_on, user_id)
+		INSERT INTO partners (title, description, content, lang, cover, occured_on, user_id)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id, version`
 
@@ -117,7 +117,7 @@ func (m PartnerModel) Get(id int64) (*Partner, error) {
 	}
 
 	query := `
-		SELECT p.id, p.created_at, p.occurred_on, p.updated_at, p.title, p.description, p.content, p.lang, p.cover, p.version
+		SELECT p.id, p.created_at, p.occured_on, p.updated_at, p.title, p.description, p.content, p.lang, p.cover, p.version
 		FROM partners p
 		WHERE id = $1`
 
@@ -152,7 +152,7 @@ func (m PartnerModel) Get(id int64) (*Partner, error) {
 func (m PartnerModel) Update(partner *Partner) error {
 	query := `
 		UPDATE partners
-		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, occurred_on = $6, updated_at = now(), version = version + 1
+		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, occured_on = $6, updated_at = now(), version = version + 1
 		WHERE id = $7 AND version = $8
 		RETURNING version`
 
