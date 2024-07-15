@@ -83,5 +83,12 @@ func (app *application) routes() http.Handler {
 	router.Patch("/v1/legal-documents/{id}", app.requireAuthenticatedUser(app.updateLegalDocumentHandler))
 	router.Delete("/v1/legal-documents", app.requireAuthenticatedUser(app.deleteLegalDocumentsHandler))
 
+	// development concepts
+	router.Get("/v1/development-concepts", app.listDevConceptsHandler)
+	router.Get("/v1/development-concepts/{id}", app.showDevConceptHandler)
+	router.Post("/v1/development-concepts", app.requireAuthenticatedUser(app.createDevConceptHandler))
+	router.Patch("/v1/development-concepts/{id}", app.requireAuthenticatedUser(app.updateDevConceptHandler))
+	router.Delete("/v1/development-concepts", app.requireAuthenticatedUser(app.deleteDevConceptsHandler))
+
 	return router
 }
