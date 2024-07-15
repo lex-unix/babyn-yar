@@ -69,5 +69,12 @@ func (app *application) routes() http.Handler {
 	router.Post("/v1/gallery", app.requireAuthenticatedUser(app.createGalleryImageHandler))
 	router.Delete("/v1/gallery/{id}", app.requireAuthenticatedUser(app.deleteGalleryImageHandler))
 
+	// partners
+	router.Get("/v1/partners", app.listPartnersHandler)
+	router.Get("/v1/partners/{id}", app.showPartnerHandler)
+	router.Post("/v1/partners", app.requireAuthenticatedUser(app.createPartnerHandler))
+	router.Patch("/v1/partners/{id}", app.requireAuthenticatedUser(app.updatePartnerHandler))
+	router.Delete("/v1/partners", app.requireAuthenticatedUser(app.deletePartnersHandler))
+
 	return router
 }
