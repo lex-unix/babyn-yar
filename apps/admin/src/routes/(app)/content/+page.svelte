@@ -21,6 +21,11 @@
     {
       href: '/content/media-articles',
       text: 'ЗМІ про заповідник'
+    },
+    {
+      href: '/content/partners',
+      text: 'Партнери'
+    },
     }
   ]
 </script>
