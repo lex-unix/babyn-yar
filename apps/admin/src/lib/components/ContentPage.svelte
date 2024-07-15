@@ -70,8 +70,9 @@
   }
 
   function deleteSelected() {
-    dispatch('delete', { selected })
+    dispatch('delete', { selected: [...selected] })
     alertDialog.dismiss()
+    selected = []
   }
 
   function search(e: CustomEvent<{ search: string }>) {
