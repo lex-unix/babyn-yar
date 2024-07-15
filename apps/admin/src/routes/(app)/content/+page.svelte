@@ -30,6 +30,9 @@
       href: '/content/legal-documents',
       text: 'Документи'
     },
+    {
+      href: '/content/development-concept',
+      text: 'Концепція розвитку'
     }
   ]
 </script>
