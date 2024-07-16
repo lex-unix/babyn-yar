@@ -27,7 +27,7 @@ if (!response.ok && response.error.isNotFoundError()) {
   !response.ok ? (
     <InternalError />
   ) : (
-    <MainLayout title="Події" description="Переглянути всі події">
+    <MainLayout title="ЗМІ про заповідник" description="ЗМІ про заповідник">
       <div class="not-prose">
         <ContentGrid>
           {articles.map(a => (
