@@ -1,0 +1,62 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro'
+import { ContentGrid, SSRPagination, ContentGridItem } from 'ui'
+import type { DevConcept, Metadata } from 'shared-types'
+import { getDevConcepts } from '@/api'
+import InternalError from '@/components/InternalError.astro'
+
+export const prerender = false
+
+let concepts: DevConcept[] = []
+let metadata: Metadata | undefined = undefined
+
+const currentPage = Astro.url.searchParams.get('page') || '1'
+const response = await getDevConcepts(currentPage)
+
+if (response.ok) {
+  concepts = response.data.concepts
+  metadata = response.data.metadata
+}
+
+if (!response.ok && response.error.isNotFoundError()) {
+  return new Response(null, { status: 404 })
+}
+---
+
+{
+  !response.ok ? (
+    <InternalError />
+  ) : (
+    <MainLayout
+      title="Концепція розвитку"
+      description="Концепція розвитку Державного історико-меморіального заповідника „Бабин Яр”"
+    >
+      <h2>
+        Концепція розвитку Державного історико-меморіального заповідника „Бабин
+        Яр”
+      </h2>
+      <div class="not-prose">
+        <ContentGrid>
+          {concepts.map(entry => (
+            <ContentGridItem
+              href={`/development-concept/${entry.id}`}
+              title={entry.title}
+              description={entry.description}
+              cover={entry.cover}
+              coverAlt={entry.title}
+              date={entry.occuredOn}
+            />
+          ))}
+        </ContentGrid>
+        <div class="mt-10">
+          {concepts.length > 0 && metadata && (
+            <SSRPagination
+              current={metadata.currentPage}
+              total={metadata.lastPage}
+            />
+          )}
+        </div>
+      </div>
+    </MainLayout>
+  )
+}
