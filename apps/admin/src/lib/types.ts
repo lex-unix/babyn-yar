@@ -29,11 +29,15 @@ export type Book = BaseContent & {
   documents: string[]
   user: User
 }
+export type LegalDocument = BaseContent & {
+  documents: string[]
+  user: User
+}
+
 export type Event = BaseContent & { user: User }
 export type HolocaustDocument = BaseContent & { user: User }
 export type MediaArticle = BaseContent & { user: User }
 export type Partner = BaseContent & { user: User }
-export type LegalDocument = BaseContent & { user: User }
 export type DevConcept = BaseContent & { user: User }
 
 export type Asset = {

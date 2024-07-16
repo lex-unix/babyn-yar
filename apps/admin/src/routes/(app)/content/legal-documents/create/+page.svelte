@@ -5,6 +5,7 @@
     LangSelect,
     CoverSelect,
     PageHeader,
+    DocumentsSelect,
     Container,
     Button,
     DatePicker
@@ -15,6 +16,7 @@
   import { PlusIcon } from 'lucide-svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { goto } from '$app/navigation'
+  import { createRecordSuccessMsg } from '$lib/toast-messages'
 
   let isSubmitting = false
   let content: JSONContent
@@ -23,6 +25,7 @@
   let lang = ''
   let cover = ''
   let date = ''
+  let documents: string[] = []
   let error: ResponseError | undefined
 
   async function submit() {
@@ -32,6 +35,7 @@
       description,
       lang,
       cover,
+      documents,
       content: JSON.stringify(content),
       occuredOn: new Date(date).toISOString()
     })
@@ -41,13 +45,7 @@
       isSubmitting = false
       return
     }
-    addToast({
-      data: {
-        title: 'Чудово!',
-        description: 'Новий запис було успішно створено',
-        variant: 'success'
-      }
-    })
+    addToast(createRecordSuccessMsg)
     isSubmitting = false
     error = undefined
     goto('/content/legal-documents')
@@ -92,6 +90,7 @@
       bind:value={description}
       required
     />
+    <DocumentsSelect bind:documents />
     <div>
       <p class="mb-1.5 text-gray-500">Контент</p>
       {#if error?.isFormError() && error?.error.content}

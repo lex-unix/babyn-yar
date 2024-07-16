@@ -21,6 +21,7 @@ type LegalDocument struct {
 	Content     string    `json:"content"`
 	Cover       string    `json:"cover"`
 	Lang        string    `json:"lang"`
+	Documents   []string  `json:"documents"`
 	Version     int32     `json:"version"`
 	UserID      int64     `json:"-"`
 	User        *User     `json:"user"`
@@ -42,8 +43,8 @@ func ValidateLegalDocument(v *validator.Validator, document *LegalDocument) {
 
 func (m LegalDocumentModel) Insert(document *LegalDocument) error {
 	query := `
-		INSERT INTO legal_documents (title, description, content, lang, cover, occured_on, user_id)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO legal_documents (title, description, content, lang, cover, documents, occured_on, user_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING id, version`
 
 	args := []interface{}{
@@ -52,6 +53,7 @@ func (m LegalDocumentModel) Insert(document *LegalDocument) error {
 		document.Content,
 		document.Lang,
 		document.Cover,
+		document.Documents,
 		document.OccuredOn,
 		document.UserID,
 	}
@@ -117,7 +119,7 @@ func (m LegalDocumentModel) Get(id int64) (*LegalDocument, error) {
 	}
 
 	query := `
-		SELECT d.id, d.created_at, d.occured_on, d.updated_at, d.title, d.description, d.content, d.lang, d.cover, d.version
+		SELECT d.id, d.created_at, d.occured_on, d.updated_at, d.title, d.description, d.content, d.lang, d.cover, d.documents, d.version
 		FROM legal_documents d
 		WHERE id = $1`
 
@@ -135,6 +137,7 @@ func (m LegalDocumentModel) Get(id int64) (*LegalDocument, error) {
 		&document.Content,
 		&document.Lang,
 		&document.Cover,
+		&document.Documents,
 		&document.Version,
 	)
 	if err != nil {
@@ -152,8 +155,8 @@ func (m LegalDocumentModel) Get(id int64) (*LegalDocument, error) {
 func (m LegalDocumentModel) Update(document *LegalDocument) error {
 	query := `
 		UPDATE legal_documents
-		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, occured_on = $6, updated_at = now(), version = version + 1
-		WHERE id = $7 AND version = $8
+		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, occured_on = $6, documents = $7, updated_at = now(), version = version + 1
+		WHERE id = $8 AND version = $9
 		RETURNING version`
 
 	args := []interface{}{
@@ -163,6 +166,7 @@ func (m LegalDocumentModel) Update(document *LegalDocument) error {
 		document.Lang,
 		document.Cover,
 		document.OccuredOn,
+		document.Documents,
 		document.ID,
 		document.Version,
 	}

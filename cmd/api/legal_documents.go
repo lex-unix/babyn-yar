@@ -18,6 +18,7 @@ func (app *application) createLegalDocumentHandler(w http.ResponseWriter, r *htt
 		Lang        string    `json:"lang"`
 		Cover       string    `json:"cover"`
 		OccuredOn   time.Time `json:"occuredOn"`
+		Documents   []string  `json:"documents"`
 	}
 
 	err := app.readJson(w, r, &input)
@@ -36,6 +37,11 @@ func (app *application) createLegalDocumentHandler(w http.ResponseWriter, r *htt
 		Cover:       input.Cover,
 		OccuredOn:   input.OccuredOn,
 		UserID:      user.ID,
+		Documents:   []string{},
+	}
+
+	if len(input.Documents) != 0 {
+		document.Documents = input.Documents
 	}
 
 	v := validator.New()
@@ -175,6 +181,7 @@ func (app *application) updateLegalDocumentHandler(w http.ResponseWriter, r *htt
 		Lang        *string    `json:"lang"`
 		Cover       *string    `json:"cover"`
 		OccuredOn   *time.Time `json:"occuredOn"`
+		Documents   []string   `json:"documents"`
 	}
 
 	err = app.readJson(w, r, &input)
@@ -205,6 +212,10 @@ func (app *application) updateLegalDocumentHandler(w http.ResponseWriter, r *htt
 
 	if input.OccuredOn != nil {
 		document.OccuredOn = *input.OccuredOn
+	}
+
+	if input.Documents != nil {
+		document.Documents = input.Documents
 	}
 
 	v := validator.New()

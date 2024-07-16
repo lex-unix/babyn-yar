@@ -6,6 +6,7 @@
     CoverSelect,
     RichTextEditor,
     PageHeader,
+    DocumentsSelect,
     Button,
     Container,
     NotFound,
@@ -47,6 +48,7 @@
       lang: legalDocument.lang,
       cover: legalDocument.cover,
       content: JSON.stringify(legalDocument.content),
+      documents: legalDocument.documents,
       occuredOn: new Date(legalDocument.occuredOn).toISOString()
     })
     const response = await updateLegalDocument($page.params.id, body)
@@ -109,6 +111,7 @@
           label="Опис"
           error={error?.isFormError() ? error.error.description : undefined}
         />
+        <DocumentsSelect bind:documents={legalDocument.documents} />
         <div>
           <p class="mb-1.5 text-gray-500">Контент</p>
           {#if error?.isFormError() && error?.error.content}
