@@ -69,5 +69,26 @@ func (app *application) routes() http.Handler {
 	router.Post("/v1/gallery", app.requireAuthenticatedUser(app.createGalleryImageHandler))
 	router.Delete("/v1/gallery/{id}", app.requireAuthenticatedUser(app.deleteGalleryImageHandler))
 
+	// partners
+	router.Get("/v1/partners", app.listPartnersHandler)
+	router.Get("/v1/partners/{id}", app.showPartnerHandler)
+	router.Post("/v1/partners", app.requireAuthenticatedUser(app.createPartnerHandler))
+	router.Patch("/v1/partners/{id}", app.requireAuthenticatedUser(app.updatePartnerHandler))
+	router.Delete("/v1/partners", app.requireAuthenticatedUser(app.deletePartnersHandler))
+
+	// legal documents
+	router.Get("/v1/legal-documents", app.listLegalDocumentsHandler)
+	router.Get("/v1/legal-documents/{id}", app.showLegalDocumentHandler)
+	router.Post("/v1/legal-documents", app.requireAuthenticatedUser(app.createLegalDocumentHandler))
+	router.Patch("/v1/legal-documents/{id}", app.requireAuthenticatedUser(app.updateLegalDocumentHandler))
+	router.Delete("/v1/legal-documents", app.requireAuthenticatedUser(app.deleteLegalDocumentsHandler))
+
+	// development concepts
+	router.Get("/v1/development-concepts", app.listDevConceptsHandler)
+	router.Get("/v1/development-concepts/{id}", app.showDevConceptHandler)
+	router.Post("/v1/development-concepts", app.requireAuthenticatedUser(app.createDevConceptHandler))
+	router.Patch("/v1/development-concepts/{id}", app.requireAuthenticatedUser(app.updateDevConceptHandler))
+	router.Delete("/v1/development-concepts", app.requireAuthenticatedUser(app.deleteDevConceptsHandler))
+
 	return router
 }

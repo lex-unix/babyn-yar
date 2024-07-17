@@ -14,7 +14,7 @@
   } from '$components'
   import type { Event } from '$lib/types'
   import type { ResponseError } from '$lib/response-error'
-  import { fetchEvent, updateEvent } from '$lib/events'
+  import { getEvent, updateEvent } from '$lib/api-utils'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'
@@ -26,9 +26,10 @@
 
   onMount(async function () {
     isLoading = true
-    const response = await fetchEvent($page.params.slug)
+    const response = await getEvent($page.params.slug)
     if (response.ok) {
-      event = response.event
+      event = response.data.event
+      event.content = JSON.parse(event.content as unknown as string)
       isLoading = false
       return
     }

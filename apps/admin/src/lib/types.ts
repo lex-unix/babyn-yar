@@ -1,5 +1,13 @@
 import type { JSONContent } from '@tiptap/core'
 
+export type Metadata = {
+  currentPage: number
+  firstPage: number
+  lastPage: number
+  pageSize: number
+  totalRecords: number
+}
+
 type BaseContent = {
   id: number
   createdAt: string
@@ -9,41 +17,28 @@ type BaseContent = {
   description: string
   content: JSONContent
   cover: string
-  lang: string
-}
-
-export type Event = BaseContent & {
   version: number
-  user: User
+  lang: string
 }
 
 export type VictimTestimony = BaseContent & {
   documents: string[]
   user: User
 }
-
 export type Book = BaseContent & {
   documents: string[]
   user: User
 }
-
-export type HolocaustDocument = BaseContent & {
-  version: number
+export type LegalDocument = BaseContent & {
+  documents: string[]
   user: User
 }
 
-export type MediaArticle = BaseContent & {
-  version: number
-  user: User
-}
-
-export type Metadata = {
-  currentPage: number
-  firstPage: number
-  lastPage: number
-  pageSize: number
-  totalRecords: number
-}
+export type Event = BaseContent & { user: User }
+export type HolocaustDocument = BaseContent & { user: User }
+export type MediaArticle = BaseContent & { user: User }
+export type Partner = BaseContent & { user: User }
+export type DevConcept = BaseContent & { user: User }
 
 export type Asset = {
   id: number
@@ -51,6 +46,12 @@ export type Asset = {
   url: string
   fileName: string
   contentType: string
+}
+
+export type GalleryImage = {
+  id: number
+  createdAt: string
+  url: string
 }
 
 export type User = {
@@ -68,8 +69,9 @@ export type UserErrorResponse = {
   password?: string
 }
 
-export type GalleryImage = {
+export type ContentData = {
   id: number
-  createdAt: string
-  url: string
+  title: string
+  author: string
+  lastChange: string
 }

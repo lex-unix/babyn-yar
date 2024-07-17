@@ -13,10 +13,7 @@
   } from '$components'
   import type { HolocaustDocument } from '$lib/types'
   import type { ResponseError } from '$lib/response-error'
-  import {
-    fetchHolocaustDocument,
-    updateHolocaustDocument
-  } from '$lib/holocaust-documents'
+  import { getHolocaustDoc, updateHolocaustDoc } from '$lib/api-utils'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'
@@ -27,9 +24,10 @@
   let error: ResponseError | undefined
 
   onMount(async function () {
-    const response = await fetchHolocaustDocument($page.params.id)
+    const response = await getHolocaustDoc($page.params.id)
     if (response.ok) {
-      doc = response.document
+      doc = response.data.document
+      doc.content = JSON.parse(doc.content as unknown as string)
     } else {
       error = response.error
     }
@@ -45,7 +43,7 @@
       cover: doc.cover,
       content: JSON.stringify(doc.content)
     })
-    const response = await updateHolocaustDocument($page.params.id, body)
+    const response = await updateHolocaustDoc($page.params.id, body)
     if (!response.ok) {
       error = response.error
       isSubmitting = false

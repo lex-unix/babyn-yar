@@ -5,4 +5,3 @@ export const allLegislativeBasis = await getEntry(
   'legislative-basis',
   'legislative-basis'
 )
-export const allExhibitions = await getEntry('exhibitions', 'exhibitions')

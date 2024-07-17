@@ -7,7 +7,10 @@ import type {
   GalleryImage,
   MediaArticle,
   DynamicTypedKey,
-  PaginatedResponse
+  PaginatedResponse,
+  Partner,
+  LegalDocument,
+  DevConcept
 } from 'shared-types'
 
 const apiURL = import.meta.env.API_URL
@@ -52,6 +55,30 @@ export function getHolocaustDocuments(page = '1') {
   return fetcher<PaginatedResponse<HolocaustDocument, 'documents'>>(url)
 }
 
+export function getPartners(page = '1') {
+  const url = new URL(apiURL + '/partners')
+  url.searchParams.set('page', `${page}`)
+  url.searchParams.set('lang', 'en')
+  url.searchParams.set('sort', '-occured_on')
+  return fetcher<PaginatedResponse<Partner, 'partners'>>(url)
+}
+
+export function getLegalDocuments(page = '1') {
+  const url = new URL(apiURL + '/legal-documents')
+  url.searchParams.set('page', `${page}`)
+  url.searchParams.set('lang', 'en')
+  url.searchParams.set('sort', '-occured_on')
+  return fetcher<PaginatedResponse<LegalDocument, 'documents'>>(url)
+}
+
+export function getDevConcepts(page = '1') {
+  const url = new URL(apiURL + '/development-concepts')
+  url.searchParams.set('page', `${page}`)
+  url.searchParams.set('lang', 'en')
+  url.searchParams.set('sort', '-occured_on')
+  return fetcher<PaginatedResponse<DevConcept, 'concepts'>>(url)
+}
+
 export function getEvent(id: string) {
   return fetcher<DynamicTypedKey<Event, 'event'>>(`${apiURL}/events/${id}`)
 }
@@ -79,5 +106,23 @@ export function getTestimony(id: string) {
 export function getHolocaustDocument(id: string) {
   return fetcher<DynamicTypedKey<Book, 'document'>>(
     `${apiURL}/holocaust-documents/${id}`
+  )
+}
+
+export function getPartner(id: string) {
+  return fetcher<DynamicTypedKey<Partner, 'partner'>>(
+    `${apiURL}/partners/${id}`
+  )
+}
+
+export function getLegalDocument(id: string) {
+  return fetcher<DynamicTypedKey<LegalDocument, 'document'>>(
+    `${apiURL}/legal-documents/${id}`
+  )
+}
+
+export function getDevConcept(id: string) {
+  return fetcher<DynamicTypedKey<DevConcept, 'concept'>>(
+    `${apiURL}/development-concepts/${id}`
   )
 }

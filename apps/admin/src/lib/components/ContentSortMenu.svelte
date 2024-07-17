@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores'
   import {
     SortDropdown,
     SortDropdownMenu,
@@ -7,6 +8,8 @@
   } from '$components'
   import { ArrowDownIcon, ArrowUpIcon } from 'lucide-svelte'
   import { createEventDispatcher } from 'svelte'
+
+  let sortParam = $page.url.searchParams.get('sort') || ''
 
   const defaultSort = '-created_at'
 
@@ -39,7 +42,7 @@
 
   const dispatch = createEventDispatcher()
 
-  let selected = menuItems[0]
+  let selected = menuItems.find(i => i.sortValue === sortParam) || menuItems[0]
 
   function select(item: (typeof menuItems)[number]) {
     if (selected.sortValue === item.sortValue) return
