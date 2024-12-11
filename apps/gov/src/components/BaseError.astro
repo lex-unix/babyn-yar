@@ -1,13 +1,17 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import { getLangFromUrl, useTranslations, useTranslatedPath } from 'i18n'
 
 interface Props {
   code: number
 }
 
 const { code } = Astro.props
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+const translatePath = useTranslatedPath(lang)
 
-const meta = `${code} | НІМЗ Бабин Яр`
+const meta = `${code} | ${t('error.meta')}`
 ---
 
 <BaseLayout title={meta} description={meta}>
@@ -26,10 +30,10 @@ const meta = `${code} | НІМЗ Бабин Яр`
       </p>
       <div class="mt-10 flex items-center justify-center gap-x-6">
         <a
-          href="/"
+          href={translatePath('/')}
           class="rounded-md bg-black px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
-          Повернутися додому
+          {t('error.return')}
         </a>
       </div>
     </div>

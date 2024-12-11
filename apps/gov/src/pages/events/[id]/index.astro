@@ -27,7 +27,11 @@ if (!response.ok && response.error.isNotFoundError()) {
   !response.ok || !event ? (
     <InternalError />
   ) : (
-    <MainLayout title={event.title} description={event.description}>
+    <MainLayout
+      title={event.title}
+      description={event.description}
+      translationId={response.data.translation?.englishId}
+    >
       <Fragment set:html={content} />
     </MainLayout>
   )

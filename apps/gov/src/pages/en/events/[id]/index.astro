@@ -1,21 +1,21 @@
 ---
 import MainLayout from '@/layouts/MainLayout.astro'
 import InternalError from '@/components/InternalError.astro'
-import type { MediaArticle } from 'shared-types'
-import { getArticle } from '@/api'
+import type { Event } from 'shared-types'
+import { getEvent } from '@/api'
 import { generateHTML } from 'tip-tap-utils'
 
 export const prerender = false
 
-let article: MediaArticle | undefined = undefined
+let event: Event | undefined = undefined
 let content: string | undefined = undefined
 
 const id = Astro.params.id
-const response = await getArticle(id as string)
+const response = await getEvent(id as string)
 
 if (response.ok) {
-  article = response.data.article
-  content = generateHTML(JSON.parse(article.content))
+  event = response.data.event
+  content = generateHTML(JSON.parse(event.content))
 }
 
 if (!response.ok && response.error.isNotFoundError()) {
@@ -24,13 +24,13 @@ if (!response.ok && response.error.isNotFoundError()) {
 ---
 
 {
-  !response.ok || !article ? (
+  !response.ok || !event ? (
     <InternalError />
   ) : (
     <MainLayout
-      title={article.title}
-      description={article.description}
-      translationId={response.data.translation?.englishId}
+      title={event.title}
+      description={event.description}
+      translationId={response.data.translation?.ukrainianId}
     >
       <Fragment set:html={content} />
     </MainLayout>

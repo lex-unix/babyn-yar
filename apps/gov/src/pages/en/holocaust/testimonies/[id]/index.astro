@@ -1,21 +1,22 @@
 ---
 import MainLayout from '@/layouts/MainLayout.astro'
 import InternalError from '@/components/InternalError.astro'
-import type { MediaArticle } from 'shared-types'
-import { getArticle } from '@/api'
 import { generateHTML } from 'tip-tap-utils'
+import { getTestimony } from '@/api'
+import type { VictimTestimony } from 'shared-types'
+import { Document } from 'ui'
 
 export const prerender = false
 
-let article: MediaArticle | undefined = undefined
+let testimony: VictimTestimony | undefined = undefined
 let content: string | undefined = undefined
 
 const id = Astro.params.id
-const response = await getArticle(id as string)
+const response = await getTestimony(id as string)
 
 if (response.ok) {
-  article = response.data.article
-  content = generateHTML(JSON.parse(article.content))
+  testimony = response.data.testimony
+  content = generateHTML(JSON.parse(testimony.content))
 }
 
 if (!response.ok && response.error.isNotFoundError()) {
@@ -24,15 +25,21 @@ if (!response.ok && response.error.isNotFoundError()) {
 ---
 
 {
-  !response.ok || !article ? (
+  !response.ok || !testimony ? (
     <InternalError />
   ) : (
-    <MainLayout
-      title={article.title}
-      description={article.description}
-      translationId={response.data.translation?.englishId}
-    >
+    <MainLayout title={testimony.title} description={testimony.description}>
       <Fragment set:html={content} />
+      <div>
+        {testimony.documents.length > 0 && (
+          <div class="max-w-md">
+            <p class="font-semibold">Documents</p>
+            {testimony.documents.map(url => (
+              <Document href={url}>{url.split('/').at(-1)}</Document>
+            ))}
+          </div>
+        )}
+      </div>
     </MainLayout>
   )
 }

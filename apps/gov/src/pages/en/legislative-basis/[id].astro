@@ -1,21 +1,22 @@
 ---
 import MainLayout from '@/layouts/MainLayout.astro'
 import InternalError from '@/components/InternalError.astro'
-import type { MediaArticle } from 'shared-types'
-import { getArticle } from '@/api'
 import { generateHTML } from 'tip-tap-utils'
+import { getLegalDocument } from '@/api'
+import { Document } from 'ui'
+import type { Book } from 'shared-types'
 
 export const prerender = false
 
-let article: MediaArticle | undefined = undefined
+let legalDocument: Book | undefined = undefined
 let content: string | undefined = undefined
 
 const id = Astro.params.id
-const response = await getArticle(id as string)
+const response = await getLegalDocument(id as string)
 
 if (response.ok) {
-  article = response.data.article
-  content = generateHTML(JSON.parse(article.content))
+  legalDocument = response.data.document
+  content = generateHTML(JSON.parse(legalDocument.content))
 }
 
 if (!response.ok && response.error.isNotFoundError()) {
@@ -24,15 +25,24 @@ if (!response.ok && response.error.isNotFoundError()) {
 ---
 
 {
-  !response.ok || !article ? (
+  !response.ok || !legalDocument ? (
     <InternalError />
   ) : (
     <MainLayout
-      title={article.title}
-      description={article.description}
-      translationId={response.data.translation?.englishId}
+      title={legalDocument.title}
+      description={legalDocument.description}
     >
       <Fragment set:html={content} />
+      <div>
+        {legalDocument.documents.length > 0 && (
+          <div class="max-w-md">
+            <p class="font-semibold">Долучення</p>
+            {legalDocument.documents.map(url => (
+              <Document href={url}>{url.split('/').at(-1)}</Document>
+            ))}
+          </div>
+        )}
+      </div>
     </MainLayout>
   )
 }

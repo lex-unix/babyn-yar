@@ -76,3 +76,8 @@ export type GalleryImage = {
   createdAt: string
   url: string
 }
+
+export type Translation = {
+  ukrainianId: number
+  englishId: number
+}

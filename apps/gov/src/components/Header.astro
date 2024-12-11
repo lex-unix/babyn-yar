@@ -1,4 +1,5 @@
 ---
+import { getLangFromUrl, useTranslations, useTranslatedPath } from 'i18n'
 import {
   HeaderSection,
   HeaderDropdownItem,
@@ -7,74 +8,99 @@ import {
   LanugagePicker,
   MobileNavToggle
 } from 'ui'
+
+interface Props {
+  translationId?: number
+}
+
+const { translationId } = Astro.props
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+const translatePath = useTranslatedPath(lang)
 ---
 
 <header class="fixed top-0 z-10 w-full bg-white">
   <div
     class="mx-auto flex items-start justify-between px-4 pb-3 pt-8 md:justify-normal md:px-8 lg:px-12"
   >
-    <a href="/" aria-label="Go to home page" class="md:mr-6 lg:mr-12">
-      <img src="/logo.webp" alt="Site logo" class="w-44" />
+    <a
+      href={translatePath('/')}
+      aria-label="Go to home page"
+      class="md:mr-6 lg:mr-12"
+    >
+      <img
+        src=`/logo${lang == 'en' ? '-en' : ''}.webp`
+        alt="Site logo"
+        class="w-44"
+      />
     </a>
     <nav class="flex items-center justify-end md:justify-between">
       <HeaderSection>
-        <HeaderLink href="/events">події</HeaderLink>
+        <HeaderLink href={translatePath('/events')}>
+          {t('header.events')}
+        </HeaderLink>
       </HeaderSection>
       <HeaderDropdown>
-        <HeaderLink slot="trigger">голокост</HeaderLink>
+        <HeaderLink slot="trigger">{t('header.holocaust')}</HeaderLink>
         <Fragment slot="list">
           <HeaderDropdownItem
-            href="/holocaust/list-of-holocaust-victims?page=1&pagesize=100"
+            href={translatePath('/holocaust/list-of-holocaust-victims')}
           >
-            списки розстріляних
+            {t('header.holocaust.victims')}
           </HeaderDropdownItem>
-          <HeaderDropdownItem href="/holocaust/documents">
-            документи
+          <HeaderDropdownItem href={translatePath('/holocaust/documents')}>
+            {t('header.holocaust.documents')}
           </HeaderDropdownItem>
-          <HeaderDropdownItem href="/holocaust/list-of-righteous">
-            списки праведників
+          <HeaderDropdownItem
+            href={translatePath('/holocaust/list-of-righteous')}
+          >
+            {t('header.holocaust.righteous')}
           </HeaderDropdownItem>
-          <HeaderDropdownItem href="/holocaust/testimonies">
-            свідчення очивидців трагедії
-          </HeaderDropdownItem>
-        </Fragment>
-      </HeaderDropdown>
-      <HeaderDropdown>
-        <HeaderLink slot="trigger">освіта</HeaderLink>
-        <Fragment slot="list">
-          <HeaderDropdownItem href="/education/history">
-            історія
-          </HeaderDropdownItem>
-          <HeaderDropdownItem href="/education/map">
-            мапа Голокосту
-          </HeaderDropdownItem>
-          <HeaderDropdownItem href="/education/archive">
-            архів
-          </HeaderDropdownItem>
-          <HeaderDropdownItem href="/education/library">
-            бібліотека
-          </HeaderDropdownItem>
-          <HeaderDropdownItem href="/education/topical-excursions">
-            тематичні екскурсії
+          <HeaderDropdownItem href={translatePath('/holocaust/testimonies')}>
+            {t('header.holocaust.testimonies')}
           </HeaderDropdownItem>
         </Fragment>
       </HeaderDropdown>
       <HeaderDropdown>
-        <HeaderLink slot="trigger">зв'язок</HeaderLink>
+        <HeaderLink slot="trigger">{t('header.education')}</HeaderLink>
         <Fragment slot="list">
-          <HeaderDropdownItem href="/connect/find-us">
-            знайти нас
+          <HeaderDropdownItem href={translatePath('/education/history')}>
+            {t('header.education.history')}
           </HeaderDropdownItem>
-          <HeaderDropdownItem href="/connect/contact">
-            контакти
+          <HeaderDropdownItem href={translatePath('/education/map')}>
+            {t('header.education.map')}
+          </HeaderDropdownItem>
+          <HeaderDropdownItem href={translatePath('/education/archive')}>
+            {t('header.education.archive')}
+          </HeaderDropdownItem>
+          <HeaderDropdownItem href={translatePath('/education/library')}>
+            {t('header.education.library')}
+          </HeaderDropdownItem>
+          <!-- <HeaderDropdownItem -->
+          <!--   href={translatePath('/education/topical-excursions')} -->
+          <!-- > -->
+          <!--   {t('header.education.excursions')} -->
+          <!-- </HeaderDropdownItem> -->
+        </Fragment>
+      </HeaderDropdown>
+      <HeaderDropdown>
+        <HeaderLink slot="trigger">{t('header.connect')}</HeaderLink>
+        <Fragment slot="list">
+          <HeaderDropdownItem href={translatePath('/connect/find-us')}>
+            {t('header.connect.find')}
+          </HeaderDropdownItem>
+          <HeaderDropdownItem href={translatePath('/connect/contact')}>
+            {t('header.connect.contact')}
           </HeaderDropdownItem>
         </Fragment>
       </HeaderDropdown>
       <HeaderSection>
-        <HeaderLink href="/gallery">галерея</HeaderLink>
+        <HeaderLink href={translatePath('/gallery')}>
+          {t('header.gallery')}
+        </HeaderLink>
       </HeaderSection>
       <div class="md:border-l md:border-l-black">
-        <LanugagePicker client:load lang="uk" />
+        <LanugagePicker client:load lang={lang} translationId={translationId} />
       </div>
       <MobileNavToggle client:load />
     </nav>

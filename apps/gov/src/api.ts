@@ -13,74 +13,81 @@ import type {
   DevConcept
 } from 'shared-types'
 
+export type Translation = {
+  ukrainianId: number
+  englishId: number
+}
+
 const apiURL = import.meta.env.API_URL
 
-export function getEvents(page: string = '1') {
+export function getEvents(page = '1', lang = 'ua') {
   const url = new URL(apiURL + '/events')
   url.searchParams.set('page', page)
-  url.searchParams.set('lang', 'ua')
+  url.searchParams.set('lang', lang)
   url.searchParams.set('sort', '-occured_on')
   return fetcher<PaginatedResponse<Event, 'events'>>(url)
 }
 
-export function getBooks(page = '1') {
+export function getBooks(page = '1', lang = 'ua') {
   const url = new URL(apiURL + '/books')
   url.searchParams.set('page', `${page}`)
-  url.searchParams.set('lang', 'ua')
+  url.searchParams.set('lang', lang)
   url.searchParams.set('sort', '-occured_on')
   return fetcher<PaginatedResponse<Book, 'books'>>(url)
 }
 
-export function getArticles(page = '1') {
+export function getArticles(page = '1', lang = 'ua') {
   const url = new URL(apiURL + '/media-articles')
   url.searchParams.set('page', page)
-  url.searchParams.set('lang', 'ua')
+  url.searchParams.set('lang', lang)
   url.searchParams.set('sort', '-occured_on')
   return fetcher<PaginatedResponse<MediaArticle, 'articles'>>(url)
 }
 
-export function getTestimonies(page = '1') {
+export function getTestimonies(page = '1', lang = 'ua') {
   const url = new URL(apiURL + '/victim-testimonies')
   url.searchParams.set('page', `${page}`)
-  url.searchParams.set('lang', 'ua')
+  url.searchParams.set('lang', lang)
   url.searchParams.set('sort', '-occured_on')
   return fetcher<PaginatedResponse<VictimTestimony, 'testimonies'>>(url)
 }
 
-export function getHolocaustDocuments(page = '1') {
+export function getHolocaustDocuments(page = '1', lang = 'ua') {
   const url = new URL(apiURL + '/holocaust-documents')
   url.searchParams.set('page', `${page}`)
-  url.searchParams.set('lang', 'ua')
+  url.searchParams.set('lang', lang)
   url.searchParams.set('sort', '-occured_on')
   return fetcher<PaginatedResponse<HolocaustDocument, 'documents'>>(url)
 }
 
-export function getPartners(page = '1') {
+export function getPartners(page = '1', lang = 'ua') {
   const url = new URL(apiURL + '/partners')
   url.searchParams.set('page', `${page}`)
-  url.searchParams.set('lang', 'ua')
+  url.searchParams.set('lang', lang)
   url.searchParams.set('sort', '-occured_on')
   return fetcher<PaginatedResponse<Partner, 'partners'>>(url)
 }
 
-export function getLegalDocuments(page = '1') {
+export function getLegalDocuments(page = '1', lang = 'ua') {
   const url = new URL(apiURL + '/legal-documents')
   url.searchParams.set('page', `${page}`)
-  url.searchParams.set('lang', 'ua')
+  url.searchParams.set('lang', lang)
   url.searchParams.set('sort', '-occured_on')
   return fetcher<PaginatedResponse<LegalDocument, 'documents'>>(url)
 }
 
-export function getDevConcepts(page = '1') {
+export function getDevConcepts(page = '1', lang = 'ua') {
   const url = new URL(apiURL + '/development-concepts')
   url.searchParams.set('page', `${page}`)
-  url.searchParams.set('lang', 'ua')
+  url.searchParams.set('lang', lang)
   url.searchParams.set('sort', '-occured_on')
   return fetcher<PaginatedResponse<DevConcept, 'concepts'>>(url)
 }
 
 export function getEvent(id: string) {
-  return fetcher<DynamicTypedKey<Event, 'event'>>(`${apiURL}/events/${id}`)
+  return fetcher<
+    DynamicTypedKey<Event, 'event'> & { translation?: Translation }
+  >(`${apiURL}/events/${id}`)
 }
 
 export function getGalleryImages() {
@@ -92,9 +99,9 @@ export function getBook(id: string) {
 }
 
 export function getArticle(id: string) {
-  return fetcher<DynamicTypedKey<MediaArticle, 'article'>>(
-    `${apiURL}/media-articles/${id}`
-  )
+  return fetcher<
+    DynamicTypedKey<MediaArticle, 'article'> & { translation?: Translation }
+  >(`${apiURL}/media-articles/${id}`)
 }
 
 export function getTestimony(id: string) {
@@ -110,9 +117,9 @@ export function getHolocaustDocument(id: string) {
 }
 
 export function getPartner(id: string) {
-  return fetcher<DynamicTypedKey<Partner, 'partner'>>(
-    `${apiURL}/partners/${id}`
-  )
+  return fetcher<
+    DynamicTypedKey<Partner, 'partner'> & { translation: Translation }
+  >(`${apiURL}/partners/${id}`)
 }
 
 export function getLegalDocument(id: string) {

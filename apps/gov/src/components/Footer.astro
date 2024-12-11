@@ -1,25 +1,36 @@
 ---
+import { getLangFromUrl, useTranslations, useTranslatedPath } from 'i18n'
 import { EMAIL } from 'shared'
 import { Youtube, Instagram, Facebook } from 'lucide-react'
 import { SocialLink, FooterSection, FooterSectionItem } from 'ui'
+
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+const translatePath = useTranslatedPath(lang)
 ---
 
 <footer class="mb-5 mt-20 space-y-1 px-4 md:px-[calc(39px+3rem)]">
   <div class="flex flex-col items-start justify-between gap-4 md:flex-row">
     <FooterSection>
-      <FooterSectionItem href="/partners">Партнери</FooterSectionItem>
-      <FooterSectionItem href="/structure">Структура</FooterSectionItem>
-      <FooterSectionItem href="/media-articles">
-        ЗМІ про заповідник
+      <FooterSectionItem href={translatePath('/partners')}>
+        {t('footer.partners')}
+      </FooterSectionItem>
+      <FooterSectionItem href={translatePath('/structure')}>
+        {t('footer.structure')}
+      </FooterSectionItem>
+      <FooterSectionItem href={translatePath('/media-articles')}>
+        {t('footer.media')}
       </FooterSectionItem>
     </FooterSection>
     <FooterSection>
-      <FooterSectionItem href="/legislative-basis">Документи</FooterSectionItem>
-      <FooterSectionItem href="/development-concept">
-        Концепція розвитку
+      <FooterSectionItem href={translatePath('/legislative-basis')}>
+        {t('footer.documents')}
       </FooterSectionItem>
-      <FooterSectionItem href="/territory-organization-plan">
-        План організації території
+      <FooterSectionItem href={translatePath('/development-concept')}>
+        {t('footer.concept')}
+      </FooterSectionItem>
+      <FooterSectionItem href={translatePath('/territory-organization-plan')}>
+        {t('footer.territory')}
       </FooterSectionItem>
     </FooterSection>
     <div class="space-y-2">
@@ -38,8 +49,8 @@ import { SocialLink, FooterSection, FooterSectionItem } from 'ui'
     </div>
   </div>
   <div class="pt-10">
-    <p>Національний історико-меморіальний заповідник "Бабин Яр"</p>
-    <p>Україна, 04119 м. Київ, вул. Юрія Іллєнка, 44</p>
+    <p>{t('footer.main')}</p>
+    <p>{t('footer.address')}</p>
     <p>
       e-mail:
       <a href={`mailto:${EMAIL}`}>

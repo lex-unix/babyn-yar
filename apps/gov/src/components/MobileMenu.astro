@@ -1,5 +1,10 @@
 ---
 import { MobileNavContent } from 'ui'
+import { getLangFromUrl, useTranslations, useTranslatedPath } from 'i18n'
+
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+const translatePath = useTranslatedPath(lang)
 ---
 
 <nav
@@ -10,72 +15,78 @@ import { MobileNavContent } from 'ui'
     class="max-h-full space-y-8 overflow-y-auto overflow-x-visible overscroll-contain pb-4"
   >
     <li class="my-4 text-lg font-bold lowercase">
-      <a href="/events">події</a>
+      <a href={translatePath('/events')}>{t('mobile.events')}</a>
     </li>
     <MobileNavContent
-      group="голокост"
+      group={t('mobile.holocaust')}
       links={[
         {
-          text: 'списки розстріляних',
-          href: `/holocaust/list-of-holocaust-victims`
+          text: t('mobile.holocaust.victims'),
+          href: translatePath('/holocaust/list-of-holocaust-victims')
         },
         {
-          text: 'документи',
-          href: `/holocaust/documents`
+          text: t('mobile.holocaust.documents'),
+          href: translatePath('/holocaust/documents')
         },
         {
-          text: 'списки праведників',
-          href: `/holocaust/list-of-righteous`
+          text: t('mobile.holocaust.righteous'),
+          href: translatePath('/holocaust/list-of-righteous')
         },
         {
-          text: 'свідчення очевидців трагедії',
-          href: `/holocaust/testimonies`
+          text: t('mobile.holocaust.testimonies'),
+          href: translatePath('/holocaust/testimonies')
         }
       ]}
     />
     <MobileNavContent
-      group="освіта"
+      group={t('mobile.education')}
       links={[
         {
-          text: 'історія',
-          href: `/education/history`
+          text: t('mobile.education.history'),
+          href: translatePath('/education/history')
         },
         {
-          text: 'мапа Голокосту',
-          href: `/education/map`
+          text: t('mobile.education.map'),
+          href: translatePath('/education/map')
         },
         {
-          text: 'архів',
-          href: `/education/archive`
+          text: t('mobile.education.archive'),
+          href: translatePath('/education/archive')
         },
         {
-          text: 'бібліотека',
-          href: `/education/library`
+          text: t('mobile.education.library'),
+          href: translatePath('/education/library')
+        }
+        // {
+        //   text: t('mobile.education.excursions'),
+        //   href: translatePath('/education/topical-excursions')
+        // }
+      ]}
+    />
+    <MobileNavContent
+      group={t('mobile.connect')}
+      links={[
+        {
+          text: t('mobile.connect.find'),
+          href: translatePath('/connect/find-us')
         },
         {
-          text: 'тематичні екскурсії',
-          href: `/education/topical-excursions`
+          text: t('mobile.connect.contact'),
+          href: translatePath('/connect/contact')
         }
       ]}
     />
     <MobileNavContent
-      group="зв'язок"
-      links={[
-        { text: 'знайти нас', href: `/connect/find-us` },
-        { text: 'контакти', href: '/connect/contact' }
-      ]}
-    />
-    <MobileNavContent
-      group="підтримати"
+      group={t('mobile.support')}
       links={[
         {
-          text: 'партнерство',
-          href: `/support/partnership`
+          text: t('mobile.support.partnership'),
+          href: translatePath('/support/partnership')
         }
       ]}
     />
     <li class="my-4 text-lg font-bold lowercase">
-      <a href="/gallery">галерея</a>
+      <a href={translatePath('/gallery')}>{t('mobile.gallery')}</a>
     </li>
   </ul>
 </nav>
