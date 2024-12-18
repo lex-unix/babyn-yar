@@ -14,6 +14,14 @@ import type {
 } from './types'
 import type { PaginatedResponse, DynamicTypedKey } from 'shared-types'
 
+type Translations = {
+  id: number
+  ukrainianId: number
+  ukrainianTitle: string
+  englishId: number
+  englishTitle: string
+}
+
 const BOOKS_ENDPOINT = `${PUBLIC_API_URL}/books`
 const MEDIA_ARTICLES_ENDPOINT = `${PUBLIC_API_URL}/media-articles`
 const GALLERY_IMGS_ENDPOINT = `${PUBLIC_API_URL}/gallery`
@@ -65,7 +73,9 @@ export function getArticles(params: Record<string, string> = {}) {
 
 export function fetchArticle(id: string) {
   const url = `${MEDIA_ARTICLES_ENDPOINT}/${id}`
-  return fetcher<DynamicTypedKey<MediaArticle, 'article'>>(url)
+  return fetcher<
+    DynamicTypedKey<MediaArticle, 'article'> & { translation?: Translations }
+  >(url)
 }
 
 export function createArticle(body: string) {
@@ -101,7 +111,7 @@ export function deleteGalleryImage(id: number) {
   return fetcher(`${GALLERY_IMGS_ENDPOINT}/${id}`, opts)
 }
 
-export function getEvents(params: Record<string, string>) {
+export function getEvents(params: Record<string, string> = {}) {
   const url = new URL(EVENTS_ENDPOINT)
   for (const param in params) {
     url.searchParams.set(param, params[param])
@@ -110,7 +120,9 @@ export function getEvents(params: Record<string, string>) {
 }
 
 export function getEvent(id: string) {
-  return fetcher<DynamicTypedKey<Event, 'event'>>(`${EVENTS_ENDPOINT}/${id}`)
+  return fetcher<
+    DynamicTypedKey<Event, 'event'> & { translation?: Translations }
+  >(`${EVENTS_ENDPOINT}/${id}`)
 }
 
 export function createEvent(body: string) {
@@ -130,7 +142,7 @@ export function deleteEvents(ids: number[]) {
   return fetcher(url, opts)
 }
 
-export function getHolocaustDocs(params: Record<string, string>) {
+export function getHolocaustDocs(params: Record<string, string> = {}) {
   const url = new URL(HOLOCAUST_DOCS_ENDPOINT)
   for (const param in params) {
     url.searchParams.set(param, params[param])
@@ -224,7 +236,7 @@ export function deleteAssets(ids: number[]) {
   return fetcher(url, opts)
 }
 
-export function getPartners(params: Record<string, string>) {
+export function getPartners(params: Record<string, string> = {}) {
   const url = new URL(PARTNERS_ENDPOINT)
   for (const param in params) {
     url.searchParams.set(param, params[param])
@@ -233,9 +245,9 @@ export function getPartners(params: Record<string, string>) {
 }
 
 export function getPartner(id: string) {
-  return fetcher<DynamicTypedKey<Partner, 'partner'>>(
-    `${PARTNERS_ENDPOINT}/${id}`
-  )
+  return fetcher<
+    DynamicTypedKey<Partner, 'partner'> & { translation?: Translations }
+  >(`${PARTNERS_ENDPOINT}/${id}`)
 }
 
 export function createPartner(body: string) {
@@ -286,7 +298,7 @@ export function deleteLegalDocuments(ids: number[]) {
   return fetcher(url, opts)
 }
 
-export function getDevConcepts(params: Record<string, string>) {
+export function getDevConcepts(params: Record<string, string> = {}) {
   const url = new URL(DEV_CONCEPT_ENDPOINT)
   for (const param in params) {
     url.searchParams.set(param, params[param])

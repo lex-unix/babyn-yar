@@ -18,6 +18,7 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 		Lang        string    `json:"lang"`
 		Cover       string    `json:"cover"`
 		OccuredOn   time.Time `json:"occuredOn"`
+		Translation *int64    `json:"translationId"`
 	}
 
 	err := app.readJson(w, r, &input)
@@ -49,6 +50,20 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
+	}
+
+	translation := data.Translation{
+		EnglishID:   event.ID,
+		UkrainianID: *input.Translation,
+	}
+
+	if event.Lang == "ua" {
+		translation.UkrainianID = event.ID
+		translation.EnglishID = *input.Translation
+	}
+
+	if err := app.models.Events.CreateTranslation(&translation); err != nil {
+		app.logger.PrintInfo("failed to create translation", map[string]string{"error": err.Error()})
 	}
 
 	headers := make(http.Header)
@@ -144,7 +159,13 @@ func (app *application) showEventHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"event": event}, nil)
+	response := envelope{"event": event}
+	translation, err := app.models.Events.GetTranslation(event.ID)
+	if err == nil {
+		response["translation"] = translation
+	}
+
+	err = app.writeJson(w, http.StatusOK, response, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -169,12 +190,13 @@ func (app *application) updateEventHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	var input struct {
-		Title       *string    `json:"title"`
-		Description *string    `json:"description"`
-		Content     *string    `json:"content"`
-		Lang        *string    `json:"lang"`
-		Cover       *string    `json:"cover"`
-		OccuredOn   *time.Time `json:"occuredOn"`
+		Title         *string    `json:"title"`
+		Description   *string    `json:"description"`
+		Content       *string    `json:"content"`
+		Lang          *string    `json:"lang"`
+		Cover         *string    `json:"cover"`
+		OccuredOn     *time.Time `json:"occuredOn"`
+		TranslationID *int64     `json:"translationId"`
 	}
 
 	err = app.readJson(w, r, &input)
@@ -225,7 +247,44 @@ func (app *application) updateEventHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"event": event}, nil)
+	if input.TranslationID == nil {
+		if err := app.models.Events.DeleteTranslation(event.ID); err != nil {
+			app.logger.PrintInfo("failed to delete translation", map[string]string{"error": err.Error()})
+		}
+	} else {
+		translation, err := app.models.Events.GetTranslation(event.ID)
+		if err != nil && errors.Is(err, data.ErrRecordNotFound) {
+			translation := data.Translation{
+				EnglishID:   event.ID,
+				UkrainianID: *input.TranslationID,
+			}
+
+			if event.Lang == "ua" {
+				translation.UkrainianID = event.ID
+				translation.EnglishID = *input.TranslationID
+			}
+
+			err := app.models.Events.CreateTranslation(&translation)
+			if err != nil {
+				app.logger.PrintInfo("failed to create translation", map[string]string{"error": err.Error()})
+			}
+
+		} else if err == nil {
+			if event.Lang == "ua" {
+				translation.UkrainianID = event.ID
+				translation.EnglishID = *input.TranslationID
+			} else {
+				translation.EnglishID = event.ID
+				translation.UkrainianID = *input.TranslationID
+			}
+
+			if err := app.models.Events.UpdateTranslation(translation); err != nil {
+				app.logger.PrintInfo("failed to update translation", map[string]string{"error": err.Error()})
+			}
+		}
+	}
+
+	err = app.writeJson(w, http.StatusCreated, envelope{"event": event}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

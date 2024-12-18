@@ -7,14 +7,17 @@
     PageHeader,
     Container,
     Button,
-    DatePicker
+    DatePicker,
+    TranslationSelect
   } from '$components'
   import type { ResponseError } from '$lib/response-error'
   import type { JSONContent } from '@tiptap/core'
-  import { createPartner } from '$lib/api-utils'
+  import { createPartner, getPartners } from '$lib/api-utils'
   import { PlusIcon } from 'lucide-svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { goto } from '$app/navigation'
+  import type { Translation } from '$lib/types'
+  import { onMount } from 'svelte'
 
   let isSubmitting = false
   let content: JSONContent
@@ -23,7 +26,16 @@
   let lang = ''
   let cover = ''
   let date = ''
+  let translations: Translation[] = []
+  let selectedTranslation: Translation | undefined
   let error: ResponseError | undefined
+
+  onMount(async function () {
+    const translationResponse = await getPartners()
+    if (translationResponse.ok) {
+      translations = translationResponse.data.partners
+    }
+  })
 
   async function submit() {
     isSubmitting = true
@@ -33,7 +45,8 @@
       lang,
       cover,
       content: JSON.stringify(content),
-      occuredOn: new Date(date).toISOString()
+      occuredOn: new Date(date).toISOString(),
+      translationId: selectedTranslation ? selectedTranslation.id : null
     })
     const response = await createPartner(body)
     if (!response.ok) {
@@ -51,6 +64,13 @@
     isSubmitting = false
     error = undefined
     goto('/content/partners')
+  }
+
+  async function searchTranslations(e: CustomEvent<{ search: string }>) {
+    const response = await getPartners({ title: e.detail.search })
+    if (response.ok) {
+      translations = response.data.partners
+    }
   }
 </script>
 
@@ -74,6 +94,11 @@
       error={error?.isFormError() ? error.error.lang : undefined}
     />
     <DatePicker bind:datetime={date} />
+    <TranslationSelect
+      {translations}
+      bind:selected={selectedTranslation}
+      on:search={searchTranslations}
+    />
     <CoverSelect
       bind:cover
       error={error?.isFormError() ? error.error.cover : undefined}
