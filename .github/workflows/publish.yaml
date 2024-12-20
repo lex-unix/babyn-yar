@@ -1,0 +1,46 @@
+name: publish
+on:
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  ACTOR: ${{ github.actor }}
+
+jobs:
+  publish:
+    name: publish images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - app: api
+            context: "{{defaultContext}}"
+          - app: gov
+            context: "{{defaultContext}}:apps/gov"
+          - app: admin
+            context: "{{defaultContext}}:apps/admin"
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.ACTOR }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.ACTOR }}/babyn-yar-${{ matrix.app }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
