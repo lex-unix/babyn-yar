@@ -1,0 +1,56 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro'
+import { ContentGrid, SSRPagination, ContentGridItem } from 'ui'
+import type { Metadata, Partner } from 'shared-types'
+import { getPartners } from '@/api'
+import InternalError from '@/components/InternalError.astro'
+
+export const prerender = false
+
+let partners: Partner[] = []
+let metadata: Metadata | undefined = undefined
+
+const currentPage = Astro.url.searchParams.get('page') || '1'
+const response = await getPartners(currentPage, 'en')
+
+if (response.ok) {
+  partners = response.data.partners
+  metadata = response.data.metadata
+}
+
+if (!response.ok && response.error.isNotFoundError()) {
+  return new Response(null, { status: 404 })
+}
+---
+
+{
+  !response.ok ? (
+    <InternalError />
+  ) : (
+    <MainLayout title="Partners" description="Partners">
+      <h2>Partners</h2>
+      <div class="not-prose">
+        <ContentGrid>
+          {partners.map(entry => (
+            <ContentGridItem
+              href={`/en/partners/${entry.id}`}
+              title={entry.title}
+              description={entry.description}
+              cover={entry.cover}
+              coverAlt={entry.title}
+              date={entry.occuredOn}
+            />
+          ))}
+        </ContentGrid>
+        <div class="mt-10">
+          {partners.length > 0 && metadata && (
+            <SSRPagination
+              current={metadata.currentPage}
+              total={metadata.lastPage}
+            />
+          )}
+        </div>
+      </div>
+    </MainLayout>
+  )
+}

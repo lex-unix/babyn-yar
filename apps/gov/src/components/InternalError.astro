@@ -1,10 +1,14 @@
 ---
 import BaseError from './BaseError.astro'
+import { getLangFromUrl, useTranslations } from 'i18n'
+
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
 ---
 
 <BaseError code={500}>
-  <Fragment slot="title">Щось пішло не так</Fragment>
+  <Fragment slot="title">{t('error.500.title')}</Fragment>
   <Fragment slot="description">
-    На жаль, наш сервер зустрів невідому трудність. Ми вже працюємо над цим!
+    {t('error.500.description')}
   </Fragment>
 </BaseError>

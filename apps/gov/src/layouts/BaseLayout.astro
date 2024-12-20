@@ -8,9 +8,10 @@ import MobileMenu from '@/components/MobileMenu.astro'
 export interface Props {
   title: string
   description: string
+  translationId?: number
 }
 
-const { title, description } = Astro.props
+const { title, description, translationId } = Astro.props
 ---
 
 <!DOCTYPE html>
@@ -25,7 +26,7 @@ const { title, description } = Astro.props
     />
   </head>
   <body class="relative">
-    <Header />
+    <Header {translationId} />
     <MobileMenu />
     <main
       class="px-4 pt-32 text-xl text-black md:px-[calc(2rem+39px)] lg:px-[calc(3rem+39px)]"

@@ -58,3 +58,4 @@ export { default as SortDropdownTrigger } from './Search/SortDropdownTrigger.sve
 export { default as SortDropdownMenu } from './Search/SortDropdownMenu.svelte'
 export { default as SortDropdownItem } from './Search/SortDropdownItem.svelte'
 export { default as ContentPage } from './ContentPage.svelte'
+export { default as TranslationSelect } from './TranslationSelect.svelte'

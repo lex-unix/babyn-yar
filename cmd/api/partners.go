@@ -18,6 +18,7 @@ func (app *application) createPartnerHandler(w http.ResponseWriter, r *http.Requ
 		Lang        string    `json:"lang"`
 		Cover       string    `json:"cover"`
 		OccuredOn   time.Time `json:"occuredOn"`
+		Translation *int64    `json:"translationId"`
 	}
 
 	err := app.readJson(w, r, &input)
@@ -49,6 +50,22 @@ func (app *application) createPartnerHandler(w http.ResponseWriter, r *http.Requ
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
+	}
+
+	if input.Translation != nil {
+		translation := data.Translation{
+			EnglishID:   partner.ID,
+			UkrainianID: *input.Translation,
+		}
+
+		if partner.Lang == "ua" {
+			translation.UkrainianID = partner.ID
+			translation.EnglishID = *input.Translation
+		}
+
+		if err := app.models.Partners.CreateTranslation(&translation); err != nil {
+			app.logger.PrintInfo("failed to create translation", map[string]string{"error": err.Error()})
+		}
 	}
 
 	headers := make(http.Header)
@@ -144,7 +161,13 @@ func (app *application) showPartnerHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"partner": partner}, nil)
+	response := envelope{"partner": partner}
+	translation, err := app.models.Partners.GetTranslation(partner.ID)
+	if err == nil {
+		response["translation"] = translation
+	}
+
+	err = app.writeJson(w, http.StatusOK, response, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -169,12 +192,13 @@ func (app *application) updatePartnerHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	var input struct {
-		Title       *string    `json:"title"`
-		Description *string    `json:"description"`
-		Content     *string    `json:"content"`
-		Lang        *string    `json:"lang"`
-		Cover       *string    `json:"cover"`
-		OccuredOn   *time.Time `json:"occuredOn"`
+		Title         *string    `json:"title"`
+		Description   *string    `json:"description"`
+		Content       *string    `json:"content"`
+		Lang          *string    `json:"lang"`
+		Cover         *string    `json:"cover"`
+		OccuredOn     *time.Time `json:"occuredOn"`
+		TranslationID *int64     `json:"translationId"`
 	}
 
 	err = app.readJson(w, r, &input)
@@ -223,6 +247,43 @@ func (app *application) updatePartnerHandler(w http.ResponseWriter, r *http.Requ
 			app.serverErrorResponse(w, r, err)
 		}
 		return
+	}
+
+	if input.TranslationID == nil {
+		if err := app.models.Partners.DeleteTranslation(partner.ID); err != nil {
+			app.logError(r, err)
+		}
+	} else {
+		translation, err := app.models.Partners.GetTranslation(partner.ID)
+		if err != nil && errors.Is(err, data.ErrRecordNotFound) {
+			translation := data.Translation{
+				EnglishID:   partner.ID,
+				UkrainianID: *input.TranslationID,
+			}
+
+			if partner.Lang == "ua" {
+				translation.UkrainianID = partner.ID
+				translation.EnglishID = *input.TranslationID
+			}
+
+			err := app.models.Partners.CreateTranslation(&translation)
+			if err != nil {
+				app.logError(r, err)
+			}
+
+		} else if err == nil {
+			if partner.Lang == "ua" {
+				translation.UkrainianID = partner.ID
+				translation.EnglishID = *input.TranslationID
+			} else {
+				translation.EnglishID = partner.ID
+				translation.UkrainianID = *input.TranslationID
+			}
+
+			if err := app.models.Partners.UpdateTranslation(translation); err != nil {
+				app.logError(r, err)
+			}
+		}
 	}
 
 	err = app.writeJson(w, http.StatusOK, envelope{"partner": partner}, nil)

@@ -75,3 +75,8 @@ export type ContentData = {
   author: string
   lastChange: string
 }
+
+export type Translation = {
+  id: number
+  title: string
+}

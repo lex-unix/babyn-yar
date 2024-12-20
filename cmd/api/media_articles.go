@@ -18,6 +18,7 @@ func (app *application) createMediaArticleHandler(w http.ResponseWriter, r *http
 		Lang        string    `json:"lang"`
 		Cover       string    `json:"cover"`
 		OccuredOn   time.Time `json:"occuredOn"`
+		Translation *int64    `json:"translationId"`
 	}
 
 	err := app.readJson(w, r, &input)
@@ -49,6 +50,22 @@ func (app *application) createMediaArticleHandler(w http.ResponseWriter, r *http
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
+	}
+
+	if input.Translation != nil {
+		translation := data.Translation{
+			EnglishID:   article.ID,
+			UkrainianID: *input.Translation,
+		}
+
+		if article.Lang == "ua" {
+			translation.UkrainianID = article.ID
+			translation.EnglishID = *input.Translation
+		}
+
+		if err := app.models.MediaArticles.CreateTranslation(&translation); err != nil {
+			app.logger.PrintInfo("failed to create translation", map[string]string{"error": err.Error()})
+		}
 	}
 
 	headers := make(http.Header)
@@ -144,7 +161,13 @@ func (app *application) showMediaArticleHandler(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"article": article}, nil)
+	response := envelope{"article": article}
+	translation, err := app.models.MediaArticles.GetTranslation(article.ID)
+	if err == nil {
+		response["translation"] = translation
+	}
+
+	err = app.writeJson(w, http.StatusOK, response, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -169,12 +192,13 @@ func (app *application) updateMediaArticleHandler(w http.ResponseWriter, r *http
 	}
 
 	var input struct {
-		Title       *string    `json:"title"`
-		Description *string    `json:"description"`
-		Content     *string    `json:"content"`
-		Lang        *string    `json:"lang"`
-		Cover       *string    `json:"cover"`
-		OccuredOn   *time.Time `json:"occuredOn"`
+		Title         *string    `json:"title"`
+		Description   *string    `json:"description"`
+		Content       *string    `json:"content"`
+		Lang          *string    `json:"lang"`
+		Cover         *string    `json:"cover"`
+		OccuredOn     *time.Time `json:"occuredOn"`
+		TranslationID *int64     `json:"translationId"`
 	}
 
 	err = app.readJson(w, r, &input)
@@ -223,6 +247,43 @@ func (app *application) updateMediaArticleHandler(w http.ResponseWriter, r *http
 			app.serverErrorResponse(w, r, err)
 		}
 		return
+	}
+
+	if input.TranslationID == nil {
+		if err := app.models.MediaArticles.DeleteTranslation(article.ID); err != nil {
+			app.logger.PrintInfo("failed to delete translation", map[string]string{"error": err.Error()})
+		}
+	} else {
+		translation, err := app.models.MediaArticles.GetTranslation(article.ID)
+		if err != nil && errors.Is(err, data.ErrRecordNotFound) {
+			translation := data.Translation{
+				EnglishID:   article.ID,
+				UkrainianID: *input.TranslationID,
+			}
+
+			if article.Lang == "ua" {
+				translation.UkrainianID = article.ID
+				translation.EnglishID = *input.TranslationID
+			}
+
+			err := app.models.MediaArticles.CreateTranslation(&translation)
+			if err != nil {
+				app.logger.PrintInfo("failed to create translation", map[string]string{"error": err.Error()})
+			}
+
+		} else if err == nil {
+			if article.Lang == "ua" {
+				translation.UkrainianID = article.ID
+				translation.EnglishID = *input.TranslationID
+			} else {
+				translation.EnglishID = article.ID
+				translation.UkrainianID = *input.TranslationID
+			}
+
+			if err := app.models.MediaArticles.UpdateTranslation(translation); err != nil {
+				app.logger.PrintInfo("failed to update translation", map[string]string{"error": err.Error()})
+			}
+		}
 	}
 
 	err = app.writeJson(w, http.StatusOK, envelope{"article": article}, nil)

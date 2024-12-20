@@ -7,15 +7,18 @@
     Button,
     PageHeader,
     Container,
-    DatePicker
+    DatePicker,
+    TranslationSelect
   } from '$components'
   import type { ResponseError } from '$lib/response-error'
   import type { JSONContent } from '@tiptap/core'
-  import { createArticle } from '$lib/api-utils'
+  import { createArticle, getArticles } from '$lib/api-utils'
   import { PlusIcon } from 'lucide-svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { goto } from '$app/navigation'
   import { createRecordSuccessMsg } from '$lib/toast-messages'
+  import { onMount } from 'svelte'
+  import { type Translation } from '$lib/types'
 
   let isSubmitting = false
   let content: JSONContent
@@ -24,7 +27,16 @@
   let lang = ''
   let cover = ''
   let occuredOn = ''
+  let translations: Translation[] = []
+  let selectedTranslation: Translation | undefined
   let error: ResponseError | undefined
+
+  onMount(async function () {
+    const translationResponse = await getArticles()
+    if (translationResponse.ok) {
+      translations = translationResponse.data.articles
+    }
+  })
 
   async function submit() {
     isSubmitting = true
@@ -34,7 +46,8 @@
       lang,
       cover,
       occuredOn: new Date(occuredOn).toISOString(),
-      content: JSON.stringify(content)
+      content: JSON.stringify(content),
+      translationId: selectedTranslation ? selectedTranslation.id : null
     })
     const response = await createArticle(body)
     if (!response.ok) {
@@ -46,6 +59,13 @@
     isSubmitting = false
     error = undefined
     goto('/content/media-articles')
+  }
+
+  async function searchTranslations(e: CustomEvent<{ search: string }>) {
+    const response = await getArticles({ title: e.detail.search })
+    if (response.ok) {
+      translations = response.data.articles
+    }
   }
 </script>
 
@@ -73,6 +93,11 @@
       error={error?.isFormError() ? error.error.lang : undefined}
     />
     <DatePicker bind:datetime={occuredOn} />
+    <TranslationSelect
+      {translations}
+      bind:selected={selectedTranslation}
+      on:search={searchTranslations}
+    />
     <CoverSelect
       bind:cover
       error={error?.isFormError() ? error.error.cover : undefined}

@@ -203,3 +203,85 @@ func (m PartnerModel) DeleteMultiple(ids []int64) error {
 
 	return nil
 }
+
+func (m PartnerModel) CreateTranslation(translation *Translation) error {
+	query := `
+	INSERT INTO partners_translations (ukrainian_id, english_id)
+	VALUES ($1, $2)
+	RETURNING id`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	return m.DB.QueryRow(ctx, query, translation.UkrainianID, translation.EnglishID).Scan(&translation.ID)
+}
+
+func (m PartnerModel) GetTranslation(id int64) (*Translation, error) {
+	query := `
+		SELECT t.id, t.ukrainian_id, t.english_id, partners_ua.title, partners_en.title
+		FROM partners_translations t
+		JOIN partners partners_ua ON  partners_ua.id = t.ukrainian_id
+		JOIN partners partners_en ON  partners_en.id = t.english_id
+		WHERE t.ukrainian_id = $1 OR t.english_id = $1`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var translation Translation
+	err := m.DB.QueryRow(ctx, query, id).Scan(
+		&translation.ID,
+		&translation.UkrainianID,
+		&translation.EnglishID,
+		&translation.UkrainianTitle,
+		&translation.EnglishTitle,
+	)
+	if err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &translation, nil
+}
+
+func (m PartnerModel) UpdateTranslation(translation *Translation) error {
+	query := `
+		UPDATE  partners_translations
+		SET ukrainian_id = $1, english_id = $2
+		WHERE id = $3`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	args := []interface{}{translation.UkrainianID, translation.EnglishID, translation.ID}
+
+	_, err := m.DB.Exec(ctx, query, args...)
+	if err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return ErrEditConflict
+		default:
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m PartnerModel) DeleteTranslation(id int64) error {
+	query := `
+		DELETE FROM partners_translations
+		WHERE english_id = $1 OR ukrainian_id = $1`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	_, err := m.DB.Exec(ctx, query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -2,8 +2,13 @@ import { useTranslations } from 'i18n'
 import type { ComponentProps, ReactNode } from 'react'
 import { EnvelopeIcon, MapPinIcon } from '@heroicons/react/24/outline'
 import { EMAIL } from 'shared'
+import { languages } from 'i18n'
 
-export default function ContactForm({ lang }: { lang: 'en' | 'uk' }) {
+interface ContactFormProps {
+  lang: keyof typeof languages
+}
+
+export default function ContactForm({ lang }: ContactFormProps) {
   const t = useTranslations(lang)
 
   return (

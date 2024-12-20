@@ -9,11 +9,12 @@
     PageHeader,
     Container,
     NotFound,
-    DatePicker
+    DatePicker,
+    TranslationSelect
   } from '$components'
-  import type { MediaArticle } from '$lib/types'
+  import type { MediaArticle, Translation } from '$lib/types'
   import type { ResponseError } from '$lib/response-error'
-  import { fetchArticle, updateArticle } from '$lib/api-utils'
+  import { fetchArticle, getArticles, updateArticle } from '$lib/api-utils'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'
@@ -21,15 +22,30 @@
 
   let isSubmitting = false
   let article: MediaArticle
+  let translations: Translation[] = []
+  let selectedTranslation: Translation | undefined
   let error: ResponseError | undefined
 
   onMount(async function () {
-    const res = await fetchArticle($page.params.id)
-    if (res.ok) {
-      article = res.data.article
-      article.content = JSON.parse(article.content as unknown as string)
-    } else {
-      error = res.error
+    const response = await fetchArticle($page.params.id)
+    if (!response.ok) {
+      error = response.error
+      return
+    }
+    article = response.data.article
+    article.content = JSON.parse(article.content as unknown as string)
+
+    if (response.data.translation) {
+      const translation = response.data.translation
+      selectedTranslation =
+        article.lang === 'ua'
+          ? { id: translation.englishId, title: translation.englishTitle }
+          : { id: translation.ukrainianId, title: translation.ukrainianTitle }
+    }
+
+    const translationResponse = await getArticles()
+    if (translationResponse.ok) {
+      translations = translationResponse.data.articles
     }
   })
 
@@ -41,7 +57,8 @@
       description: article.description,
       lang: article.lang,
       cover: article.cover,
-      content: JSON.stringify(article.content)
+      content: JSON.stringify(article.content),
+      translationId: selectedTranslation ? selectedTranslation.id : null
     })
     const response = await updateArticle($page.params.id, body)
     if (!response.ok) {
@@ -52,6 +69,13 @@
     addToast(updateRecordSuccessMsg)
     isSubmitting = false
     error = undefined
+  }
+
+  async function searchTranslations(e: CustomEvent<{ search: string }>) {
+    const response = await getArticles({ title: e.detail.search })
+    if (response.ok) {
+      translations = response.data.articles
+    }
   }
 </script>
 
@@ -76,6 +100,11 @@
           error={error?.isFormError() ? error.error.lang : undefined}
         />
         <DatePicker bind:datetime={article.occuredOn} />
+        <TranslationSelect
+          {translations}
+          bind:selected={selectedTranslation}
+          on:search={searchTranslations}
+        />
         <CoverSelect
           bind:cover={article.cover}
           error={error?.isFormError() ? error.error.cover : undefined}

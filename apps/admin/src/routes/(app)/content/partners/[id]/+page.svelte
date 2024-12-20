@@ -10,11 +10,12 @@
     Container,
     NotFound,
     EditorSkeleton,
-    DatePicker
+    DatePicker,
+    TranslationSelect
   } from '$components'
-  import type { Partner } from '$lib/types'
+  import type { Partner, Translation } from '$lib/types'
   import type { ResponseError } from '$lib/response-error'
-  import { getPartner, updatePartner } from '$lib/api-utils'
+  import { getPartner, getPartners, updatePartner } from '$lib/api-utils'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'
@@ -22,19 +23,34 @@
   let isSubmitting = false
   let isLoading = false
   let partner: Partner
+  let translations: Translation[] = []
+  let selectedTranslation: Translation | undefined
   let error: ResponseError | undefined
 
   onMount(async function () {
     isLoading = true
     const response = await getPartner($page.params.id)
-    if (response.ok) {
-      partner = response.data.partner
-      partner.content = JSON.parse(partner.content as unknown as string)
+    if (!response.ok) {
+      error = response.error
       isLoading = false
       return
     }
-    error = response.error
+    partner = response.data.partner
+    partner.content = JSON.parse(partner.content as unknown as string)
     isLoading = false
+
+    if (response.data.translation) {
+      const translation = response.data.translation
+      selectedTranslation =
+        partner.lang === 'ua'
+          ? { id: translation.englishId, title: translation.englishTitle }
+          : { id: translation.ukrainianId, title: translation.ukrainianTitle }
+    }
+
+    const translationResponse = await getPartners()
+    if (translationResponse.ok) {
+      translations = translationResponse.data.partners
+    }
   })
 
   async function submit() {
@@ -45,7 +61,8 @@
       lang: partner.lang,
       cover: partner.cover,
       content: JSON.stringify(partner.content),
-      occuredOn: new Date(partner.occuredOn).toISOString()
+      occuredOn: new Date(partner.occuredOn).toISOString(),
+      translationId: selectedTranslation ? selectedTranslation.id : null
     })
     const response = await updatePartner($page.params.id, body)
     isSubmitting = false
@@ -61,6 +78,13 @@
       }
     })
     error = undefined
+  }
+
+  async function searchTranslations(e: CustomEvent<{ search: string }>) {
+    const response = await getPartners({ title: e.detail.search })
+    if (response.ok) {
+      translations = response.data.partners
+    }
   }
 </script>
 
@@ -91,6 +115,11 @@
           error={error?.isFormError() ? error.error.lang : undefined}
         />
         <DatePicker bind:datetime={partner.occuredOn} />
+        <TranslationSelect
+          {translations}
+          bind:selected={selectedTranslation}
+          on:search={searchTranslations}
+        />
         <CoverSelect
           bind:cover={partner.cover}
           error={error?.isFormError() ? error.error.cover : undefined}
