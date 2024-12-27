@@ -1,4 +1,4 @@
-name: Cleanup old images
+name: cleanup old images
 
 on:
   schedule:
@@ -15,6 +15,5 @@ jobs:
           token: ${{ secrets.PAT }}
           image-names: 'babynar-yar-*'
           cut-off: 1d
-          keep-at-least: 3
-          untagged-only: true
+          keep-n-most-recent: 3
           dry-run: true
