@@ -153,9 +153,11 @@ export function getHolocaustDocs(params: Record<string, string> = {}) {
 }
 
 export function getHolocaustDoc(id: string) {
-  return fetcher<DynamicTypedKey<HolocaustDocument, 'document'>>(
-    `${HOLOCAUST_DOCS_ENDPOINT}/${id}`
-  )
+  return fetcher<
+    DynamicTypedKey<HolocaustDocument, 'document'> & {
+      translation?: Translations
+    }
+  >(`${HOLOCAUST_DOCS_ENDPOINT}/${id}`)
 }
 
 export function createHolocaustDoc(body: string) {

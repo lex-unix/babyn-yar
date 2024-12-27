@@ -30,7 +30,7 @@ if (!response.ok && response.error.isNotFoundError()) {
     <MainLayout
       title={doc.title}
       description={doc.description}
-      translationId={response.data.translation?.englishId}
+      translationId={response.data.translation?.ukrainianId}
     >
       <Fragment set:html={content} />
     </MainLayout>

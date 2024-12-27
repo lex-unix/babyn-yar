@@ -9,11 +9,16 @@
     PageHeader,
     Container,
     NotFound,
-    DatePicker
+    DatePicker,
+    TranslationSelect
   } from '$components'
-  import type { HolocaustDocument } from '$lib/types'
+  import type { HolocaustDocument, Translation } from '$lib/types'
   import type { ResponseError } from '$lib/response-error'
-  import { getHolocaustDoc, updateHolocaustDoc } from '$lib/api-utils'
+  import {
+    getHolocaustDoc,
+    updateHolocaustDoc,
+    getHolocaustDocs
+  } from '$lib/api-utils'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'
@@ -21,15 +26,30 @@
 
   let isSubmitting = false
   let doc: HolocaustDocument
+  let translations: Translation[] = []
+  let selectedTranslation: Translation | undefined
   let error: ResponseError | undefined
 
   onMount(async function () {
     const response = await getHolocaustDoc($page.params.id)
-    if (response.ok) {
-      doc = response.data.document
-      doc.content = JSON.parse(doc.content as unknown as string)
-    } else {
+    if (!response.ok) {
       error = response.error
+      return
+    }
+    doc = response.data.document
+    doc.content = JSON.parse(doc.content as unknown as string)
+
+    if (response.data.translation) {
+      const translation = response.data.translation
+      selectedTranslation =
+        doc.lang === 'ua'
+          ? { id: translation.englishId, title: translation.englishTitle }
+          : { id: translation.ukrainianId, title: translation.ukrainianTitle }
+    }
+
+    const translationResponse = await getHolocaustDocs()
+    if (translationResponse.ok) {
+      translations = translationResponse.data.documents
     }
   })
 
@@ -41,7 +61,8 @@
       description: doc.description,
       lang: doc.lang,
       cover: doc.cover,
-      content: JSON.stringify(doc.content)
+      content: JSON.stringify(doc.content),
+      translationId: selectedTranslation ? selectedTranslation.id : null
     })
     const response = await updateHolocaustDoc($page.params.id, body)
     if (!response.ok) {
@@ -52,6 +73,13 @@
     addToast(updateRecordSuccessMsg)
     isSubmitting = false
     error = undefined
+  }
+
+  async function searchTranslations(e: CustomEvent<{ search: string }>) {
+    const response = await getHolocaustDocs({ title: e.detail.search })
+    if (response.ok) {
+      translations = response.data.documents
+    }
   }
 </script>
 
@@ -76,6 +104,11 @@
           error={error?.isFormError() ? error.error.lang : undefined}
         />
         <DatePicker bind:datetime={doc.occuredOn} />
+        <TranslationSelect
+          {translations}
+          bind:selected={selectedTranslation}
+          on:search={searchTranslations}
+        />
         <CoverSelect
           bind:cover={doc.cover}
           error={error?.isFormError() ? error.error.cover : undefined}

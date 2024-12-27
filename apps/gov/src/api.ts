@@ -113,9 +113,9 @@ export function getTestimony(id: string) {
 }
 
 export function getHolocaustDocument(id: string) {
-  return fetcher<DynamicTypedKey<Book, 'document'>>(
-    `${apiURL}/holocaust-documents/${id}`
-  )
+  return fetcher<
+    DynamicTypedKey<Book, 'document'> & { translation?: Translation }
+  >(`${apiURL}/holocaust-documents/${id}`)
 }
 
 export function getPartner(id: string) {

@@ -18,6 +18,7 @@ func (app *application) createHolocaustDocumentHandler(w http.ResponseWriter, r 
 		Lang        string    `json:"lang"`
 		Cover       string    `json:"cover"`
 		OccuredOn   time.Time `json:"occuredOn"`
+		Translation *int64    `json:"translationId"`
 	}
 
 	err := app.readJson(w, r, &input)
@@ -49,6 +50,22 @@ func (app *application) createHolocaustDocumentHandler(w http.ResponseWriter, r 
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
+	}
+
+	if input.Translation != nil {
+		translation := data.Translation{
+			EnglishID:   document.ID,
+			UkrainianID: *input.Translation,
+		}
+
+		if document.Lang == "ua" {
+			translation.UkrainianID = document.ID
+			translation.EnglishID = *input.Translation
+		}
+
+		if err := app.models.HolocaustDocuments.CreateTranslation(&translation); err != nil {
+			app.logger.PrintInfo("failed to create translation", map[string]string{"error": err.Error()})
+		}
 	}
 
 	headers := make(http.Header)
@@ -142,7 +159,13 @@ func (app *application) showHolocaustDocumentHandler(w http.ResponseWriter, r *h
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"document": document}, nil)
+	response := envelope{"document": document}
+	translation, err := app.models.HolocaustDocuments.GetTranslation(document.ID)
+	if err == nil {
+		response["translation"] = translation
+	}
+
+	err = app.writeJson(w, http.StatusOK, response, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -167,12 +190,13 @@ func (app *application) updateHolocaustDocumentHandler(w http.ResponseWriter, r 
 	}
 
 	var input struct {
-		Title       *string    `json:"title"`
-		Description *string    `json:"description"`
-		Content     *string    `json:"content"`
-		Lang        *string    `json:"lang"`
-		Cover       *string    `json:"cover"`
-		OccuredOn   *time.Time `json:"occuredOn"`
+		Title         *string    `json:"title"`
+		Description   *string    `json:"description"`
+		Content       *string    `json:"content"`
+		Lang          *string    `json:"lang"`
+		Cover         *string    `json:"cover"`
+		OccuredOn     *time.Time `json:"occuredOn"`
+		TranslationID *int64     `json:"translationId"`
 	}
 
 	err = app.readJson(w, r, &input)
@@ -221,6 +245,43 @@ func (app *application) updateHolocaustDocumentHandler(w http.ResponseWriter, r 
 			app.serverErrorResponse(w, r, err)
 		}
 		return
+	}
+
+	if input.TranslationID == nil {
+		if err := app.models.HolocaustDocuments.DeleteTranslation(document.ID); err != nil {
+			app.logger.PrintInfo("failed to delete translation", map[string]string{"error": err.Error()})
+		}
+	} else {
+		translation, err := app.models.HolocaustDocuments.GetTranslation(document.ID)
+		if err != nil && errors.Is(err, data.ErrRecordNotFound) {
+			translation := data.Translation{
+				EnglishID:   document.ID,
+				UkrainianID: *input.TranslationID,
+			}
+
+			if document.Lang == "ua" {
+				translation.UkrainianID = document.ID
+				translation.EnglishID = *input.TranslationID
+			}
+
+			err := app.models.HolocaustDocuments.CreateTranslation(&translation)
+			if err != nil {
+				app.logger.PrintInfo("failed to create translation", map[string]string{"error": err.Error()})
+			}
+
+		} else if err == nil {
+			if document.Lang == "ua" {
+				translation.UkrainianID = document.ID
+				translation.EnglishID = *input.TranslationID
+			} else {
+				translation.EnglishID = document.ID
+				translation.UkrainianID = *input.TranslationID
+			}
+
+			if err := app.models.HolocaustDocuments.UpdateTranslation(translation); err != nil {
+				app.logger.PrintInfo("failed to update translation", map[string]string{"error": err.Error()})
+			}
+		}
 	}
 
 	err = app.writeJson(w, http.StatusOK, envelope{"document": document}, nil)
