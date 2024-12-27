@@ -43,7 +43,9 @@ export function getBooks(params: Record<string, string> = {}) {
 }
 
 export function fetchBook(id: string) {
-  return fetcher<DynamicTypedKey<Book, 'book'>>(`${BOOKS_ENDPOINT}/${id}`)
+  return fetcher<
+    DynamicTypedKey<Book, 'book'> & { translation?: Translations }
+  >(`${BOOKS_ENDPOINT}/${id}`)
 }
 
 export function createBook(body: string) {

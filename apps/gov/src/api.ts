@@ -95,7 +95,9 @@ export function getGalleryImages() {
 }
 
 export function getBook(id: string) {
-  return fetcher<DynamicTypedKey<Book, 'book'>>(`${apiURL}/books/${id}`)
+  return fetcher<DynamicTypedKey<Book, 'book'> & { translation?: Translation }>(
+    `${apiURL}/books/${id}`
+  )
 }
 
 export function getArticle(id: string) {
