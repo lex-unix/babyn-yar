@@ -43,7 +43,9 @@ export function getBooks(params: Record<string, string> = {}) {
 }
 
 export function fetchBook(id: string) {
-  return fetcher<DynamicTypedKey<Book, 'book'>>(`${BOOKS_ENDPOINT}/${id}`)
+  return fetcher<
+    DynamicTypedKey<Book, 'book'> & { translation?: Translations }
+  >(`${BOOKS_ENDPOINT}/${id}`)
 }
 
 export function createBook(body: string) {
@@ -151,9 +153,11 @@ export function getHolocaustDocs(params: Record<string, string> = {}) {
 }
 
 export function getHolocaustDoc(id: string) {
-  return fetcher<DynamicTypedKey<HolocaustDocument, 'document'>>(
-    `${HOLOCAUST_DOCS_ENDPOINT}/${id}`
-  )
+  return fetcher<
+    DynamicTypedKey<HolocaustDocument, 'document'> & {
+      translation?: Translations
+    }
+  >(`${HOLOCAUST_DOCS_ENDPOINT}/${id}`)
 }
 
 export function createHolocaustDoc(body: string) {

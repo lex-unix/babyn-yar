@@ -1,14 +1,19 @@
 ---
+import { getLangFromUrl, useTranslatedPath } from 'i18n'
+
 export interface Props {
   href: string
 }
 
 const { href } = Astro.props
+
+const lang = getLangFromUrl(Astro.url)
+const translatePath = useTranslatedPath(lang)
 ---
 
 <div class="mx-auto">
   <a
-    href={href}
+    href={translatePath(href)}
     class="rounded-sm border border-black/20 px-3 py-1 !not-italic no-underline transition-colors duration-200 hover:bg-black hover:text-white"
   >
     <slot />

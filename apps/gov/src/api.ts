@@ -95,7 +95,9 @@ export function getGalleryImages() {
 }
 
 export function getBook(id: string) {
-  return fetcher<DynamicTypedKey<Book, 'book'>>(`${apiURL}/books/${id}`)
+  return fetcher<DynamicTypedKey<Book, 'book'> & { translation?: Translation }>(
+    `${apiURL}/books/${id}`
+  )
 }
 
 export function getArticle(id: string) {
@@ -111,9 +113,9 @@ export function getTestimony(id: string) {
 }
 
 export function getHolocaustDocument(id: string) {
-  return fetcher<DynamicTypedKey<Book, 'document'>>(
-    `${apiURL}/holocaust-documents/${id}`
-  )
+  return fetcher<
+    DynamicTypedKey<Book, 'document'> & { translation?: Translation }
+  >(`${apiURL}/holocaust-documents/${id}`)
 }
 
 export function getPartner(id: string) {

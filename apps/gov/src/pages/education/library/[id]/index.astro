@@ -28,7 +28,11 @@ if (!response.ok && response.error.isNotFoundError()) {
   !response.ok || !book ? (
     <InternalError />
   ) : (
-    <MainLayout title={book.title} description={book.description}>
+    <MainLayout
+      title={book.title}
+      description={book.description}
+      translationId={response.data.translation?.englishId}
+    >
       <Fragment set:html={content} />
       <div>
         {book.documents.length > 0 && (

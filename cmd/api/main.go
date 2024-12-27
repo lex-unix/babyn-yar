@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -29,13 +30,23 @@ type application struct {
 }
 
 func main() {
-	cfg := config.NewConfig()
+	if err := run(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
+	cfg, err := config.NewConfig()
+	if err != nil {
+		return err
+	}
 
 	logger := jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 
 	db, err := openDB(cfg)
 	if err != nil {
-		logger.PrintFatal(err, nil)
+		return err
 	}
 
 	defer db.Close()
@@ -44,7 +55,7 @@ func main() {
 
 	store, err := newSessionStore(cfg)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer store.Close()
 
@@ -52,7 +63,7 @@ func main() {
 
 	storageHandler, err := storage.NewS3Handler(cfg)
 	if err != nil {
-		logger.PrintFatal(err, nil)
+		return err
 	}
 
 	logger.PrintInfo("storage handler initialized", nil)
@@ -65,7 +76,7 @@ func main() {
 			os.Getenv("SEED_USER_PASSWORD"),
 		)
 		if err != nil {
-			logger.PrintFatal(err, nil)
+			return err
 		}
 		logger.PrintInfo("initialized new user", nil)
 	}
@@ -80,8 +91,10 @@ func main() {
 
 	err = app.serve()
 	if err != nil {
-		logger.PrintFatal(err, nil)
+		return err
 	}
+
+	return nil
 }
 
 func openDB(cfg config.Config) (*pgxpool.Pool, error) {

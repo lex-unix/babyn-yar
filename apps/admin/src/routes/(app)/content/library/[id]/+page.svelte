@@ -10,11 +10,12 @@
     PageHeader,
     Container,
     NotFound,
-    DatePicker
+    DatePicker,
+    TranslationSelect
   } from '$components'
-  import type { Book } from '$lib/types'
+  import type { Book, Translation } from '$lib/types'
   import type { ResponseError } from '$lib/response-error'
-  import { fetchBook, updateBook } from '$lib/api-utils'
+  import { fetchBook, getBooks, updateBook } from '$lib/api-utils'
   import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { SaveIcon } from 'lucide-svelte'
@@ -22,15 +23,30 @@
 
   let isSubmitting = false
   let book: Book
+  let translations: Translation[] = []
+  let selectedTranslation: Translation | undefined
   let error: ResponseError | undefined
 
   onMount(async function () {
-    const res = await fetchBook($page.params.id)
-    if (res.ok) {
-      book = res.data.book
-      book.content = JSON.parse(book.content as unknown as string)
-    } else {
-      error = res.error
+    const response = await fetchBook($page.params.id)
+    if (!response.ok) {
+      error = response.error
+      return
+    }
+    book = response.data.book
+    book.content = JSON.parse(book.content as unknown as string)
+
+    if (response.data.translation) {
+      const translation = response.data.translation
+      selectedTranslation =
+        book.lang === 'ua'
+          ? { id: translation.englishId, title: translation.englishTitle }
+          : { id: translation.ukrainianId, title: translation.ukrainianTitle }
+    }
+
+    const translationResponse = await getBooks()
+    if (translationResponse.ok) {
+      translations = translationResponse.data.books
     }
   })
 
@@ -43,7 +59,8 @@
       lang: book.lang,
       cover: book.cover,
       documents: book.documents,
-      content: JSON.stringify(book.content)
+      content: JSON.stringify(book.content),
+      translationId: selectedTranslation ? selectedTranslation.id : null
     })
     const response = await updateBook($page.params.id, body)
     if (!response.ok) {
@@ -54,6 +71,13 @@
     addToast(updateRecordSuccessMsg)
     isSubmitting = false
     error = undefined
+  }
+
+  async function searchTranslations(e: CustomEvent<{ search: string }>) {
+    const response = await getBooks({ title: e.detail.search })
+    if (response.ok) {
+      translations = response.data.books
+    }
   }
 </script>
 
@@ -78,6 +102,11 @@
           error={error?.isFormError() ? error.error.lang : undefined}
         />
         <DatePicker bind:datetime={book.occuredOn} />
+        <TranslationSelect
+          {translations}
+          bind:selected={selectedTranslation}
+          on:search={searchTranslations}
+        />
         <CoverSelect
           bind:cover={book.cover}
           error={error?.isFormError() ? error.error.cover : undefined}
