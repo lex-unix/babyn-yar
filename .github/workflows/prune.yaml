@@ -13,7 +13,7 @@ jobs:
         with:
           account: user
           token: ${{ secrets.PAT }}
-          image-names: 'babynar-yar-*'
+          image-names: 'babyn-yar-*'
           cut-off: 1d
           keep-n-most-recent: 3
           dry-run: true
