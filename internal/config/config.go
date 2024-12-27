@@ -1,68 +1,43 @@
 package config
 
 import (
-	"flag"
-	"strings"
+	"github.com/caarlos0/env/v11"
 )
 
 type Config struct {
-	Port int
-	Env  string
+	Port int    `env:"API_PORT"`
+	Env  string `env:"API_ENV"`
 	DB   struct {
-		DSN string
+		DSN string `env:"DATABASE_URL"`
 	}
 	Storage struct {
-		AccountID       string
-		AccessKeyID     string
-		AccessKeySecret string
-		Bucket          string
-		PublicURL       string
+		AccountID       string `env:"STORAGE_ACCOUNT_ID"`
+		AccessKeyID     string `env:"STORAGE_ACCESS_KEY_ID"`
+		AccessKeySecret string `env:"STORAGE_SECRET_ACCESS_KEY"`
+		Bucket          string `env:"STORAGE_BUCKET_NAME"`
+		PublicURL       string `env:"STORAGE_PUBLIC_ACCESS_URL"`
 	}
 	SessionStore struct {
-		DSN          string
-		Secret       string
-		MaxIdleConns int
-		Password     string
+		DSN          string `env:"REDIS_URL"`
+		Secret       string `env:"SESSION_SECRET"`
+		MaxIdleConns int    `env:"REDIS_MAX_IDLE_CONN" envDefault:"10"`
+		Password     string `env:"REDIS_PASSWORD" envDefault:""`
 	}
 	CORS struct {
-		TrustedOrigins []string
+		TrustedOrigins []string `env:"CORS_ORIGINS"`
 	}
-	Seed bool
+	Seed bool `env:"REDIS_PASSWORD" envDefault:"false"`
 }
 
-func NewConfig() Config {
+func NewConfig() (Config, error) {
 	var cfg Config
 
-	// app
-	flag.IntVar(&cfg.Port, "port", 8000, "API server port")
-	flag.StringVar(&cfg.Env, "env", "development", "Environment (development|staging|production)")
-
-	// db
-	flag.StringVar(&cfg.DB.DSN, "db-dsn", "", "PostgreSQL DSN")
-
-	// storage
-	flag.StringVar(&cfg.Storage.AccountID, "storage-account-id", "", "Storage account ID")
-	flag.StringVar(&cfg.Storage.AccessKeyID, "storage-access-key-id", "", "Storage access key ID")
-	flag.StringVar(&cfg.Storage.AccessKeySecret, "storage-access-key-secret", "", "Storage access key secret")
-	flag.StringVar(&cfg.Storage.Bucket, "storage-bucket", "", "Storage bucket name")
-	flag.StringVar(&cfg.Storage.PublicURL, "storage-public-url", "", "Storage public access URL")
-
-	// redis store
-	flag.StringVar(&cfg.SessionStore.DSN, "session-store-dsn", "", "Redis DSN")
-	flag.StringVar(&cfg.SessionStore.Secret, "session-store-secret", "", "Session secret")
-	flag.IntVar(&cfg.SessionStore.MaxIdleConns, "session-store-max-idle-conns", 10, "Redis max idle connections")
-	flag.StringVar(&cfg.SessionStore.Password, "session-store-password", "", "Redis password")
-
-	// CORS
-	flag.Func("cors-trusted-origins", "Trusted CORS origins (comma separated)", func(val string) error {
-		cfg.CORS.TrustedOrigins = strings.Split(val, ",")
-		return nil
+	err := env.ParseWithOptions(&cfg, env.Options{
+		RequiredIfNoDef: true,
 	})
+	if err != nil {
+		return Config{}, err
+	}
 
-	// add initial user here
-	flag.BoolVar(&cfg.Seed, "seed", false, "A boolean flag to add initial user")
-
-	flag.Parse()
-
-	return cfg
+	return cfg, nil
 }

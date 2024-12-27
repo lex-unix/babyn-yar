@@ -38,21 +38,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-      args:
-        - 'DATABASE_URL=${DATABASE_URL}'
-        - 'API_PORT=${API_PORT}'
-        - 'STORAGE_BUCKET_NAME=${STORAGE_BUCKET_NAME}'
-        - 'STORAGE_PUBLIC_ACCESS_URL=${STORAGE_PUBLIC_ACCESS_URL}'
-        - 'STORAGE_ACCOUNT_ID=${STORAGE_ACCOUNT_ID}'
-        - 'STORAGE_ACCESS_KEY_ID=${STORAGE_ACCESS_KEY_ID}'
-        - 'STORAGE_SECRET_ACCESS_KEY=${STORAGE_SECRET_ACCESS_KEY}'
-        - 'REDIS_URL=${REDIS_URL}'
-        - 'SESSION_SECRET=${SESSION_SECRET}'
-        - 'CORS_ORIGINS=${CORS_ORIGINS}'
-        - 'SEED_USER=${SEED_USER}'
-        - 'SEED_USER_NAME=${SEED_USER_NAME}'
-        - 'SEED_USER_EMAIL=${SEED_USER_EMAIL}'
-        - 'SEED_USER_PASSWORD=${SEED_USER_PASSWORD}'
+    env_file: .env
     ports:
       - 8000:8000
     depends_on:
