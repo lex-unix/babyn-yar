@@ -24,18 +24,7 @@ confirm:
 ## run/api: run cmd/api application
 .PHONY: run/api
 run/api:
-	@go run ${MAIN_PACKAGE_PATH} \
-		-db-dsn=${DATABASE_URL} \
-		-port=${API_PORT} \
-		-storage-account-id=${STORAGE_ACCOUNT_ID} \
-		-storage-access-key-id=${STORAGE_ACCESS_KEY_ID} \
-		-storage-access-key-secret=${STORAGE_SECRET_ACCESS_KEY} \
-		-storage-bucket=${STORAGE_BUCKET_NAME} \
-		-storage-public-url=${STORAGE_PUBLIC_ACCESS_URL} \
-		-session-store-dsn=${REDIS_URL} \
-		-session-store-secret=${SESSION_SECRET} \
-		-cors-trusted-origins=${CORS_ORIGINS} \
-		-seed=${SEED_USER}
+	@go run ${MAIN_PACKAGE_PATH}
 
 ## build: build the application
 .PHONY: build
@@ -49,19 +38,6 @@ run/live:
 		--build.cmd "make build" --build.bin "/tmp/bin/${BINARY_NAME}" --build.delay "100" \
 		--build.include_dir "internal,cmd" \
 		--misc.clean_on_exit "true" \
-		-- \
-		-db-dsn=${DATABASE_URL} \
-		-port=${API_PORT} \
-		-storage-account-id=${STORAGE_ACCOUNT_ID} \
-		-storage-access-key-id=${STORAGE_ACCESS_KEY_ID} \
-		-storage-access-key-secret=${STORAGE_SECRET_ACCESS_KEY} \
-		-storage-bucket=${STORAGE_BUCKET_NAME} \
-		-storage-public-url=${STORAGE_PUBLIC_ACCESS_URL} \
-		-session-store-dsn=${REDIS_URL} \
-		-session-store-secret=${SESSION_SECRET} \
-		-cors-trusted-origins=${CORS_ORIGINS} \
-		-seed=${SEED_USER}
-
 
 ## db/psql: connect to the database using psql
 .PHONY: db/psql
@@ -69,14 +45,14 @@ db/psql:
 	psql ${DATABASE_URL}
 
 ## db/migrations/new name=$1: create a new database migration
-.PHONY db/migrations/new:
+.PHONY: db/migrations/new
 db/migrations/new:
 	@echo 'Creating migration files for ${name}'
 	migrate create -seq -ext=.sql -dir=./migrations ${name}
 
 ## db/migrations/up: apply all up database migrations
-.PHONY db/migrations/up: confirm
-db/migrations/up:
+.PHONY: db/migrations/up
+db/migrations/up: confirm
 	@echo 'Running migrations...'
 	migrate -path ./migrations -database ${DATABASE_URL} up
 
@@ -85,8 +61,8 @@ db/migrations/up:
 # ==================================================================================== #
 
 ## migrate-up: apply all up database migrations
-.PHONY migrate-up: confirm
-migrate-up:
+.PHONY: migrate-up
+migrate-up: confirm
 	@echo 'Running migrations...'
 	docker compose --profile tools run --rm migrate up
 
