@@ -21,7 +21,11 @@ func main() {
 }
 
 func run() error {
-	cfg := config.NewConfig()
+	log.Println("reading config file")
+	cfg, err := config.NewConfig(config.WithRequired(false))
+	if err != nil {
+		return err
+	}
 	handler, err := storage.NewS3Handler(cfg)
 	if err != nil {
 		return err
@@ -31,6 +35,7 @@ func run() error {
 	filename := fmt.Sprintf("dump_%s.gz", timestamp)
 	filepath := path.Join(os.TempDir(), filename)
 
+	log.Println("dumping database")
 	if err := dumpDatabase(filepath); err != nil {
 		return fmt.Errorf("failed to dump database: %v", err)
 	}
@@ -41,10 +46,12 @@ func run() error {
 		}
 	}()
 
+	log.Println("uploading to remote storage")
 	if err := uploadFile(handler, filepath, filename); err != nil {
 		return fmt.Errorf("failed to upload file: %v", err)
 	}
 
+	log.Println("upload succesful")
 	return nil
 }
 
