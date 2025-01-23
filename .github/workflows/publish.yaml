@@ -9,10 +9,7 @@ env:
   ACTOR: ${{ github.actor }}
 
 jobs:
-  backup:
-    uses: ./.github/workflows/backup.yaml
   publish:
-    needs: backup
     name: publish ${{ matrix.app }} image
     runs-on: ubuntu-latest
     strategy:
