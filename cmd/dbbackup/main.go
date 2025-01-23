@@ -51,7 +51,7 @@ func run() error {
 		return fmt.Errorf("failed to upload file: %v", err)
 	}
 
-	log.Println("upload succesful")
+	log.Println("upload successful")
 	return nil
 }
 
