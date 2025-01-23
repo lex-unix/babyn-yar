@@ -4,6 +4,19 @@ import (
 	"github.com/caarlos0/env/v11"
 )
 
+type options struct {
+	required *bool
+}
+
+type Option func(options *options) error
+
+func WithRequired(required bool) Option {
+	return func(options *options) error {
+		options.required = &required
+		return nil
+	}
+}
+
 type Config struct {
 	Port int    `env:"API_PORT"`
 	Env  string `env:"API_ENV"`
@@ -29,11 +42,25 @@ type Config struct {
 	Seed bool `env:"REDIS_PASSWORD" envDefault:"false"`
 }
 
-func NewConfig() (Config, error) {
-	var cfg Config
+func NewConfig(opts ...Option) (Config, error) {
+	var options options
+	for _, opt := range opts {
+		err := opt(&options)
+		if err != nil {
+			return Config{}, err
+		}
+	}
 
+	var required bool
+	if options.required == nil {
+		required = true
+	} else {
+		required = *options.required
+	}
+
+	var cfg Config
 	err := env.ParseWithOptions(&cfg, env.Options{
-		RequiredIfNoDef: true,
+		RequiredIfNoDef: required,
 	})
 	if err != nil {
 		return Config{}, err
