@@ -1,7 +1,7 @@
 services:
   gov:
     image: ghcr.io/lex-unix/babyn-yar-gov:latest
-    restart: always
+    restart: unless-stopped
     ports:
       - 8080:4321
     depends_on:
@@ -9,6 +9,7 @@ services:
         condition: service_healthy
   admin:
     image: ghcr.io/lex-unix/babyn-yar-admin:latest
+    restart: unless-stopped
     ports:
       - 8082:80
     depends_on:
@@ -16,6 +17,7 @@ services:
         condition: service_healthy
   api:
     image: ghcr.io/lex-unix/babyn-yar-api:latest
+    restart: unless-stopped
     env_file: .env
     ports:
       - 8000:8000
