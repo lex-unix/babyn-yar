@@ -1,26 +1,18 @@
 ---
-import MainLayout from '@/layouts/MainLayout.astro'
 import InternalError from '@/components/InternalError.astro'
-import { generateHTML } from 'tip-tap-utils'
 import { getLegalDocument } from '@/api'
-import { Document } from 'ui'
 import type { Book } from 'shared-types'
+import CMSContent from '@/components/CMSContent.astro'
 
 export const prerender = false
 
 let legalDocument: Book | undefined = undefined
-let content: string | undefined = undefined
-
-const id = Astro.params.id
-const response = await getLegalDocument(id as string)
-
-if (response.ok) {
-  legalDocument = response.data.document
-  content = generateHTML(JSON.parse(legalDocument.content))
-}
-
+const response = await getLegalDocument(Astro.params.id as string)
 if (!response.ok && response.error.isNotFoundError()) {
   return new Response(null, { status: 404 })
+}
+if (response.ok) {
+  legalDocument = response.data.document
 }
 ---
 
@@ -28,28 +20,11 @@ if (!response.ok && response.error.isNotFoundError()) {
   !response.ok || !legalDocument ? (
     <InternalError />
   ) : (
-    <MainLayout
+    <CMSContent
       title={legalDocument.title}
       description={legalDocument.description}
-    >
-      <Fragment set:html={content} />
-      <div>
-        {legalDocument.documents.length > 0 && (
-          <div class="max-w-md">
-            <p class="font-semibold">Долучення</p>
-            {legalDocument.documents.map(url => (
-              <Document href={url}>{url.split('/').at(-1)}</Document>
-            ))}
-          </div>
-        )}
-      </div>
-    </MainLayout>
+      content={legalDocument.content}
+      attachemnts={legalDocument.documents}
+    />
   )
 }
-
-<style is:global>
-  div > img,
-  div > video {
-    @apply !-mx-4 !h-auto !w-[calc(100%+2rem)] !max-w-[calc(100%+2rem)] md:!-mx-[calc(39px+2rem)] md:!w-[calc(100%+((2rem+39px)*2))] md:!max-w-[calc(100%+((2rem+39px)*2))] lg:!-mx-[calc(39px+3rem)] lg:!w-[calc(100%+((3rem+39px)*2))] lg:!max-w-[calc(100%+((3rem+39px)*2))];
-  }
-</style>

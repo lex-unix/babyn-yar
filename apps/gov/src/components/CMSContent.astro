@@ -1,0 +1,49 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro'
+import { Document } from 'ui'
+import { generateHTML } from 'tip-tap-utils'
+
+interface Props {
+  title: string
+  description: string
+  content: string
+  translationId?: number
+  attachemnts?: string[]
+}
+
+const { title, description, content, attachemnts, translationId } = Astro.props
+
+const html = generateHTML(JSON.parse(content))
+---
+
+<MainLayout
+  title={title}
+  description={description}
+  translationId={translationId}
+>
+  <div class="cms-content">
+    <Fragment set:html={html} />
+    {
+      attachemnts && attachemnts.length > 0 && (
+        <div class="max-w-md">
+          <p class="font-semibold">Долучення</p>
+          {attachemnts.map(url => (
+            <Document href={url}>{url.split('/').at(-1)}</Document>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</MainLayout>
+
+<style is:global>
+  div > img,
+  div > video,
+  div > iframe {
+    @apply !-mx-4 !h-auto !w-[calc(100%+2rem)] !max-w-[calc(100%+2rem)] md:!-mx-[calc(39px+2rem)] md:!w-[calc(100%+((2rem+39px)*2))] md:!max-w-[calc(100%+((2rem+39px)*2))] lg:!-mx-[calc(39px+3rem)] lg:!w-[calc(100%+((3rem+39px)*2))] lg:!max-w-[calc(100%+((3rem+39px)*2))];
+  }
+
+  div > iframe {
+    @apply aspect-video;
+  }
+</style>
