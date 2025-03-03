@@ -69,7 +69,7 @@
   {metadata}
   {data}
   {isLoading}
-  title="ЗМІ про заповідник"
+  title="Свідчення очевидців трагедії"
   entryHref="/content/victim-testimonies"
   on:filter={filter}
   on:delete={_delete}

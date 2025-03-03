@@ -69,7 +69,7 @@
   {metadata}
   {data}
   {isLoading}
-  title="ЗМІ про заповідник"
+  title="Події"
   entryHref="/content/events"
   on:filter={filter}
   on:delete={_delete}

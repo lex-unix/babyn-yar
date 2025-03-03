@@ -69,7 +69,7 @@
   {metadata}
   {data}
   {isLoading}
-  title="ЗМІ про заповідник"
+  title="Документи Голокосту"
   entryHref="/content/holocaust-documents"
   on:filter={filter}
   on:delete={_delete}

@@ -69,7 +69,7 @@
   {metadata}
   {data}
   {isLoading}
-  title="Партнери"
+  title="Документи"
   entryHref="/content/legal-documents"
   on:filter={filter}
   on:delete={_delete}
