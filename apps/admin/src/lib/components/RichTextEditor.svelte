@@ -20,9 +20,11 @@
     VideoIcon,
     LinkIcon,
     UnlinkIcon,
-    CornerDownLeftIcon
+    CornerDownLeftIcon,
+    YoutubeIcon
   } from 'lucide-svelte'
-  import { AssetDialog, LinkDialog } from '$components'
+  import { AssetDialog, LinkDialog, EditorCommand } from '$components'
+  import YouTubeVideoDialog from './YouTubeVideoDialog.svelte'
 
   export let content: JSONContent
 
@@ -30,6 +32,7 @@
   let editor: Editor
   let assetsDialog: AssetDialog
   let linkDialog: LinkDialog
+  let youtubeDialog: YouTubeVideoDialog
 
   function selectAsset(e: CustomEvent<{ url: string; type: string }>) {
     const { url, type } = e.detail
@@ -65,6 +68,11 @@
     editor.chain().focus().setLink(linkProps).run()
   }
 
+  function addYouTubeVideo(e: CustomEvent<{ link: string }>) {
+    youtubeDialog.close()
+    editor.chain().focus().setYoutubeVideo({ src: e.detail.link }).run()
+  }
+
   onMount(() => {
     editor = new Editor({
       editorProps: {
@@ -98,151 +106,139 @@
       class="min-w-full overflow-x-auto rounded-tl rounded-tr border border-b-0 bg-white"
     >
       <div class="flex items-center gap-1 p-2">
-        <button
-          type="button"
+        <EditorCommand
           on:click={() =>
             editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          class:active={editor.isActive('heading', { level: 1 })}
-          class="rounded p-1.5 hover:bg-gray-100"
+          active={editor.isActive('heading', { level: 1 })}
+          tooltip="Заголовок 1"
         >
           <Heading1Icon size={16} />
-        </button>
-        <button
-          type="button"
+        </EditorCommand>
+        <EditorCommand
           on:click={() =>
             editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          class:active={editor.isActive('heading', { level: 2 })}
-          class="rounded p-1.5 hover:bg-gray-100"
+          active={editor.isActive('heading', { level: 2 })}
+          tooltip="Заголовок 2"
         >
           <Heading2Icon size={16} />
-        </button>
-        <button
-          type="button"
+        </EditorCommand>
+        <EditorCommand
           on:click={() =>
             editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          class:active={editor.isActive('heading', { level: 3 })}
-          class="rounded p-1.5 hover:bg-gray-100"
+          active={editor.isActive('heading', { level: 3 })}
+          tooltip="Заголовок 3"
         >
           <Heading3Icon size={16} />
-        </button>
-        <button
-          type="button"
+        </EditorCommand>
+        <EditorCommand
           on:click={() => editor.chain().focus().setParagraph().run()}
-          class:active={editor.isActive('paragraph')}
-          class="rounded p-1.5 hover:bg-gray-100"
+          active={editor.isActive('paragraph')}
+          tooltip="Параграф"
         >
           <PilcrowIcon size={16} />
-        </button>
-        <button
-          type="button"
+        </EditorCommand>
+        <EditorCommand
           on:click={() => linkDialog.open()}
-          class:active={editor.isActive('link')}
-          class="rounded p-1.5 hover:bg-gray-100"
+          active={editor.isActive('link')}
+          tooltip="Додати посилання"
         >
           <LinkIcon size={16} />
-        </button>
+        </EditorCommand>
         {#if editor.isActive('link')}
-          <button
-            type="button"
+          <EditorCommand
             on:click={() => editor.chain().focus().unsetLink().run()}
-            class="rounded p-1.5 hover:bg-gray-100"
+            tooltip="Видалити посилання"
           >
             <UnlinkIcon size={16} />
-          </button>
+          </EditorCommand>
         {/if}
-        <button
-          type="button"
+        <EditorCommand
           on:click={() => editor.chain().focus().toggleBulletList().run()}
-          class:active={editor.isActive('bulletList')}
-          class="rounded p-1.5 hover:bg-gray-100"
+          active={editor.isActive('bulletList')}
+          tooltip="Маркерований список"
         >
           <ListIcon size={16} />
-        </button>
-        <button
-          type="button"
+        </EditorCommand>
+        <EditorCommand
           on:click={() => editor.chain().focus().toggleOrderedList().run()}
-          class:active={editor.isActive('orderedList')}
-          class="rounded p-1.5 hover:bg-gray-100"
+          active={editor.isActive('orderedList')}
+          tooltip="Нумерований список"
         >
           <ListOrderedIcon size={16} />
-        </button>
+        </EditorCommand>
         <div class="min-h-full w-[1px] self-stretch bg-gray-200" />
-        <button
-          type="button"
+        <EditorCommand
           on:click={() => editor.chain().focus().toggleBold().run()}
-          class:active={editor.isActive('bold')}
-          class="rounded p-1.5 hover:bg-gray-100"
+          active={editor.isActive('bold')}
+          tooltip="Жирний текст"
         >
           <BoldIcon size={16} />
-        </button>
-        <button
-          type="button"
+        </EditorCommand>
+        <EditorCommand
           on:click={() => editor.chain().focus().toggleItalic().run()}
-          class:active={editor.isActive('italic')}
-          class="rounded p-1.5 hover:bg-gray-100"
+          active={editor.isActive('italic')}
+          tooltip="Курсив"
         >
           <ItalicIcon size={16} />
-        </button>
-        <button
-          type="button"
+        </EditorCommand>
+        <EditorCommand
           on:click={() => editor.chain().focus().toggleUnderline().run()}
-          class:active={editor.isActive('underline')}
-          class="rounded p-1.5 hover:bg-gray-100"
+          active={editor.isActive('underline')}
+          tooltip="Підкреслений текст"
         >
           <UnderlineIcon size={16} />
-        </button>
-        <button
-          type="button"
+        </EditorCommand>
+        <EditorCommand
           on:click={() => editor.chain().focus().toggleStrike().run()}
-          class:active={editor.isActive('strike')}
-          class="rounded p-1.5 hover:bg-gray-100"
+          active={editor.isActive('strike')}
+          tooltip="Закреслений текст"
         >
           <StrikethroughIcon size={16} />
-        </button>
+        </EditorCommand>
         <div class="min-h-full w-[1px] self-stretch bg-gray-200" />
-        <button
-          type="button"
+        <EditorCommand
           on:click={() => editor.chain().focus().setTextAlign('left').run()}
-          class="rounded p-1.5 hover:bg-gray-100"
+          tooltip="Вирівняти по лівому краю"
         >
           <AlignLeftIcon size={16} />
-        </button>
-        <button
-          type="button"
+        </EditorCommand>
+        <EditorCommand
           on:click={() => editor.chain().focus().setTextAlign('center').run()}
-          class="rounded p-1.5 hover:bg-gray-100"
+          tooltip="Вирівняти по центру"
         >
           <AlignCenterIcon size={16} />
-        </button>
-        <button
-          type="button"
+        </EditorCommand>
+        <EditorCommand
           on:click={() => editor.chain().focus().setTextAlign('right').run()}
-          class="rounded p-1.5 hover:bg-gray-100"
+          tooltip="Вирівняти по правому краю"
         >
           <AlignRightIcon size={16} />
-        </button>
-        <button
-          type="button"
+        </EditorCommand>
+        <EditorCommand
           on:click={() => editor.chain().focus().setHardBreak().run()}
-          class="rounded p-1.5 hover:bg-gray-100"
+          tooltip="Перенос рядка"
         >
           <CornerDownLeftIcon size={16} />
-        </button>
+        </EditorCommand>
         <div class="min-h-full w-[1px] self-stretch bg-gray-200" />
-        <button
-          type="button"
+        <EditorCommand
           on:click={() => assetsDialog.open('image')}
-          class="rounded p-1.5 hover:bg-gray-100"
+          tooltip="Додати зображення"
         >
           <ImageIcon size={16} />
-        </button>
-        <button
-          type="button"
+        </EditorCommand>
+        <EditorCommand
           on:click={() => assetsDialog.open('video')}
-          class="rounded p-1.5 hover:bg-gray-100"
+          tooltip="Додати відео"
         >
           <VideoIcon size={16} />
-        </button>
+        </EditorCommand>
+        <EditorCommand
+          on:click={() => youtubeDialog.open()}
+          tooltip="Додати YouTube відео"
+        >
+          <YoutubeIcon size={16} />
+        </EditorCommand>
       </div>
     </div>
   {/if}
@@ -253,8 +249,4 @@
 
 <LinkDialog bind:this={linkDialog} on:done={addLink} />
 
-<style lang="postcss">
-  .active {
-    @apply bg-gray-100;
-  }
-</style>
+<YouTubeVideoDialog bind:this={youtubeDialog} on:done={addYouTubeVideo} />

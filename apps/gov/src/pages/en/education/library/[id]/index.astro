@@ -1,26 +1,18 @@
 ---
-import MainLayout from '@/layouts/MainLayout.astro'
 import InternalError from '@/components/InternalError.astro'
-import { generateHTML } from 'tip-tap-utils'
 import { getBook } from '@/api'
-import { Document } from 'ui'
 import type { Book } from 'shared-types'
+import CMSContent from '@/components/CMSContent.astro'
 
 export const prerender = false
 
 let book: Book | undefined = undefined
-let content: string | undefined = undefined
-
-const id = Astro.params.id
-const response = await getBook(id as string)
-
-if (response.ok) {
-  book = response.data.book
-  content = generateHTML(JSON.parse(book.content))
-}
-
+const response = await getBook(Astro.params.id as string)
 if (!response.ok && response.error.isNotFoundError()) {
   return new Response(null, { status: 404 })
+}
+if (response.ok) {
+  book = response.data.book
 }
 ---
 
@@ -28,29 +20,12 @@ if (!response.ok && response.error.isNotFoundError()) {
   !response.ok || !book ? (
     <InternalError />
   ) : (
-    <MainLayout
+    <CMSContent
       title={book.title}
       description={book.description}
+      content={book.content}
+      attachemnts={book.documents}
       translationId={response.data.translation?.ukrainianId}
-    >
-      <Fragment set:html={content} />
-      <div>
-        {book.documents.length > 0 && (
-          <div class="max-w-md">
-            <p class="font-semibold">Documents</p>
-            {book.documents.map(url => (
-              <Document href={url}>{url.split('/').at(-1)}</Document>
-            ))}
-          </div>
-        )}
-      </div>
-    </MainLayout>
+    />
   )
 }
-
-<style is:global>
-  div > img,
-  div > video {
-    @apply !-mx-4 !h-auto !w-[calc(100%+2rem)] !max-w-[calc(100%+2rem)] md:!-mx-[calc(39px+2rem)] md:!w-[calc(100%+((2rem+39px)*2))] md:!max-w-[calc(100%+((2rem+39px)*2))] lg:!-mx-[calc(39px+3rem)] lg:!w-[calc(100%+((3rem+39px)*2))] lg:!max-w-[calc(100%+((3rem+39px)*2))];
-  }
-</style>
