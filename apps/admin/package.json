@@ -40,6 +40,7 @@
     "@tiptap/extension-link": "^2.1.11",
     "@tiptap/extension-text-align": "^2.1.11",
     "@tiptap/extension-underline": "^2.1.11",
+    "@tiptap/extension-youtube": "^2.11.5",
     "@tiptap/pm": "^2.1.11",
     "@tiptap/starter-kit": "^2.1.11",
     "clsx": "^2.1.0",

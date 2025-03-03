@@ -3,6 +3,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
+import YouTube from '@tiptap/extension-youtube'
 import { Video } from './video-extension'
 
 export const extensions = [
@@ -54,5 +55,8 @@ export const extensions = [
     HTMLAttributes: {
       class: 'max-w-[400px] min-h-[120px] w-full my-6'
     }
+  }),
+  YouTube.configure({
+    autoplay: false
   })
 ]

@@ -36,9 +36,9 @@
 <Dialog bind:this={dialog} size="md">
   <DialogContent>
     <DialogTitle slot="title">Посилання</DialogTitle>
-    <DialogDescription slot="description"
-      >Додати будь-яке посилання</DialogDescription
-    >
+    <DialogDescription slot="description">
+      Додати будь-яке посилання
+    </DialogDescription>
     <div class="mt-7 min-h-[30px]">
       <div class="pb-5">
         <div class="relative h-full">

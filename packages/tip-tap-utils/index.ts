@@ -3,6 +3,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
+import YouTube from '@tiptap/extension-youtube'
 import { Video } from './video'
 import { generateHTML as tipTapGenerateHTML } from '@tiptap/html'
 
@@ -12,6 +13,7 @@ export const extensions = [
   TextAlign.configure({
     types: ['heading', 'paragraph']
   }),
+  YouTube,
   Image,
   Underline,
   Video
