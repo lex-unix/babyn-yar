@@ -57,6 +57,10 @@ export const extensions = [
     }
   }),
   YouTube.configure({
-    autoplay: false
+    autoplay: false,
+    HTMLAttributes: {
+      class:
+        'max-w-[400px] object-contain my-6 min-h-[120px] !h-auto aspect-video w-full rounded-lg'
+    }
   })
 ]
