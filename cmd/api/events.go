@@ -17,6 +17,7 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 		Content     string    `json:"content"`
 		Lang        string    `json:"lang"`
 		Cover       string    `json:"cover"`
+		Documents   []string  `json:"documents"`
 		OccuredOn   time.Time `json:"occuredOn"`
 		Translation *int64    `json:"translationId"`
 	}
@@ -35,6 +36,7 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 		Content:     input.Content,
 		Lang:        input.Lang,
 		Cover:       input.Cover,
+		Documents:   input.Documents,
 		OccuredOn:   input.OccuredOn,
 		UserID:      user.ID,
 	}
@@ -195,6 +197,7 @@ func (app *application) updateEventHandler(w http.ResponseWriter, r *http.Reques
 		Content       *string    `json:"content"`
 		Lang          *string    `json:"lang"`
 		Cover         *string    `json:"cover"`
+		Documents     []string   `json:"documents"`
 		OccuredOn     *time.Time `json:"occuredOn"`
 		TranslationID *int64     `json:"translationId"`
 	}
@@ -223,6 +226,10 @@ func (app *application) updateEventHandler(w http.ResponseWriter, r *http.Reques
 
 	if input.Cover != nil {
 		event.Cover = *input.Cover
+	}
+
+	if input.Documents != nil {
+		event.Documents = input.Documents
 	}
 
 	if input.OccuredOn != nil {

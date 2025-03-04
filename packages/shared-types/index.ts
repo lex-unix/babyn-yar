@@ -40,7 +40,7 @@ export type ContentData = {
   lastChange: string
 }
 
-export type Event = BaseContent
+export type Event = BaseContent & { documents: string[] }
 export type EventWithUser = Event & { user: User }
 
 export type MediaArticle = BaseContent
