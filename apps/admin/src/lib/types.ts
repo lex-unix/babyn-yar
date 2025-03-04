@@ -34,7 +34,11 @@ export type LegalDocument = BaseContent & {
   user: User
 }
 
-export type Event = BaseContent & { user: User }
+export type Event = BaseContent & {
+  user: User
+  documents: string[]
+}
+
 export type HolocaustDocument = BaseContent & { user: User }
 export type MediaArticle = BaseContent & { user: User }
 export type Partner = BaseContent & { user: User }

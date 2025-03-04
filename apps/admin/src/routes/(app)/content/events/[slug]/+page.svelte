@@ -11,7 +11,8 @@
     NotFound,
     EditorSkeleton,
     DatePicker,
-    TranslationSelect
+    TranslationSelect,
+    DocumentsSelect
   } from '$components'
   import type { Event, Translation } from '$lib/types'
   import type { ResponseError } from '$lib/response-error'
@@ -60,6 +61,7 @@
       description: event.description,
       lang: event.lang,
       cover: event.cover,
+      documents: event.documents,
       content: JSON.stringify(event.content),
       occuredOn: new Date(event.occuredOn).toISOString(),
       translationId: selectedTranslation ? selectedTranslation.id : null
@@ -136,6 +138,7 @@
           label="Опис"
           error={error?.isFormError() ? error.error.description : undefined}
         />
+        <DocumentsSelect bind:documents={event.documents} />
         <div>
           <p class="mb-1.5 text-gray-500">Контент</p>
           {#if error?.isFormError() && error?.error.content}

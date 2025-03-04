@@ -21,6 +21,7 @@ type Event struct {
 	Content     string    `json:"content"`
 	Cover       string    `json:"cover"`
 	Lang        string    `json:"lang"`
+	Documents   []string  `json:"documents"`
 	Version     int32     `json:"version"`
 	UserID      int64     `json:"-"`
 	User        *User     `json:"user"`
@@ -42,8 +43,8 @@ func ValidateEvent(v *validator.Validator, event *Event) {
 
 func (m EventModel) Insert(event *Event) error {
 	query := `
-		INSERT INTO events (title, description, content, lang, cover, occured_on, user_id)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO events (title, description, content, lang, documents, cover, occured_on, user_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING id, version`
 
 	args := []interface{}{
@@ -51,6 +52,7 @@ func (m EventModel) Insert(event *Event) error {
 		event.Description,
 		event.Content,
 		event.Lang,
+		event.Documents,
 		event.Cover,
 		event.OccuredOn,
 		event.UserID,
@@ -64,7 +66,7 @@ func (m EventModel) Insert(event *Event) error {
 
 func (m EventModel) GetAll(title, lang string, filters Filters) ([]*Event, Metadata, error) {
 	query := fmt.Sprintf(`
-		SELECT count(*) OVER(), e.id, e.created_at, e.updated_at, e.title, e.description, e.cover, e.content, e.version, u.full_name
+		SELECT count(*) OVER(), e.id, e.created_at, e.updated_at, e.title, e.description, e.cover, e.content, e.documents, e.version, u.full_name
 		FROM events e
 		INNER JOIN users u ON e.user_id = u.id
 		WHERE (e.lang = $1 OR $1 = '')
@@ -95,6 +97,7 @@ func (m EventModel) GetAll(title, lang string, filters Filters) ([]*Event, Metad
 			&event.Description,
 			&event.Cover,
 			&event.Content,
+			&event.Documents,
 			&event.Version,
 			&user.FullName,
 		)
@@ -117,7 +120,7 @@ func (m EventModel) Get(id int64) (*Event, error) {
 	}
 
 	query := `
-		SELECT e.id, e.created_at, e.occured_on, e.updated_at, e.title, e.description, e.content, e.lang, e.cover, e.version
+		SELECT e.id, e.created_at, e.occured_on, e.updated_at, e.title, e.description, e.content, e.documents, e.lang, e.cover, e.version
 		FROM events e
 		WHERE id = $1`
 
@@ -133,6 +136,7 @@ func (m EventModel) Get(id int64) (*Event, error) {
 		&event.Title,
 		&event.Description,
 		&event.Content,
+		&event.Documents,
 		&event.Lang,
 		&event.Cover,
 		&event.Version,
@@ -152,14 +156,15 @@ func (m EventModel) Get(id int64) (*Event, error) {
 func (m EventModel) Update(event *Event) error {
 	query := `
 		UPDATE events
-		SET title = $1, description = $2, content = $3, lang = $4, cover = $5, occured_on = $6, updated_at = now(), version = version + 1
-		WHERE id = $7 AND version = $8
+		SET title = $1, description = $2, content = $3, documents = $4, lang = $5, cover = $6, occured_on = $7, updated_at = now(), version = version + 1
+		WHERE id = $8 AND version = $9
 		RETURNING version`
 
 	args := []interface{}{
 		event.Title,
 		event.Description,
 		event.Content,
+		event.Documents,
 		event.Lang,
 		event.Cover,
 		event.OccuredOn,

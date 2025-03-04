@@ -17,6 +17,7 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 		Content     string    `json:"content"`
 		Lang        string    `json:"lang"`
 		Cover       string    `json:"cover"`
+		Documents   []string  `json:"documents"`
 		OccuredOn   time.Time `json:"occuredOn"`
 		Translation *int64    `json:"translationId"`
 	}
@@ -35,6 +36,7 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 		Content:     input.Content,
 		Lang:        input.Lang,
 		Cover:       input.Cover,
+		Documents:   input.Documents,
 		OccuredOn:   input.OccuredOn,
 		UserID:      user.ID,
 	}
@@ -52,18 +54,20 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	translation := data.Translation{
-		EnglishID:   event.ID,
-		UkrainianID: *input.Translation,
-	}
+	if input.Translation != nil {
+		translation := data.Translation{
+			EnglishID:   event.ID,
+			UkrainianID: *input.Translation,
+		}
 
-	if event.Lang == "ua" {
-		translation.UkrainianID = event.ID
-		translation.EnglishID = *input.Translation
-	}
+		if event.Lang == "ua" {
+			translation.UkrainianID = event.ID
+			translation.EnglishID = *input.Translation
+		}
 
-	if err := app.models.Events.CreateTranslation(&translation); err != nil {
-		app.logger.PrintInfo("failed to create translation", map[string]string{"error": err.Error()})
+		if err := app.models.Events.CreateTranslation(&translation); err != nil {
+			app.logger.PrintInfo("failed to create translation", map[string]string{"error": err.Error()})
+		}
 	}
 
 	headers := make(http.Header)
@@ -195,6 +199,7 @@ func (app *application) updateEventHandler(w http.ResponseWriter, r *http.Reques
 		Content       *string    `json:"content"`
 		Lang          *string    `json:"lang"`
 		Cover         *string    `json:"cover"`
+		Documents     []string   `json:"documents"`
 		OccuredOn     *time.Time `json:"occuredOn"`
 		TranslationID *int64     `json:"translationId"`
 	}
@@ -223,6 +228,10 @@ func (app *application) updateEventHandler(w http.ResponseWriter, r *http.Reques
 
 	if input.Cover != nil {
 		event.Cover = *input.Cover
+	}
+
+	if input.Documents != nil {
+		event.Documents = input.Documents
 	}
 
 	if input.OccuredOn != nil {

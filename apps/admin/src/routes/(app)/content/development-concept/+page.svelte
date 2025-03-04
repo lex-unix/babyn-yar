@@ -69,7 +69,7 @@
   {metadata}
   {data}
   {isLoading}
-  title="Партнери"
+  title="Концепція розвитку"
   entryHref="/content/development-concept"
   on:filter={filter}
   on:delete={_delete}

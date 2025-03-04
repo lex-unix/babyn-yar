@@ -8,7 +8,8 @@
     Container,
     Button,
     DatePicker,
-    TranslationSelect
+    TranslationSelect,
+    DocumentsSelect
   } from '$components'
   import type { ResponseError } from '$lib/response-error'
   import type { JSONContent } from '@tiptap/core'
@@ -26,6 +27,7 @@
   let lang = ''
   let cover = ''
   let date = ''
+  let documents: string[] = []
   let translations: Translation[] = []
   let selectedTranslation: Translation | undefined
   let error: ResponseError | undefined
@@ -44,6 +46,7 @@
       description,
       lang,
       cover,
+      documents,
       content: JSON.stringify(content),
       occuredOn: new Date(date).toISOString(),
       translationId: selectedTranslation ? selectedTranslation.id : null
@@ -117,6 +120,7 @@
       bind:value={description}
       required
     />
+    <DocumentsSelect bind:documents />
     <div>
       <p class="mb-1.5 text-gray-500">Контент</p>
       {#if error?.isFormError() && error?.error.content}
