@@ -54,18 +54,20 @@ func (app *application) createEventHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	translation := data.Translation{
-		EnglishID:   event.ID,
-		UkrainianID: *input.Translation,
-	}
+	if input.Translation != nil {
+		translation := data.Translation{
+			EnglishID:   event.ID,
+			UkrainianID: *input.Translation,
+		}
 
-	if event.Lang == "ua" {
-		translation.UkrainianID = event.ID
-		translation.EnglishID = *input.Translation
-	}
+		if event.Lang == "ua" {
+			translation.UkrainianID = event.ID
+			translation.EnglishID = *input.Translation
+		}
 
-	if err := app.models.Events.CreateTranslation(&translation); err != nil {
-		app.logger.PrintInfo("failed to create translation", map[string]string{"error": err.Error()})
+		if err := app.models.Events.CreateTranslation(&translation); err != nil {
+			app.logger.PrintInfo("failed to create translation", map[string]string{"error": err.Error()})
+		}
 	}
 
 	headers := make(http.Header)
