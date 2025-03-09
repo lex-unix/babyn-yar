@@ -1,29 +1,36 @@
 <script lang="ts">
-  import { login } from '$lib/api-utils'
   import { user } from '$lib/stores'
   import { goto } from '$app/navigation'
   import { Button, Input } from '$components'
   import { addToast } from '$components/Toaster.svelte'
-  import { invalidCredentialsMsg, serverErrorMsg } from '$lib/toast-messages'
+  import { TOAST } from '$lib/toast-messages'
+  import { craeteLoginMutation, createMeQuery } from '$lib/query'
 
   let email: string
   let password: string
-  let isSubmitting = false
 
-  $: $user && goto('/content')
+  const query = createMeQuery()
+  const mutation = craeteLoginMutation()
+
+  $: ($user || $query.isSuccess) && goto('/content')
 
   async function submit() {
-    isSubmitting = true
-    const res = await login(JSON.stringify({ email, password }))
-    if (res.ok) {
-      $user = res.data.user
-      goto('/')
-    } else if (res.error.isUnauthorized()) {
-      addToast(invalidCredentialsMsg)
-    } else if (res.error.isServerError()) {
-      addToast(serverErrorMsg)
-    }
-    isSubmitting = false
+    $mutation.mutate(
+      { email, password },
+      {
+        onSuccess: data => {
+          $user = data.user
+          goto('/content')
+        },
+        onError: error => {
+          if (error.isUnauthorized()) {
+            addToast(TOAST.CREDENTIALS_ERROR)
+          } else if (error.isServerError()) {
+            addToast(TOAST.SERVER_ERROR)
+          }
+        }
+      }
+    )
   }
 </script>
 
@@ -54,7 +61,7 @@
             bind:value={password}
             required
           />
-          <Button isLoading={isSubmitting} class="w-full justify-center">
+          <Button isLoading={$mutation.isPending} class="w-full justify-center">
             Продовжити
           </Button>
         </form>

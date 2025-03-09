@@ -208,6 +208,51 @@ export function createRegisterMutation() {
   })
 }
 
+export function createUserSettingsMutation() {
+  return createMutation<
+    Record<string, string>,
+    ResponseError,
+    { fullName: string; email: string; password: string }
+  >({
+    mutationFn: data => {
+      const body: Record<string, unknown> = {}
+      for (const [key, value] of Object.entries(data)) {
+        if (value) body[key] = value
+      }
+      return fetcher(PUBLIC_API_URL + '/users', {
+        method: 'PATCH',
+        body: JSON.stringify(body)
+      })
+    }
+  })
+}
+
+export function craeteLoginMutation() {
+  return createMutation<
+    { user: User },
+    ResponseError,
+    { email: string; password: string }
+  >({
+    mutationFn: data => {
+      return fetcher(PUBLIC_API_URL + '/users/login', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+    }
+  })
+}
+
+export function createMeQuery() {
+  return createQuery<{ user: User }, ResponseError>({
+    queryKey: ['me'],
+    queryFn: () => fetcher(PUBLIC_API_URL + '/users/me'),
+    retry: (failureCount, error) => {
+      if (error.isUnauthorized()) return false
+      return failureCount < 3
+    }
+  })
+}
+
 export function createContentQuery(
   filters: Readable<Record<string, string | number>>
 ) {
@@ -246,25 +291,6 @@ export function createContentQuery(
       } as CreateQueryOptions<ContentResponse, ResponseError>
     })
   )
-}
-
-export function createUserSettingsMutation() {
-  return createMutation<
-    Record<string, string>,
-    ResponseError,
-    { fullName: string; email: string; password: string }
-  >({
-    mutationFn: data => {
-      const body: Record<string, unknown> = {}
-      for (const [key, value] of Object.entries(data)) {
-        if (value) body[key] = value
-      }
-      return fetcher(PUBLIC_API_URL + '/users', {
-        method: 'PATCH',
-        body: JSON.stringify(body)
-      })
-    }
-  })
 }
 
 export function createContentdDeleteMutation() {

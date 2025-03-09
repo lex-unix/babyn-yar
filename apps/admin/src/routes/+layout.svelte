@@ -1,23 +1,8 @@
 <script>
-  import { onMount } from 'svelte'
   import '../app.css'
-  import { PUBLIC_API_URL } from '$env/static/public'
-  import { user } from '$lib/stores'
   import { Toaster } from '$components'
   import { QueryClientProvider } from '@tanstack/svelte-query'
   import { queryClient } from '$lib/query'
-
-  let blocked = true
-
-  onMount(async () => {
-    const url = PUBLIC_API_URL + '/users/me'
-    const response = await fetch(url, { credentials: 'include' })
-    if (response.ok) {
-      const json = await response.json()
-      $user = json.user
-    }
-    blocked = false
-  })
 </script>
 
 <svelte:head>
@@ -25,8 +10,6 @@
 </svelte:head>
 
 <QueryClientProvider client={queryClient}>
-  {#if !blocked}
-    <slot />
-  {/if}
+  <slot />
   <Toaster />
 </QueryClientProvider>
