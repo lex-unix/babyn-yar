@@ -15,7 +15,10 @@
     $mutation.mutate(
       { fullName, email, password },
       {
-        onSuccess: () => addToast(TOAST.UPDATE_SETTINGS_SUCCESS),
+        onSuccess: data => {
+          $user = data.user
+          addToast(TOAST.UPDATE_SETTINGS_SUCCESS)
+        },
         onError: () => addToast(TOAST.UPDATE_SETTINGS_ERROR)
       }
     )

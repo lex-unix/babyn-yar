@@ -36,6 +36,7 @@ export async function fetcher(url: URL | string, opts: RequestInit = {}) {
       responseError = error
     } catch (error) {
       responseError = response.statusText
+      console.log(error)
     }
     throw new ResponseError(response.status, responseError)
   }
@@ -210,7 +211,7 @@ export function createRegisterMutation() {
 
 export function createUserSettingsMutation() {
   return createMutation<
-    Record<string, string>,
+    { user: User },
     ResponseError,
     { fullName: string; email: string; password: string }
   >({
