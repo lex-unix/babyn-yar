@@ -75,7 +75,7 @@
 </PageHeader>
 
 <Container title="Медіа файли">
-  <SearchBar on:search={search} wait={200}>
+  <SearchBar on:search={search} debounceWait={200}>
     <AssetSortMenu slot="filters" on:select={sort} />
   </SearchBar>
 
