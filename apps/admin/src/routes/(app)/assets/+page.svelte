@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Asset, Metadata } from '$lib/types'
+  import type { Asset } from '$lib/types'
   import {
     AssetGridItemSkeleton,
     UploadAssetsDialog,
@@ -14,51 +14,29 @@
     EmptySearchMessage
   } from '$components'
   import { RefreshCcw, Trash } from 'lucide-svelte'
-  import { fetchAssetsWrapper, type Filters } from '$lib/assets'
-  import { deleteAssets } from '$lib/api-utils'
-  import { onMount } from 'svelte'
   import { addToast } from '$components/Toaster.svelte'
-  import {
-    deleteErrorMsg,
-    deleteSuccessMsg,
-    fetchErrorMsg
-  } from '$lib/toast-messages'
+  import { deleteErrorMsg, deleteSuccessMsg } from '$lib/toast-messages'
+  import { writable } from 'svelte/store'
+  import { createAssetsQuery, createDeleteAssetsMutation } from '$lib/query'
 
-  let loading = false
   let assets: Asset[] = []
-  let metadata: Metadata
   let selectedAssets: number[] = []
   let alertDialog: DeleteAlertDialog
-  let isLoadingMore = false
 
-  const fetchAssets = fetchAssetsWrapper()
-
-  onMount(async () => {
-    loading = true
-    const res = await fetchAssets()
-    if (res.ok) {
-      assets = res.data.assets
-      metadata = res.data.metadata
-    }
-    loading = false
+  const filters = writable({
+    search: '',
+    sort: ''
   })
 
-  async function load(pageNum = 1, filters: Filters | undefined = undefined) {
-    const res = await fetchAssets(pageNum, filters)
-    if (!res.ok) {
-      addToast(fetchErrorMsg)
-      return
-    }
-    assets = res.data.assets
-    metadata = res.data.metadata
+  const query = createAssetsQuery(filters)
+  const mutation = createDeleteAssetsMutation()
+
+  function sort(e: CustomEvent<string>) {
+    $filters.sort = e.detail
   }
 
-  async function sort(e: CustomEvent<string>) {
-    await load(1, { sort: e.detail })
-  }
-
-  async function search(e: CustomEvent<{ search: string }>) {
-    await load(1, { filename: e.detail.search })
+  function search(e: CustomEvent<{ search: string }>) {
+    $filters.search = e.detail.search
   }
 
   function clear() {
@@ -77,46 +55,27 @@
     }
   }
 
-  async function loadMore() {
-    isLoadingMore = true
-    const response = await fetchAssets(metadata.currentPage + 1)
-    isLoadingMore = false
-    if (!response.ok) {
-      addToast(fetchErrorMsg)
-      return
-    }
-    assets = [...assets, ...response.data.assets]
-    metadata = response.data.metadata
-  }
-
-  async function deleteSelected() {
-    const { ok } = await deleteAssets(selectedAssets)
-    if (!ok) {
-      addToast(deleteErrorMsg)
-      return
-    }
-
-    addToast(deleteSuccessMsg)
-    selectedAssets = []
+  function deleteSelected() {
+    $mutation.mutate(selectedAssets, {
+      onSuccess: () => {
+        selectedAssets = []
+        addToast(deleteSuccessMsg)
+      },
+      onError: () => {
+        addToast(deleteErrorMsg)
+      }
+    })
     alertDialog.dismiss()
-
-    await load()
-  }
-
-  async function onUpload() {
-    loading = true
-    await load()
-    loading = false
   }
 </script>
 
 <PageHeader>
   <svelte:fragment slot="heading">Медіа файли</svelte:fragment>
-  <UploadAssetsDialog slot="right-items" on:submit={onUpload} />
+  <UploadAssetsDialog slot="right-items" />
 </PageHeader>
 
 <Container title="Медіа файли">
-  <SearchBar on:search={search}>
+  <SearchBar on:search={search} wait={200}>
     <AssetSortMenu slot="filters" on:select={sort} />
   </SearchBar>
 
@@ -156,7 +115,7 @@
     </div>
   {/if}
 
-  {#if loading && assets.length === 0}
+  {#if $query.isLoading}
     <AssetGrid>
       <AssetGridItemSkeleton />
       <AssetGridItemSkeleton />
@@ -165,50 +124,61 @@
       <AssetGridItemSkeleton />
       <AssetGridItemSkeleton />
     </AssetGrid>
-  {:else if !loading && assets.length === 0}
+  {:else if $query.isSuccess && $query.data.pages[0].assets.length === 0}
     <div class="mt-10">
       <EmptySearchMessage />
     </div>
-  {:else}
+  {:else if $query.isError}
+    <div class="mt-6 text-center text-red-700">
+      <p>Сталася помилка при завантажені</p>
+      <p class="font-mono text-sm">{$query.error.message}</p>
+    </div>
+  {:else if $query.isSuccess}
     <AssetGrid>
-      {#each assets as asset}
-        {@const selected = selectedAssets.includes(asset.id)}
-        <li class="p-2.5">
-          <div class="group relative">
-            <AssetItem
-              src={asset.url}
-              fileName={asset.fileName}
-              contentType={asset.contentType}
-            />
-            <div
-              class="absolute left-2 top-2 z-[2] hidden overflow-hidden group-hover:block"
-              class:selected
-            >
+      {#each $query.data.pages as { assets }}
+        {#each assets as asset}
+          {@const selected = selectedAssets.includes(asset.id)}
+          <li class="p-2.5">
+            <div class="group relative">
+              <AssetItem
+                src={asset.url}
+                fileName={asset.fileName}
+                contentType={asset.contentType}
+              />
               <div
-                class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-200 p-3"
+                class="absolute left-2 top-2 z-[2] hidden overflow-hidden group-hover:block"
+                class:selected
               >
-                <input
-                  id="id-{asset.id}"
-                  type="checkbox"
-                  checked={selected}
-                  on:change={() => toggleSelect(asset.id)}
-                />
+                <div
+                  class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-200 p-3"
+                >
+                  <input
+                    id="id-{asset.id}"
+                    type="checkbox"
+                    checked={selected}
+                    on:change={() => toggleSelect(asset.id)}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        </li>
+          </li>
+        {/each}
       {/each}
     </AssetGrid>
-  {/if}
-  {#if metadata && metadata.currentPage !== metadata.lastPage}
-    <div class="mt-8">
-      <div class="flex min-w-full items-center justify-center">
-        <Button on:click={loadMore} isLoading={isLoadingMore} variant="soft">
-          <RefreshCcw slot="icon" class="h-4 w-4" />
-          Показати ще
-        </Button>
+    {#if $query.hasNextPage}
+      <div class="mt-8">
+        <div class="flex min-w-full items-center justify-center">
+          <Button
+            on:click={() => $query.fetchNextPage()}
+            isLoading={$query.isFetchingNextPage}
+            variant="soft"
+          >
+            <RefreshCcw slot="icon" class="h-4 w-4" />
+            Показати ще
+          </Button>
+        </div>
       </div>
-    </div>
+    {/if}
   {/if}
 </Container>
 

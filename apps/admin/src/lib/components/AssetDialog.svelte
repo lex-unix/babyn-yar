@@ -9,57 +9,41 @@
     AssetGrid,
     AssetSortMenu,
     AssetItem,
-    Button
+    Button,
+    AssetGridItemSkeleton
   } from '$components'
-  import { fetchAssetsWrapper, type Filters } from '$lib/assets'
-  import type { Asset, Metadata } from '$lib/types'
+  import { createAssetsQuery } from '$lib/query'
+  import type { Asset } from '$lib/types'
   import { createEventDispatcher } from 'svelte'
   import { RefreshCcw } from 'lucide-svelte'
-  import { addToast } from './Toaster.svelte'
-  import { fetchErrorMsg } from '$lib/toast-messages'
+  import { writable } from 'svelte/store'
 
-  export async function open(type: string) {
-    isLoading = true
-    assets = []
+  export function open(type: string) {
     dialog.show()
-    await load(1, { contentType: type })
-    contentType = type
-    isLoading = false
+    $filters.contentType = type
   }
 
   export function close() {
     dialog.dissmis()
   }
 
-  let assets: Asset[] = []
-  let metadata: Metadata
-  let contentType: string
   let dialog: Dialog
-  let isLoading = false
-  let isLoadingMore = false
 
-  const fetchAssets = fetchAssetsWrapper()
+  let filters = writable({
+    sort: '',
+    search: '',
+    contentType: ''
+  })
 
-  const dispatch = createEventDispatcher<{
-    select: { id: number; url: string; type: string; fileName: string }
-  }>()
-
-  async function load(pageNum = 1, filters: Filters | undefined = undefined) {
-    const response = await fetchAssets(pageNum, filters)
-    if (!response.ok) {
-      addToast(fetchErrorMsg)
-      return
-    }
-    assets = response.data.assets
-    metadata = response.data?.metadata
-  }
+  const query = createAssetsQuery(filters)
+  const dispatch = createEventDispatcher()
 
   async function sort(e: CustomEvent<string>) {
-    await load(1, { sort: e.detail })
+    $filters.sort = e.detail
   }
 
   async function search(e: CustomEvent<{ search: string }>) {
-    await load(1, { contentType, filename: e.detail.search })
+    $filters.search = e.detail.search
   }
 
   function selectAsset(asset: Asset) {
@@ -76,18 +60,6 @@
       fileName: asset.fileName
     })
   }
-
-  async function loadMore() {
-    isLoadingMore = true
-    const res = await fetchAssets(metadata.currentPage + 1)
-    isLoadingMore = false
-    if (!res.ok) {
-      addToast(fetchErrorMsg)
-      return
-    }
-    assets = [...assets, ...res.data.assets]
-    metadata = res.data.metadata
-  }
 </script>
 
 <Dialog bind:this={dialog} size="lg">
@@ -102,45 +74,61 @@
       </SearchBar>
     </div>
     <div class="h-[85%] overflow-y-auto pb-20 pr-3">
-      <AssetGrid>
-        {#each assets as asset}
-          <li class="p-2.5">
-            <button
-              class="group relative w-full"
-              on:click={() => selectAsset(asset)}
-            >
-              <AssetItem
-                src={asset.url}
-                fileName={asset.fileName}
-                contentType={asset.contentType}
-              />
-            </button>
-          </li>
-        {:else}
-          {#if !isLoading}
-            <div
-              class="flex flex-col justify-center items-center h-full col-span-full w-full"
-            >
-              <p class="text-gray-500 font-medium text-center text-lg">
-                Вибачте, ми не змогли знайти жодного файлу за вашими критеріями
-              </p>
-            </div>
-          {/if}
-        {/each}
-      </AssetGrid>
-      {#if metadata && metadata.currentPage !== metadata.lastPage}
-        <div class="pt-8">
-          <div class="flex min-w-full items-center justify-center">
-            <Button
-              on:click={loadMore}
-              isLoading={isLoadingMore}
-              variant="soft"
-            >
-              <RefreshCcw slot="icon" class="h-4 w-4" />
-              Показати ще
-            </Button>
-          </div>
+      {#if $query.isLoading}
+        <AssetGrid>
+          <AssetGridItemSkeleton />
+          <AssetGridItemSkeleton />
+          <AssetGridItemSkeleton />
+          <AssetGridItemSkeleton />
+          <AssetGridItemSkeleton />
+          <AssetGridItemSkeleton />
+        </AssetGrid>
+      {:else if $query.isError}
+        <div class="mt-6 text-center font-medium text-red-700">
+          <p class="pb-4">Сталася помилка при завантажені</p>
+          <p class="font-mono text-sm">{$query.error.message}</p>
         </div>
+      {:else if $query.isSuccess && $query.data.pages[0].assets.length === 0}
+        <div
+          class="col-span-full flex h-full w-full flex-col items-center justify-center"
+        >
+          <p class="text-center text-lg font-medium text-gray-500">
+            Вибачте, ми не змогли знайти жодного файлу за вашими критеріями
+          </p>
+        </div>
+      {:else if $query.isSuccess}
+        <AssetGrid>
+          {#each $query.data.pages as { assets }}
+            {#each assets as asset}
+              <li class="p-2.5">
+                <button
+                  class="group relative w-full"
+                  on:click={() => selectAsset(asset)}
+                >
+                  <AssetItem
+                    src={asset.url}
+                    fileName={asset.fileName}
+                    contentType={asset.contentType}
+                  />
+                </button>
+              </li>
+            {/each}
+          {/each}
+        </AssetGrid>
+        {#if $query.hasNextPage}
+          <div class="pt-8">
+            <div class="flex min-w-full items-center justify-center">
+              <Button
+                on:click={() => $query.fetchNextPage()}
+                isLoading={$query.isFetchingNextPage}
+                variant="soft"
+              >
+                <RefreshCcw slot="icon" class="h-4 w-4" />
+                Показати ще
+              </Button>
+            </div>
+          </div>
+        {/if}
       {/if}
     </div>
     <DialogClose />

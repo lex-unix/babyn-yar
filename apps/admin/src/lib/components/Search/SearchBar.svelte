@@ -4,6 +4,8 @@
   import { debounce } from '$lib/debounce'
   import { page } from '$app/stores'
 
+  export let wait = 300
+
   let searchParam = $page.url.searchParams.get('search') || ''
 
   const dispatch = createEventDispatcher()
@@ -27,7 +29,7 @@
         type="search"
         placeholder="Пошук..."
         value={searchParam}
-        on:input={debounce(search)}
+        on:input={debounce(search, wait)}
         class="w-full border-none bg-transparent py-3.5 pl-10 outline-none placeholder:text-gray-400"
       />
       <SearchIcon

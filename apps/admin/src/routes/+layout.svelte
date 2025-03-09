@@ -4,6 +4,8 @@
   import { PUBLIC_API_URL } from '$env/static/public'
   import { user } from '$lib/stores'
   import { Toaster } from '$components'
+  import { QueryClientProvider } from '@tanstack/svelte-query'
+  import { queryClient } from '$lib/query'
 
   let blocked = true
 
@@ -22,8 +24,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 </svelte:head>
 
-{#if !blocked}
-  <slot />
-{/if}
-
-<Toaster />
+<QueryClientProvider client={queryClient}>
+  {#if !blocked}
+    <slot />
+  {/if}
+  <Toaster />
+</QueryClientProvider>
