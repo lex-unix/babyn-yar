@@ -8,7 +8,10 @@
   export let currentPage: number
   export let lastPage: number
 
-  let pageSize = $page.url.searchParams.get('page_size') || ''
+  let pageSize =
+    $page.url.searchParams.get('page_size') ||
+    $page.url.searchParams.get('pageSize') ||
+    ''
 
   let pageOption =
     pageSizeOptions.find(o => o.value === pageSize) || pageSizeOptions[0]

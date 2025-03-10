@@ -8,12 +8,15 @@
   } from '$components'
   import { user } from '$lib/stores'
   import { Layers, Image, Cog, Users2 } from 'lucide-svelte'
-  import { onMount } from 'svelte'
   import { admin } from '$lib/stores'
+  import { createMeQuery } from '$lib/query'
 
-  onMount(() => {
-    !$user && goto('/login')
-  })
+  const query = createMeQuery()
+
+  $: $query.isError && $query.error.isUnauthorized() && goto('/login')
+  $: if ($query.isSuccess) {
+    $user = $query.data.user
+  }
 
   const links = [
     {
@@ -34,32 +37,34 @@
   ]
 </script>
 
-<div class="h-screen bg-gray-50 text-gray-900">
-  <MobileHeader />
-  <div class="flex h-full">
-    <Sidebar>
-      {#each links as { text, href, icon }}
-        <SidebarLink {href}>
-          <svelte:component
-            this={icon}
-            class="min-w-[20px] group-data-[active=true]:text-indigo-700"
-            size={20}
-          />
-          <SidebarLinkLabel>{text}</SidebarLinkLabel>
-        </SidebarLink>
-      {/each}
-      {#if $admin}
-        <SidebarLink href="/users">
-          <Users2
-            size={20}
-            class="min-w-[20px] group-data-[active=true]:text-indigo-700"
-          />
-          <SidebarLinkLabel>Користувачі</SidebarLinkLabel>
-        </SidebarLink>
-      {/if}
-    </Sidebar>
-    <div class="flex-1 overflow-y-auto overflow-x-hidden">
-      <slot />
+{#if $query.isSuccess}
+  <div class="h-screen bg-gray-50 text-gray-900">
+    <MobileHeader />
+    <div class="flex h-full">
+      <Sidebar>
+        {#each links as { text, href, icon }}
+          <SidebarLink {href}>
+            <svelte:component
+              this={icon}
+              class="min-w-[20px] group-data-[active=true]:text-indigo-700"
+              size={20}
+            />
+            <SidebarLinkLabel>{text}</SidebarLinkLabel>
+          </SidebarLink>
+        {/each}
+        {#if $admin}
+          <SidebarLink href="/users">
+            <Users2
+              size={20}
+              class="min-w-[20px] group-data-[active=true]:text-indigo-700"
+            />
+            <SidebarLinkLabel>Користувачі</SidebarLinkLabel>
+          </SidebarLink>
+        {/if}
+      </Sidebar>
+      <div class="flex-1 overflow-y-auto overflow-x-hidden">
+        <slot />
+      </div>
     </div>
   </div>
-</div>
+{/if}

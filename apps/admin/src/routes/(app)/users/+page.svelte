@@ -13,39 +13,29 @@
     Pagination
   } from '$components'
   import { UserIcon, AtSignIcon, CalendarIcon, KeyIcon } from 'lucide-svelte'
-  import type { Metadata, User } from '$lib/types'
   import { admin } from '$lib/stores'
-  import { onMount } from 'svelte'
-  import { fetchUsersWrapper } from '$lib/user'
-  import { deleteUsers } from '$lib/api-utils'
   import { formatDate } from '$lib/format-date'
   import { addToast } from '$components/Toaster.svelte'
   import { deleteErrorMsg, deleteSuccessMsg } from '$lib/toast-messages'
+  import { createUsersDeleteMutation, createUsersQuery } from '$lib/query'
+  import { derived } from 'svelte/store'
+  import { page } from '$app/stores'
+  import { updateFilter, updateFilters } from '$lib/url-params'
 
-  let users: User[] = []
-  let metadata: Metadata
   let selectedUsers: number[] = []
   let alertDialog: DeleteAlertDialog
-  let isLoading = false
 
-  const fetchUsers = fetchUsersWrapper()
+  let filters = derived(page, $page => ({
+    page: $page.url.searchParams.has('page')
+      ? parseInt($page.url.searchParams.get('page') as string)
+      : 1,
+    pageSize: $page.url.searchParams.has('pageSize')
+      ? parseInt($page.url.searchParams.get('pageSize') as string)
+      : 10
+  }))
 
-  onMount(async () => {
-    if ($admin) {
-      isLoading = true
-      const res = await fetchUsers()
-      if (res.ok) {
-        users = res.data.users
-        metadata = res.data.metadata
-      }
-      isLoading = false
-    }
-  })
-
-  function addUser(e: CustomEvent<{ user: User }>) {
-    const { user } = e.detail
-    users = [user, ...users]
-  }
+  const query = createUsersQuery(filters)
+  const deleteMutation = createUsersDeleteMutation()
 
   function toggleSelect(id: number) {
     if (selectedUsers.includes(id)) {
@@ -56,43 +46,37 @@
   }
 
   function toggleSelectAll() {
-    if (selectedUsers.length === users.length) {
-      selectedUsers = []
-    } else {
-      selectedUsers = users.map(e => e.id)
+    if ($query.isSuccess) {
+      if (selectedUsers.length === $query.data.users.length) {
+        selectedUsers = []
+      } else {
+        selectedUsers = $query.data.users.map(e => e.id)
+      }
     }
   }
 
   async function deleteSelected() {
-    const { ok } = await deleteUsers(selectedUsers)
-    if (!ok) {
-      addToast(deleteErrorMsg)
-      return
-    }
+    $deleteMutation.mutate(selectedUsers, {
+      onSuccess: () => addToast(deleteSuccessMsg),
+      onError: () => addToast(deleteErrorMsg)
+    })
     selectedUsers = []
     alertDialog.dismiss()
-    addToast(deleteSuccessMsg)
-    const res = await fetchUsers()
-    if (res.ok) {
-      users = res.data.users
-      metadata = res.data.metadata
-    }
   }
 
-  async function selectPage(e: CustomEvent<{ page: number }>) {
-    const { page } = e.detail
-    const response = await fetchUsers(page)
-    if (response.ok) {
-      users = response.data.users
-      metadata = response.data.metadata
-    }
+  function selectPage(e: CustomEvent<{ page: number }>) {
+    updateFilter('page', e.detail.page)
+  }
+
+  function selectPageSize(e: CustomEvent<{ size: number }>) {
+    updateFilters({ page: 1, pageSize: e.detail.size })
   }
 </script>
 
 {#if $admin}
   <PageHeader>
     <svelte:fragment slot="heading">Користувачі</svelte:fragment>
-    <RegisterUserDialog slot="right-items" on:register={addUser} />
+    <RegisterUserDialog slot="right-items" />
   </PageHeader>
 
   <Container title="Управління користувачами">
@@ -101,9 +85,9 @@
       on:delete={() => alertDialog.show()}
     />
 
-    {#if isLoading}
+    {#if $query.isLoading}
       <TableSkeleton />
-    {:else}
+    {:else if $query.isSuccess}
       <Table>
         <thead>
           <tr>
@@ -111,7 +95,7 @@
               <input
                 type="checkbox"
                 checked={selectedUsers.length > 0 &&
-                  selectedUsers.length === users.length}
+                  selectedUsers.length === $query.data.users.length}
                 on:input={toggleSelectAll}
               />
             </TableHeader>
@@ -142,7 +126,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each users as user}
+          {#each $query.data.users as user}
             <TableRow>
               <TableData>
                 <input
@@ -159,13 +143,12 @@
           {/each}
         </tbody>
         <svelte:fragment slot="pagination">
-          {#if metadata}
-            <Pagination
-              currentPage={metadata.currentPage}
-              lastPage={metadata.lastPage}
-              on:select={selectPage}
-            />
-          {/if}
+          <Pagination
+            currentPage={$query.data.metadata.currentPage}
+            lastPage={$query.data.metadata.lastPage}
+            on:select={selectPage}
+            on:selectSize={selectPageSize}
+          />
         </svelte:fragment>
       </Table>
     {/if}

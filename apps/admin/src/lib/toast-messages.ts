@@ -6,6 +6,58 @@ export type ToastMessage = {
   }
 }
 
+export const TOAST: Record<string, ToastMessage> = {
+  DELETE_RECORDS_SUCCESS: {
+    data: {
+      title: 'Операція успішна',
+      description: 'Елементи було видалено.',
+      variant: 'success'
+    }
+  },
+  DELETE_RECORDS_ERROR: {
+    data: {
+      title: 'Виникла помилка',
+      description: 'Не вдалось видалити елементи. Спробуйте ще раз.',
+      variant: 'error'
+    }
+  },
+  REGISTER_SUCCESS: {
+    data: {
+      title: 'Операція успішна',
+      description: 'Нового користувача додано',
+      variant: 'success'
+    }
+  },
+  UPDATE_SETTINGS_SUCCESS: {
+    data: {
+      title: 'Зміни збережено',
+      description: 'Ваші зміни було збережено',
+      variant: 'success'
+    }
+  },
+  UPDATE_SETTINGS_ERROR: {
+    data: {
+      title: 'Зміни не збережено',
+      description: 'Не вдалося зберегти ваші зміни',
+      variant: 'error'
+    }
+  },
+  CREDENTIALS_ERROR: {
+    data: {
+      title: 'Неправильно ввдені дані',
+      description: 'Email або пароль введено неправильно',
+      variant: 'error'
+    }
+  },
+  SERVER_ERROR: {
+    data: {
+      title: 'Помилка',
+      description: 'Сталася помикла. Cпробуйте, будь-ласка, ще раз',
+      variant: 'error'
+    }
+  }
+}
+
 export const deleteSuccessMsg: ToastMessage = {
   data: {
     title: 'Операція успішна',

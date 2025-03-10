@@ -9,8 +9,7 @@ import type {
   VictimTestimony,
   Partner,
   LegalDocument,
-  DevConcept,
-  User
+  DevConcept
 } from './types'
 import type { PaginatedResponse, DynamicTypedKey } from 'shared-types'
 
@@ -28,8 +27,6 @@ const GALLERY_IMGS_ENDPOINT = `${PUBLIC_API_URL}/gallery`
 const EVENTS_ENDPOINT = `${PUBLIC_API_URL}/events`
 const HOLOCAUST_DOCS_ENDPOINT = `${PUBLIC_API_URL}/holocaust-documents`
 const TESTIMONIES_ENDPOINT = `${PUBLIC_API_URL}/victim-testimonies`
-const USERS_ENDPOINT = `${PUBLIC_API_URL}/users`
-const ASSETS_ENDPOINT = `${PUBLIC_API_URL}/assets`
 const PARTNERS_ENDPOINT = `${PUBLIC_API_URL}/partners`
 const LEGAL_DOCUMENTS_ENDPOINT = `${PUBLIC_API_URL}/legal-documents`
 const DEV_CONCEPT_ENDPOINT = `${PUBLIC_API_URL}/development-concepts`
@@ -204,38 +201,6 @@ export function updateTestimony(id: string, body: string) {
 export function deleteTestimonies(ids: number[]) {
   const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
   const url = new URL(TESTIMONIES_ENDPOINT)
-  url.searchParams.set('ids', ids.join(','))
-  return fetcher(url, opts)
-}
-
-export function login(body: string) {
-  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
-  return fetcher<DynamicTypedKey<User, 'user'>>(`${USERS_ENDPOINT}/login`, opts)
-}
-
-export function register(body: string) {
-  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
-  return fetcher<DynamicTypedKey<User, 'user'>>(
-    `${USERS_ENDPOINT}/register`,
-    opts
-  )
-}
-
-export function deleteUsers(ids: number[]) {
-  const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
-  const url = new URL(USERS_ENDPOINT)
-  url.searchParams.set('ids', ids.join(','))
-  return fetcher(url, opts)
-}
-
-export function createAssets(body: FormData) {
-  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
-  return fetcher(ASSETS_ENDPOINT, opts)
-}
-
-export function deleteAssets(ids: number[]) {
-  const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
-  const url = new URL(ASSETS_ENDPOINT)
   url.searchParams.set('ids', ids.join(','))
   return fetcher(url, opts)
 }

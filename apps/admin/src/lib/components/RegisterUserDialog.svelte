@@ -13,12 +13,11 @@
     DialogDescription,
     DialogContent
   } from '$components'
-  import type { ResponseError } from '$lib/response-error'
   import { PlusIcon } from 'lucide-svelte'
-  import { createEventDispatcher } from 'svelte'
-  import { register } from '$lib/api-utils'
   import { permissionOptions } from '$lib/select-options'
   import { addToast } from './Toaster.svelte'
+  import { createRegisterMutation } from '$lib/query'
+  import { TOAST } from '$lib/toast-messages'
 
   export function open() {
     dialog.show()
@@ -28,35 +27,26 @@
     dialog.dissmis()
   }
 
+  const mutation = createRegisterMutation()
+
   let fullName: string
   let email: string
   let password: string
   let permission: string
   let isSubmitting = false
   let dialog: Dialog
-  let error: ResponseError | undefined
-
-  const dispatch = createEventDispatcher()
 
   async function submit() {
-    isSubmitting = true
-    const body = JSON.stringify({ fullName, email, password, permission })
-    const response = await register(body)
-    isSubmitting = false
-    if (!response.ok) {
-      error = response.error
-      addToast({
-        data: {
-          title: 'Щось пішло не так',
-          description: 'Спробуйте ще раз',
-          variant: 'error'
-        }
-      })
-      return
+    $mutation.mutate(
+      { fullName, email, password },
+      {
+        onSuccess: () => addToast(TOAST.REGISTER_SUCCESS)
+      }
+    )
+    if ($mutation.isSuccess) {
+      reset()
+      dialog.dissmis()
     }
-    dispatch('register', { user: response.data.user })
-    reset()
-    dialog.dissmis()
   }
 
   function reset() {
@@ -89,7 +79,9 @@
         label="Email"
         name="email"
         bind:value={email}
-        error={error?.isFormError() ? error.error.email : undefined}
+        error={$mutation.isError && $mutation.error.isFormError()
+          ? $mutation.error.error.email
+          : undefined}
         required
       />
       <Input
@@ -97,6 +89,9 @@
         label="Пароль"
         name="password"
         bind:value={password}
+        error={$mutation.isError && $mutation.error.isFormError()
+          ? $mutation.error.error.password
+          : undefined}
         required
       />
       <div>
@@ -108,7 +103,7 @@
           defaultSelected={permissionOptions[0]}
         >
           <SelectTrigger>Обрати роль</SelectTrigger>
-          <SelectMenu>
+          <SelectMenu class="z-[100]">
             {#each permissionOptions as { value, label }}
               <SelectItem {value} {label} />
             {/each}

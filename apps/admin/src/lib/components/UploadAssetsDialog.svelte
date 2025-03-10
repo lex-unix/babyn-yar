@@ -11,9 +11,9 @@
     DialogClose,
     Input
   } from '$components'
-  import { createAssets } from '$lib/assets'
   import { addToast } from '$components/Toaster.svelte'
   import { createEventDispatcher } from 'svelte'
+  import { createUploadAssetMutation } from '$lib/query'
 
   export function open() {
     dialog.show()
@@ -26,10 +26,10 @@
   let fileInput: HTMLInputElement
   let files: { file: File; fileName: string; extension: string }[] = []
   let filePrefix: string = ''
-  let isSubmitting = false
   let dialog: Dialog
 
   const dispatch = createEventDispatcher()
+  const mutation = createUploadAssetMutation()
 
   function addFiles(
     e: Event & {
@@ -59,35 +59,28 @@
   async function submit() {
     if (files.length < 0) return
 
-    isSubmitting = true
-
     const formData = new FormData()
-
     files.forEach(({ file, fileName, extension }) => {
       const prefix = filePrefix ? filePrefix + '_' : ''
       formData.append('assets', file, prefix + fileName + '.' + extension)
     })
 
-    const response = await createAssets(formData)
-    if (response.ok) {
-      dispatch('submit')
-      isSubmitting = false
-      dialog.dissmis()
-      return
-    }
-    let errMsg = 'Спробуйте, будь ласка, ще раз'
-    if (response.error.isFormError()) {
-      const existingFiles = Object.keys(response.error.error).join(', ')
-      errMsg = 'Файли вже існують: ' + existingFiles
-    }
-    addToast({
-      data: {
-        title: 'Помилка',
-        description: errMsg,
-        variant: 'error'
+    $mutation.mutate(formData, {
+      onError: error => {
+        let errMsg = 'Спробуйте, будь ласка, ще раз'
+        if (error.isFormError()) {
+          const existingFiles = Object.keys(error.error).join(', ')
+          errMsg = 'Файли вже існують: ' + existingFiles
+        }
+        addToast({
+          data: {
+            title: 'Помилка',
+            description: errMsg,
+            variant: 'error'
+          }
+        })
       }
     })
-    isSubmitting = false
   }
 
   function changeFileName(e: CustomEvent<{ i: number; fileName: string }>) {
@@ -142,12 +135,14 @@
       />
       <button
         class="rounded-md border bg-white px-4 py-3 font-medium leading-none outline-none focus:ring focus:ring-gray-300 disabled:opacity-60"
-        disabled={isSubmitting}
+        disabled={$mutation.isPending}
         on:click={openFileBrowser}
       >
         Додати файл
       </button>
-      <Button isLoading={isSubmitting} on:click={submit}>Завантажити</Button>
+      <Button isLoading={$mutation.isPending} on:click={submit}
+        >Завантажити</Button
+      >
     </div>
   </DialogContent>
 </Dialog>
