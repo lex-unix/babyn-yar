@@ -76,12 +76,7 @@
     <div class="h-[85%] overflow-y-auto pb-20 pr-3">
       {#if $query.isLoading}
         <AssetGrid>
-          <AssetGridItemSkeleton />
-          <AssetGridItemSkeleton />
-          <AssetGridItemSkeleton />
-          <AssetGridItemSkeleton />
-          <AssetGridItemSkeleton />
-          <AssetGridItemSkeleton />
+          <AssetGridItemSkeleton count={50} />
         </AssetGrid>
       {:else if $query.isError}
         <div class="mt-6 text-center font-medium text-red-700">

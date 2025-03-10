@@ -117,12 +117,7 @@
 
   {#if $query.isLoading}
     <AssetGrid>
-      <AssetGridItemSkeleton />
-      <AssetGridItemSkeleton />
-      <AssetGridItemSkeleton />
-      <AssetGridItemSkeleton />
-      <AssetGridItemSkeleton />
-      <AssetGridItemSkeleton />
+      <AssetGridItemSkeleton count={50} />
     </AssetGrid>
   {:else if $query.isSuccess && $query.data.pages[0].assets.length === 0}
     <div class="mt-10">
