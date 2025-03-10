@@ -10,6 +10,8 @@
 </svelte:head>
 
 <QueryClientProvider client={queryClient}>
-  <slot />
+  <div class="isolate">
+    <slot />
+  </div>
   <Toaster />
 </QueryClientProvider>

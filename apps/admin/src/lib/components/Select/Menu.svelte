@@ -16,7 +16,7 @@
   <div
     use:melt={$menu}
     class={cn(
-      'z-10 flex max-h-[300px] flex-col overflow-y-auto rounded border bg-white p-1',
+      'flex max-h-[300px] flex-col overflow-y-auto rounded border bg-white p-1',
       className
     )}
   >

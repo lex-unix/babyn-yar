@@ -15,10 +15,10 @@
   {#if $open}
     <div
       use:melt={$overlay}
-      class="fixed inset-0 z-50 bg-black/10 backdrop-blur-sm"
+      class="fixed inset-0 bg-black/10 backdrop-blur-sm"
     />
     <div
-      class="fixed inset-0 z-50 flex w-full min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden p-2 md:p-6"
+      class="fixed inset-0 flex w-full min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden p-2 md:p-6"
     >
       <div
         use:melt={$content}
