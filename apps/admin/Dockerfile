@@ -28,7 +28,7 @@ COPY public ./apps/admin/public
 
 RUN npx turbo run build --filter=admin...
 
-FROM nginx:1.24-alpine as runtime
+FROM nginx:1.24-alpine AS runtime
 
 WORKDIR /usr/share/nginx/html
 
