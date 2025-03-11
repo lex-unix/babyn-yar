@@ -16,7 +16,7 @@
   import { PlusIcon } from 'lucide-svelte'
   import { permissionOptions } from '$lib/select-options'
   import { addToast } from './Toaster.svelte'
-  import { createRegisterMutation } from '$query/auth'
+  import { useRegister } from '$query/auth'
   import { TOAST } from '$lib/toast-messages'
 
   export function open() {
@@ -27,7 +27,7 @@
     dialog.dissmis()
   }
 
-  const mutation = createRegisterMutation()
+  const register = useRegister()
 
   let fullName: string
   let email: string
@@ -37,7 +37,7 @@
   let dialog: Dialog
 
   async function submit() {
-    $mutation.mutate(
+    $register.mutate(
       { fullName, email, password, permission },
       {
         onSuccess: () => {
@@ -79,8 +79,8 @@
         label="Email"
         name="email"
         bind:value={email}
-        error={$mutation.isError && $mutation.error.isFormError()
-          ? $mutation.error.error.email
+        error={$register.isError && $register.error.isFormError()
+          ? $register.error.error.email
           : undefined}
         required
       />
@@ -89,8 +89,8 @@
         label="Пароль"
         name="password"
         bind:value={password}
-        error={$mutation.isError && $mutation.error.isFormError()
-          ? $mutation.error.error.password
+        error={$register.isError && $register.error.isFormError()
+          ? $register.error.error.password
           : undefined}
         required
       />

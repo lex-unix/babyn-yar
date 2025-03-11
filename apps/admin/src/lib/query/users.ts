@@ -10,15 +10,15 @@ import {
   createQuery
 } from '@tanstack/svelte-query'
 import type { ResponseError } from 'shared'
-import { derived, type Readable } from 'svelte/store'
+import { derived } from 'svelte/store'
+import { filters } from '$lib/stores'
+
 type UsersResponse = {
   users: User[]
   metadata: Metadata
 }
 
-export function createUsersQuery(
-  filters: Readable<Record<string, string | number>>
-) {
+export function useUsers() {
   return createQuery(
     derived(filters, $filters => {
       return {
@@ -40,7 +40,7 @@ export function createUsersQuery(
   )
 }
 
-export function createUsersDeleteMutation() {
+export function useDeleteUsers() {
   return createMutation<Record<string, string>, ResponseError, number[]>({
     mutationFn: ids => {
       return fetcher(PUBLIC_API_URL + `/users?ids=${ids.join(',')}`, {
@@ -48,12 +48,22 @@ export function createUsersDeleteMutation() {
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] })
+      const unsubscribe = filters.subscribe(filters => {
+        queryClient.setQueryData(
+          ['users', { page: filters.page, page_size: filters.pageSize }],
+          (oldData: UsersResponse) => {
+            console.log(oldData, filters)
+            return oldData
+          }
+        )
+      })
+      // queryClient.invalidateQueries({ queryKey: ['users'] })
+      unsubscribe()
     }
   })
 }
 
-export function createUserSettingsMutation() {
+export function useUpdateSettings() {
   return createMutation<
     { user: User },
     ResponseError,
@@ -72,7 +82,7 @@ export function createUserSettingsMutation() {
   })
 }
 
-export function createMeQuery() {
+export function useMe() {
   return createQuery<{ user: User }, ResponseError>({
     queryKey: ['me'],
     queryFn: () => fetcher(PUBLIC_API_URL + '/users/me'),

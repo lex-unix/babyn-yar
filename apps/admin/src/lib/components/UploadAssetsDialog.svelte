@@ -12,7 +12,7 @@
     Input
   } from '$components'
   import { addToast } from '$components/Toaster.svelte'
-  import { createUploadAssetMutation } from '$query/assets'
+  import { useUploadAssets } from '$query/assets'
 
   export function open() {
     dialog.show()
@@ -27,7 +27,7 @@
   let filePrefix: string = ''
   let dialog: Dialog
 
-  const mutation = createUploadAssetMutation()
+  const mutation = useUploadAssets()
 
   function addFiles(
     e: Event & {

@@ -17,25 +17,14 @@
   import { formatDate } from '$lib/format-date'
   import { addToast } from '$components/Toaster.svelte'
   import { deleteErrorMsg, deleteSuccessMsg } from '$lib/toast-messages'
-  import { createUsersDeleteMutation, createUsersQuery } from '$query/users'
-  import { derived } from 'svelte/store'
-  import { page } from '$app/stores'
+  import { useDeleteUsers, useUsers } from '$query/users'
   import { updateFilter, updateFilters } from '$lib/url-params'
 
   let selectedUsers: number[] = []
   let alertDialog: DeleteAlertDialog
 
-  let filters = derived(page, $page => ({
-    page: $page.url.searchParams.has('page')
-      ? parseInt($page.url.searchParams.get('page') as string)
-      : 1,
-    pageSize: $page.url.searchParams.has('pageSize')
-      ? parseInt($page.url.searchParams.get('pageSize') as string)
-      : 10
-  }))
-
-  const query = createUsersQuery(filters)
-  const deleteMutation = createUsersDeleteMutation()
+  const users = useUsers()
+  const deleteUsers = useDeleteUsers()
 
   function toggleSelect(id: number) {
     if (selectedUsers.includes(id)) {
@@ -46,17 +35,17 @@
   }
 
   function toggleSelectAll() {
-    if ($query.isSuccess) {
-      if (selectedUsers.length === $query.data.users.length) {
+    if ($users.isSuccess) {
+      if (selectedUsers.length === $users.data.users.length) {
         selectedUsers = []
       } else {
-        selectedUsers = $query.data.users.map(e => e.id)
+        selectedUsers = $users.data.users.map(e => e.id)
       }
     }
   }
 
   async function deleteSelected() {
-    $deleteMutation.mutate(selectedUsers, {
+    $deleteUsers.mutate(selectedUsers, {
       onSuccess: () => addToast(deleteSuccessMsg),
       onError: () => addToast(deleteErrorMsg)
     })
@@ -85,9 +74,9 @@
       on:delete={() => alertDialog.show()}
     />
 
-    {#if $query.isLoading}
+    {#if $users.isLoading}
       <TableSkeleton />
-    {:else if $query.isSuccess}
+    {:else if $users.isSuccess}
       <Table>
         <thead>
           <tr>
@@ -95,7 +84,7 @@
               <input
                 type="checkbox"
                 checked={selectedUsers.length > 0 &&
-                  selectedUsers.length === $query.data.users.length}
+                  selectedUsers.length === $users.data.users.length}
                 on:input={toggleSelectAll}
               />
             </TableHeader>
@@ -126,7 +115,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each $query.data.users as user}
+          {#each $users.data.users as user}
             <TableRow>
               <TableData>
                 <input
@@ -144,8 +133,8 @@
         </tbody>
         <svelte:fragment slot="pagination">
           <Pagination
-            currentPage={$query.data.metadata.currentPage}
-            lastPage={$query.data.metadata.lastPage}
+            currentPage={$users.data.metadata.currentPage}
+            lastPage={$users.data.metadata.lastPage}
             on:select={selectPage}
             on:selectSize={selectPageSize}
           />

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Asset } from '$lib/types'
   import {
     AssetGridItemSkeleton,
     UploadAssetsDialog,
@@ -17,9 +16,8 @@
   import { addToast } from '$components/Toaster.svelte'
   import { deleteErrorMsg, deleteSuccessMsg } from '$lib/toast-messages'
   import { writable } from 'svelte/store'
-  import { createAssetsQuery, createDeleteAssetsMutation } from '$query/assets'
+  import { useAssets, useDeleteAssets } from '$query/assets'
 
-  let assets: Asset[] = []
   let selectedAssets: number[] = []
   let alertDialog: DeleteAlertDialog
 
@@ -28,8 +26,8 @@
     sort: ''
   })
 
-  const query = createAssetsQuery(filters)
-  const mutation = createDeleteAssetsMutation()
+  const assets = useAssets(filters)
+  const deleteAssets = useDeleteAssets()
 
   function sort(e: CustomEvent<string>) {
     $filters.sort = e.detail
@@ -44,7 +42,11 @@
   }
 
   function selectAll() {
-    selectedAssets = assets.map(asset => asset.id)
+    if ($assets.isSuccess) {
+      selectedAssets = $assets.data.pages
+        .flatMap(p => p.assets || [])
+        .map(asset => asset.id)
+    }
   }
 
   function toggleSelect(id: number) {
@@ -56,7 +58,7 @@
   }
 
   function deleteSelected() {
-    $mutation.mutate(selectedAssets, {
+    $deleteAssets.mutate(selectedAssets, {
       onSuccess: () => {
         selectedAssets = []
         addToast(deleteSuccessMsg)
@@ -115,22 +117,22 @@
     </div>
   {/if}
 
-  {#if $query.isLoading}
+  {#if $assets.isLoading}
     <AssetGrid>
       <AssetGridItemSkeleton count={50} />
     </AssetGrid>
-  {:else if $query.isSuccess && $query.data.pages[0].assets.length === 0}
+  {:else if $assets.isSuccess && $assets.data.pages[0].assets.length === 0}
     <div class="mt-10">
       <EmptySearchMessage />
     </div>
-  {:else if $query.isError}
+  {:else if $assets.isError}
     <div class="mt-6 text-center text-red-700">
       <p>Сталася помилка при завантажені</p>
-      <p class="font-mono text-sm">{$query.error.message}</p>
+      <p class="font-mono text-sm">{$assets.error.message}</p>
     </div>
-  {:else if $query.isSuccess}
+  {:else if $assets.isSuccess}
     <AssetGrid>
-      {#each $query.data.pages as { assets }}
+      {#each $assets.data.pages as { assets }}
         {#each assets as asset}
           {@const selected = selectedAssets.includes(asset.id)}
           <li class="p-2.5">
@@ -160,12 +162,12 @@
         {/each}
       {/each}
     </AssetGrid>
-    {#if $query.hasNextPage}
+    {#if $assets.hasNextPage}
       <div class="mt-8">
         <div class="flex min-w-full items-center justify-center">
           <Button
-            on:click={() => $query.fetchNextPage()}
-            isLoading={$query.isFetchingNextPage}
+            on:click={() => $assets.fetchNextPage()}
+            isLoading={$assets.isFetchingNextPage}
             variant="soft"
           >
             <RefreshCcw slot="icon" class="h-4 w-4" />

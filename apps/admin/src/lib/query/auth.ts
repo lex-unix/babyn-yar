@@ -5,7 +5,7 @@ import { createMutation } from '@tanstack/svelte-query'
 import type { ResponseError } from 'shared'
 import { queryClient } from './client'
 
-export function createRegisterMutation() {
+export function useRegister() {
   return createMutation<
     { user: User },
     ResponseError,
@@ -23,7 +23,7 @@ export function createRegisterMutation() {
   })
 }
 
-export function craeteLoginMutation() {
+export function useLogin() {
   return createMutation<
     { user: User },
     ResponseError,

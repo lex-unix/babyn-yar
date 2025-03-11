@@ -4,19 +4,19 @@
   import { Button, Input } from '$components'
   import { addToast } from '$components/Toaster.svelte'
   import { TOAST } from '$lib/toast-messages'
-  import { craeteLoginMutation } from '$query/auth'
-  import { createMeQuery } from '$query/users'
+  import { useLogin } from '$query/auth'
+  import { useMe } from '$query/users'
 
   let email: string
   let password: string
 
-  const query = createMeQuery()
-  const mutation = craeteLoginMutation()
+  const me = useMe()
+  const login = useLogin()
 
-  $: ($user || $query.isSuccess) && goto('/content')
+  $: ($user || $me.isSuccess) && goto('/content')
 
   async function submit() {
-    $mutation.mutate(
+    $login.mutate(
       { email, password },
       {
         onSuccess: data => {
@@ -62,7 +62,7 @@
             bind:value={password}
             required
           />
-          <Button isLoading={$mutation.isPending} class="w-full justify-center">
+          <Button isLoading={$login.isPending} class="w-full justify-center">
             Продовжити
           </Button>
         </form>

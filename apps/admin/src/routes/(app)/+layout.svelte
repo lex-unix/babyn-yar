@@ -9,13 +9,13 @@
   import { user } from '$lib/stores'
   import { Layers, Image, Cog, Users2 } from 'lucide-svelte'
   import { admin } from '$lib/stores'
-  import { createMeQuery } from '$query/users'
+  import { useMe } from '$query/users'
 
-  const query = createMeQuery()
+  const me = useMe()
 
-  $: $query.isError && $query.error.isUnauthorized() && goto('/login')
-  $: if ($query.isSuccess) {
-    $user = $query.data.user
+  $: $me.isError && $me.error.isUnauthorized() && goto('/login')
+  $: if ($me.isSuccess) {
+    $user = $me.data.user
   }
 
   const links = [
@@ -37,7 +37,7 @@
   ]
 </script>
 
-{#if $query.isSuccess}
+{#if $me.isSuccess}
   <div class="h-screen bg-gray-50 text-gray-900">
     <MobileHeader />
     <div class="flex h-full">

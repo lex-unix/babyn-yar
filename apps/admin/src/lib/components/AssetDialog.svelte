@@ -12,7 +12,7 @@
     Button,
     AssetGridItemSkeleton
   } from '$components'
-  import { createAssetsQuery } from '$query/assets'
+  import { useAssets } from '$query/assets'
   import type { Asset } from '$lib/types'
   import { createEventDispatcher } from 'svelte'
   import { RefreshCcw } from 'lucide-svelte'
@@ -35,7 +35,7 @@
     contentType: ''
   })
 
-  const query = createAssetsQuery(filters)
+  const assets = useAssets(filters)
   const dispatch = createEventDispatcher()
 
   async function sort(e: CustomEvent<string>) {
@@ -74,16 +74,16 @@
       </SearchBar>
     </div>
     <div class="h-[85%] overflow-y-auto pb-20 pr-3">
-      {#if $query.isLoading}
+      {#if $assets.isLoading}
         <AssetGrid>
           <AssetGridItemSkeleton count={50} />
         </AssetGrid>
-      {:else if $query.isError}
+      {:else if $assets.isError}
         <div class="mt-6 text-center font-medium text-red-700">
           <p class="pb-4">Сталася помилка при завантажені</p>
-          <p class="font-mono text-sm">{$query.error.message}</p>
+          <p class="font-mono text-sm">{$assets.error.message}</p>
         </div>
-      {:else if $query.isSuccess && $query.data.pages[0].assets.length === 0}
+      {:else if $assets.isSuccess && $assets.data.pages[0].assets.length === 0}
         <div
           class="col-span-full flex h-full w-full flex-col items-center justify-center"
         >
@@ -91,9 +91,9 @@
             Вибачте, ми не змогли знайти жодного файлу за вашими критеріями
           </p>
         </div>
-      {:else if $query.isSuccess}
+      {:else if $assets.isSuccess}
         <AssetGrid>
-          {#each $query.data.pages as { assets }}
+          {#each $assets.data.pages as { assets }}
             {#each assets as asset}
               <li class="p-2.5">
                 <button
@@ -110,12 +110,12 @@
             {/each}
           {/each}
         </AssetGrid>
-        {#if $query.hasNextPage}
+        {#if $assets.hasNextPage}
           <div class="pt-8">
             <div class="flex min-w-full items-center justify-center">
               <Button
-                on:click={() => $query.fetchNextPage()}
-                isLoading={$query.isFetchingNextPage}
+                on:click={() => $assets.fetchNextPage()}
+                isLoading={$assets.isFetchingNextPage}
                 variant="soft"
               >
                 <RefreshCcw slot="icon" class="h-4 w-4" />
