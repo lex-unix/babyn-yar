@@ -16,7 +16,7 @@
   import { PlusIcon } from 'lucide-svelte'
   import { permissionOptions } from '$lib/select-options'
   import { addToast } from './Toaster.svelte'
-  import { createRegisterMutation } from '$lib/query'
+  import { createRegisterMutation } from '$query/auth'
   import { TOAST } from '$lib/toast-messages'
 
   export function open() {
@@ -38,15 +38,15 @@
 
   async function submit() {
     $mutation.mutate(
-      { fullName, email, password },
+      { fullName, email, password, permission },
       {
-        onSuccess: () => addToast(TOAST.REGISTER_SUCCESS)
+        onSuccess: () => {
+          reset()
+          dialog.dissmis()
+          addToast(TOAST.REGISTER_SUCCESS)
+        }
       }
     )
-    if ($mutation.isSuccess) {
-      reset()
-      dialog.dissmis()
-    }
   }
 
   function reset() {

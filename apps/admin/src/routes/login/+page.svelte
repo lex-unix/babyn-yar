@@ -4,7 +4,8 @@
   import { Button, Input } from '$components'
   import { addToast } from '$components/Toaster.svelte'
   import { TOAST } from '$lib/toast-messages'
-  import { craeteLoginMutation, createMeQuery } from '$lib/query'
+  import { craeteLoginMutation } from '$query/auth'
+  import { createMeQuery } from '$query/users'
 
   let email: string
   let password: string

@@ -17,7 +17,7 @@
   import { formatDate } from '$lib/format-date'
   import { addToast } from '$components/Toaster.svelte'
   import { deleteErrorMsg, deleteSuccessMsg } from '$lib/toast-messages'
-  import { createUsersDeleteMutation, createUsersQuery } from '$lib/query'
+  import { createUsersDeleteMutation, createUsersQuery } from '$query/users'
   import { derived } from 'svelte/store'
   import { page } from '$app/stores'
   import { updateFilter, updateFilters } from '$lib/url-params'

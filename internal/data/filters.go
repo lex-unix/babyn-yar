@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/lex-unix/babyn-yar/internal/validator"
+	"slices"
 )
 
 type Metadata struct {
@@ -53,10 +54,8 @@ func (f Filters) offset() int {
 }
 
 func (f Filters) sortColumn() string {
-	for _, safeValue := range f.SortSafelist {
-		if f.Sort == safeValue {
-			return strings.TrimPrefix(f.Sort, "-")
-		}
+	if slices.Contains(f.SortSafelist, f.Sort) {
+		return strings.TrimPrefix(f.Sort, "-")
 	}
 
 	panic("unsafe sort parameter: " + f.Sort)

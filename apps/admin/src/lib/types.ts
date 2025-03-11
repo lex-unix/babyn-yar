@@ -84,3 +84,32 @@ export type Translation = {
   id: number
   title: string
 }
+
+export type Content = {
+  id: number
+  translationId: number
+  slug: string
+  createdAt: string
+  updatedAt: string
+  occurredOn: string
+  contentType: string
+  lang: string
+  title: string
+  description: string
+  content: JSONContent
+  cover: string
+  documents: string[]
+  version: number
+  user: User
+}
+
+export type CreateContent = Omit<
+  Content,
+  | 'id'
+  | 'translationId'
+  | 'slug'
+  | 'version'
+  | 'user'
+  | 'createdAt'
+  | 'updatedAt'
+>

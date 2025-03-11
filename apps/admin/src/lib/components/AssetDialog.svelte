@@ -12,7 +12,7 @@
     Button,
     AssetGridItemSkeleton
   } from '$components'
-  import { createAssetsQuery } from '$lib/query'
+  import { createAssetsQuery } from '$query/assets'
   import type { Asset } from '$lib/types'
   import { createEventDispatcher } from 'svelte'
   import { RefreshCcw } from 'lucide-svelte'

@@ -2,7 +2,7 @@
   import '../app.css'
   import { Toaster } from '$components'
   import { QueryClientProvider } from '@tanstack/svelte-query'
-  import { queryClient } from '$lib/query'
+  import { queryClient } from '$query/client'
 </script>
 
 <svelte:head>

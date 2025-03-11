@@ -9,7 +9,7 @@
   import { user } from '$lib/stores'
   import { Layers, Image, Cog, Users2 } from 'lucide-svelte'
   import { admin } from '$lib/stores'
-  import { createMeQuery } from '$lib/query'
+  import { createMeQuery } from '$query/users'
 
   const query = createMeQuery()
 

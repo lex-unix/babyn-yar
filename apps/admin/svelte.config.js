@@ -10,7 +10,8 @@ const config = {
   preprocess: sequence([vitePreprocess(), preprocessMeltUI()]),
   kit: {
     alias: {
-      $components: './src/lib/components'
+      $components: './src/lib/components',
+      $query: './src/lib/query'
     },
     // adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.
     // If your environment is not supported or you settled on a specific environment, switch out the adapter.
