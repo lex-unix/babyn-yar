@@ -17,7 +17,7 @@
   import { addToast } from '$components/Toaster.svelte'
   import { deleteErrorMsg, deleteSuccessMsg } from '$lib/toast-messages'
   import { writable } from 'svelte/store'
-  import { createAssetsQuery, createDeleteAssetsMutation } from '$lib/query'
+  import { createAssetsQuery, createDeleteAssetsMutation } from '$query/assets'
 
   let assets: Asset[] = []
   let selectedAssets: number[] = []

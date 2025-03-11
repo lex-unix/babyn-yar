@@ -2,7 +2,7 @@
   import { Input, PageHeader, Container, Button } from '$components'
   import { addToast } from '$components/Toaster.svelte'
   import { user } from '$lib/stores'
-  import { createUserSettingsMutation } from '$lib/query'
+  import { createUserSettingsMutation } from '$query/users'
   import { TOAST } from '$lib/toast-messages'
 
   let fullName: string = $user?.fullName as string
