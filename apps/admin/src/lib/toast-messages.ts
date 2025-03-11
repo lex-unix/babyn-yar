@@ -21,6 +21,14 @@ export const TOAST: Record<string, ToastMessage> = {
       variant: 'error'
     }
   },
+  CREATE_RECORD_SUCCESS: {
+    data: {
+      title: 'Успіх!',
+      description:
+        'Новий запис було успішно створено і вже доступний для перегляду.',
+      variant: 'success'
+    }
+  },
   REGISTER_SUCCESS: {
     data: {
       title: 'Операція успішна',
