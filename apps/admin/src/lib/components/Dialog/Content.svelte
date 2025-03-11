@@ -3,6 +3,8 @@
   import { getContext } from 'svelte'
   import type { Size } from './Dialog.svelte'
 
+  let ref: HTMLElement
+
   const {
     elements: { portalled, content, overlay },
     states: { open }
@@ -21,6 +23,7 @@
       class="fixed inset-0 flex w-full min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden p-2 md:p-6"
     >
       <div
+        bind:this={ref}
         use:melt={$content}
         class="relative overflow-hidden rounded-lg bg-white p-5 shadow-[0_16px_20px_hsla(0,0%,0%,20%)]"
         class:md={size === 'md'}
@@ -33,7 +36,7 @@
           </div>
           <slot name="description" />
         </div>
-        <slot />
+        <slot {ref} />
       </div>
     </div>
   {/if}

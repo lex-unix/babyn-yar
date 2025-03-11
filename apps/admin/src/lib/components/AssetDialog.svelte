@@ -9,14 +9,13 @@
     AssetGrid,
     AssetSortMenu,
     AssetItem,
-    Button,
     AssetGridItemSkeleton
   } from '$components'
   import { useAssets } from '$query/assets'
   import type { Asset } from '$lib/types'
   import { createEventDispatcher } from 'svelte'
-  import { RefreshCcw } from 'lucide-svelte'
   import { writable } from 'svelte/store'
+  import { infiniteScroll } from '$lib/actions'
 
   export function open(type: string) {
     dialog.show()
@@ -63,7 +62,7 @@
 </script>
 
 <Dialog bind:this={dialog} size="lg">
-  <DialogContent>
+  <DialogContent let:ref>
     <DialogTitle slot="title">Медіа файли</DialogTitle>
     <DialogDescription slot="description">
       Оберіть потрібний файл
@@ -110,19 +109,13 @@
             {/each}
           {/each}
         </AssetGrid>
-        {#if $assets.hasNextPage}
-          <div class="pt-8">
-            <div class="flex min-w-full items-center justify-center">
-              <Button
-                on:click={() => $assets.fetchNextPage()}
-                isLoading={$assets.isFetchingNextPage}
-                variant="soft"
-              >
-                <RefreshCcw slot="icon" class="h-4 w-4" />
-                Показати ще
-              </Button>
-            </div>
-          </div>
+        {#if $assets.hasNextPage && !$assets.isFetching}
+          <div
+            use:infiniteScroll={{
+              onIntersect: $assets.fetchNextPage,
+              root: ref
+            }}
+          />
         {/if}
       {/if}
     </div>

@@ -9,14 +9,15 @@
     Container,
     AssetGrid,
     DeleteAlertDialog,
-    Button,
     EmptySearchMessage
   } from '$components'
-  import { RefreshCcw, Trash } from 'lucide-svelte'
+  import { Trash } from 'lucide-svelte'
   import { addToast } from '$components/Toaster.svelte'
   import { deleteErrorMsg, deleteSuccessMsg } from '$lib/toast-messages'
   import { writable } from 'svelte/store'
   import { useAssets, useDeleteAssets } from '$query/assets'
+  import { infiniteScroll } from '$lib/actions'
+  import { scrollContainer } from '$lib/stores'
 
   let selectedAssets: number[] = []
   let alertDialog: DeleteAlertDialog
@@ -162,19 +163,13 @@
         {/each}
       {/each}
     </AssetGrid>
-    {#if $assets.hasNextPage}
-      <div class="mt-8">
-        <div class="flex min-w-full items-center justify-center">
-          <Button
-            on:click={() => $assets.fetchNextPage()}
-            isLoading={$assets.isFetchingNextPage}
-            variant="soft"
-          >
-            <RefreshCcw slot="icon" class="h-4 w-4" />
-            Показати ще
-          </Button>
-        </div>
-      </div>
+    {#if $assets.hasNextPage && !$assets.isFetching}
+      <div
+        use:infiniteScroll={{
+          onIntersect: $assets.fetchNextPage,
+          root: $scrollContainer
+        }}
+      />
     {/if}
   {/if}
 </Container>

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation'
   import {
     Sidebar,
@@ -8,8 +8,11 @@
   } from '$components'
   import { user } from '$lib/stores'
   import { Layers, Image, Cog, Users2 } from 'lucide-svelte'
-  import { admin } from '$lib/stores'
+  import { admin, scrollContainer } from '$lib/stores'
   import { useMe } from '$query/users'
+
+  let containerRef: HTMLElement | undefined = undefined
+  $: if (containerRef) scrollContainer.set(containerRef)
 
   const me = useMe()
 
@@ -62,7 +65,11 @@
           </SidebarLink>
         {/if}
       </Sidebar>
-      <div class="flex-1 overflow-y-auto overflow-x-hidden">
+      <div
+        bind:this={containerRef}
+        class="flex-1 overflow-y-auto overflow-x-hidden"
+        id="scrollable-container"
+      >
         <slot />
       </div>
     </div>

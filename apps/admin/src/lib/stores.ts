@@ -20,3 +20,5 @@ export const filters = derived(page, $page => ({
   search: $page.url.searchParams.get('search') || '',
   sort: $page.url.searchParams.get('sort') || ''
 }))
+
+export const scrollContainer = writable<HTMLElement | undefined>(undefined)
