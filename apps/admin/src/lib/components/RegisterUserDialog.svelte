@@ -33,7 +33,6 @@
   let email: string
   let password: string
   let permission: string
-  let isSubmitting = false
   let dialog: Dialog
 
   async function submit() {
@@ -110,10 +109,10 @@
           </SelectMenu>
         </Select>
         <div class="flex justify-end pt-2">
-          <Button isLoading={isSubmitting}>Додати</Button>
+          <Button isLoading={$register.isPending}>Додати</Button>
         </div>
       </div>
     </form>
-    <DialogClose isDisabled={isSubmitting} />
+    <DialogClose isDisabled={$register.isPending} />
   </DialogContent>
 </Dialog>
