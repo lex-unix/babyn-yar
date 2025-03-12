@@ -26,7 +26,7 @@
   import { AssetDialog, LinkDialog, EditorCommand } from '$components'
   import YouTubeVideoDialog from './YouTubeVideoDialog.svelte'
 
-  export let content: JSONContent
+  export let content: JSONContent | undefined
 
   let element: HTMLDivElement
   let editor: Editor
