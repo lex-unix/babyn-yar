@@ -2,17 +2,17 @@
   import { Input, PageHeader, Container, Button } from '$components'
   import { addToast } from '$components/Toaster.svelte'
   import { user } from '$lib/stores'
-  import { createUserSettingsMutation } from '$query/users'
+  import { useUpdateSettings } from '$query/users'
   import { TOAST } from '$lib/toast-messages'
 
   let fullName: string = $user?.fullName as string
   let email: string = $user?.email as string
   let password: string
 
-  const mutation = createUserSettingsMutation()
+  const updateSettigs = useUpdateSettings()
 
   async function submit() {
-    $mutation.mutate(
+    $updateSettigs.mutate(
       { fullName, email, password },
       {
         onSuccess: data => {
@@ -40,8 +40,8 @@
             type="email"
             label="Email"
             name="email"
-            error={$mutation.isError && $mutation.error.isFormError()
-              ? $mutation.error.error.email
+            error={$updateSettigs.isError && $updateSettigs.error.isFormError()
+              ? $updateSettigs.error.error.email
               : undefined}
           />
           <Input
@@ -49,11 +49,14 @@
             type="password"
             label="Новий пароль"
             name="password"
-            error={$mutation.isError && $mutation.error.isFormError()
-              ? $mutation.error.error.password
+            error={$updateSettigs.isError && $updateSettigs.error.isFormError()
+              ? $updateSettigs.error.error.password
               : undefined}
           />
-          <Button isLoading={$mutation.isPending} class="w-full justify-center">
+          <Button
+            isLoading={$updateSettigs.isPending}
+            class="w-full justify-center"
+          >
             Зберегти зміни
           </Button>
         </form>

@@ -17,7 +17,7 @@ type AssetsResponse = {
   metadata: Metadata
 }
 
-export function createAssetsQuery(filters: Writable<Record<string, string>>) {
+export function useAssets(filters: Writable<Record<string, string>>) {
   return createInfiniteQuery(
     derived(filters, $filters => {
       return {
@@ -53,7 +53,7 @@ export function createAssetsQuery(filters: Writable<Record<string, string>>) {
   )
 }
 
-export function createUploadAssetMutation() {
+export function useUploadAssets() {
   return createMutation<Record<string, string>, ResponseError, FormData>({
     mutationFn: async formData => {
       return fetcher(PUBLIC_API_URL + '/assets', {
@@ -67,7 +67,7 @@ export function createUploadAssetMutation() {
   })
 }
 
-export function createDeleteAssetsMutation() {
+export function useDeleteAssets() {
   return createMutation<Record<string, string>, ResponseError, number[]>({
     mutationFn: async ids => {
       const url = new URL(PUBLIC_API_URL + '/assets')

@@ -12,7 +12,8 @@
     Input
   } from '$components'
   import { addToast } from '$components/Toaster.svelte'
-  import { createUploadAssetMutation } from '$query/assets'
+  import { useUploadAssets } from '$query/assets'
+  import { TOAST } from '$lib/toast-messages'
 
   export function open() {
     dialog.show()
@@ -27,21 +28,29 @@
   let filePrefix: string = ''
   let dialog: Dialog
 
-  const mutation = createUploadAssetMutation()
+  const uploadAssets = useUploadAssets()
 
   function addFiles(
     e: Event & {
       currentTarget: EventTarget & HTMLInputElement
     }
   ) {
-    if (!e.currentTarget.files) return
-    const fileList = Array.from(e.currentTarget.files).map(file => ({
-      file,
-      fileName: filePrefix + file.name.split('.')[0],
-      extension: file.name.split('.').at(-1) as string
-    }))
+    const input = e.currentTarget
 
-    files = [...files, ...fileList]
+    if (!input.files || input.files.length === 0) return
+
+    const newFiles = Array.from(input.files).map(file => {
+      const nameParts = file.name.split('.')
+      const extension = nameParts.pop() || ''
+      const baseName = nameParts.join('.')
+      return {
+        file,
+        fileName: filePrefix + baseName,
+        extension
+      }
+    })
+
+    files = [...files, ...newFiles]
   }
 
   function removeFile(e: CustomEvent<{ index: number }>) {
@@ -55,25 +64,31 @@
   }
 
   async function submit() {
-    if (files.length < 0) return
+    if (files.length <= 0) return
 
     const formData = new FormData()
     files.forEach(({ file, fileName, extension }) => {
       const prefix = filePrefix ? filePrefix + '_' : ''
-      formData.append('assets', file, prefix + fileName + '.' + extension)
+      const fullName = `${prefix}${fileName}.${extension}`
+      formData.append('assets', file, fullName)
     })
 
-    $mutation.mutate(formData, {
+    $uploadAssets.mutate(formData, {
+      onSuccess: () => {
+        addToast(TOAST.UPLOAD_ASSETS_SUCCESS)
+        files = []
+        dialog.dissmis()
+      },
       onError: error => {
-        let errMsg = 'Спробуйте, будь ласка, ще раз'
+        let toastMessage = 'Спробуйте, будь ласка, ще раз'
         if (error.isFormError()) {
           const existingFiles = Object.keys(error.error).join(', ')
-          errMsg = 'Файли вже існують: ' + existingFiles
+          toastMessage = `Файли вже існують: ${existingFiles}`
         }
         addToast({
           data: {
             title: 'Помилка',
-            description: errMsg,
+            description: toastMessage,
             variant: 'error'
           }
         })
@@ -101,7 +116,7 @@
       введіть префікс у поле.
     </DialogDescription>
     <DialogClose />
-    <div>
+    <div class="mb-3 md:mb-5">
       <Input bind:value={filePrefix} label="Префікс" name="filePrefix" />
     </div>
     <div class="min-h-[30px]">
@@ -133,14 +148,14 @@
       />
       <button
         class="rounded-md border bg-white px-4 py-3 font-medium leading-none outline-none focus:ring focus:ring-gray-300 disabled:opacity-60"
-        disabled={$mutation.isPending}
+        disabled={$uploadAssets.isPending}
         on:click={openFileBrowser}
       >
         Додати файл
       </button>
-      <Button isLoading={$mutation.isPending} on:click={submit}
-        >Завантажити</Button
-      >
+      <Button isLoading={$uploadAssets.isPending} on:click={submit}>
+        Завантажити
+      </Button>
     </div>
   </DialogContent>
 </Dialog>

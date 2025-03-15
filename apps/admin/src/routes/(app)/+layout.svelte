@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation'
   import {
     Sidebar,
@@ -8,14 +8,17 @@
   } from '$components'
   import { user } from '$lib/stores'
   import { Layers, Image, Cog, Users2 } from 'lucide-svelte'
-  import { admin } from '$lib/stores'
-  import { createMeQuery } from '$query/users'
+  import { admin, scrollContainer } from '$lib/stores'
+  import { useMe } from '$query/users'
 
-  const query = createMeQuery()
+  let containerRef: HTMLElement | undefined = undefined
+  $: if (containerRef) scrollContainer.set(containerRef)
 
-  $: $query.isError && $query.error.isUnauthorized() && goto('/login')
-  $: if ($query.isSuccess) {
-    $user = $query.data.user
+  const me = useMe()
+
+  $: $me.isError && $me.error.isUnauthorized() && goto('/login')
+  $: if ($me.isSuccess) {
+    $user = $me.data.user
   }
 
   const links = [
@@ -37,7 +40,7 @@
   ]
 </script>
 
-{#if $query.isSuccess}
+{#if $me.isSuccess}
   <div class="h-screen bg-gray-50 text-gray-900">
     <MobileHeader />
     <div class="flex h-full">
@@ -62,7 +65,11 @@
           </SidebarLink>
         {/if}
       </Sidebar>
-      <div class="flex-1 overflow-y-auto overflow-x-hidden">
+      <div
+        bind:this={containerRef}
+        class="flex-1 overflow-y-auto overflow-x-hidden"
+        id="scrollable-container"
+      >
         <slot />
       </div>
     </div>
