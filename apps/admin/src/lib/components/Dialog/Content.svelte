@@ -2,6 +2,7 @@
   import { type Dialog, melt } from '@melt-ui/svelte'
   import { getContext } from 'svelte'
   import type { Size } from './Dialog.svelte'
+  import { cn } from '$lib/cn'
 
   let ref: HTMLElement
 
@@ -25,10 +26,13 @@
       <div
         bind:this={ref}
         use:melt={$content}
-        class="relative overflow-hidden rounded-lg bg-white p-5 shadow-[0_16px_20px_hsla(0,0%,0%,20%)]"
-        class:md={size === 'md'}
-        class:lg={size === 'lg'}
-        class:sm={size === 'sm'}
+        class={cn(
+          'relative overflow-hidden rounded-lg bg-white shadow-[0_16px_20px_hsla(0,0%,0%,20%)]',
+          size === 'sm' && 'w-[90vw] max-w-md p-3 md:p-6',
+          size === 'md' &&
+            'w-full p-5 lg:min-w-[720px] lg:max-w-[800px] lg:p-9',
+          size === 'lg' && 'h-full w-full p-5 md:p-9'
+        )}
       >
         <div class="mb-5">
           <div class="mb-2">
@@ -41,17 +45,3 @@
     </div>
   {/if}
 </div>
-
-<style lang="postcss">
-  .sm {
-    @apply w-[90vw] max-w-md p-3 md:p-6;
-  }
-
-  .md {
-    @apply w-full p-5 lg:min-w-[720px] lg:max-w-[800px] lg:p-9;
-  }
-
-  .lg {
-    @apply h-full w-full p-5 md:p-9;
-  }
-</style>

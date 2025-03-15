@@ -100,7 +100,7 @@
               {#each $weekdays as day}
                 <th class="text-sm font-semibold">
                   <div
-                    class="flex h-6 w-6 select-none items-center justify-center p-4 text-gray-500"
+                    class="size-6 flex select-none items-center justify-center p-4 text-gray-500"
                   >
                     {day}
                   </div>
@@ -118,7 +118,10 @@
                     aria-disabled={$isDateDisabled(date) ||
                       $isDateUnavailable(date)}
                   >
-                    <div use:melt={$cell(date, month.value)} class="cell">
+                    <div
+                      use:melt={$cell(date, month.value)}
+                      class="cell size-6 flex cursor-pointer select-none items-center justify-center rounded-lg p-4 hover:bg-indigo-100 focus:outline-none focus:ring focus:ring-indigo-400"
+                    >
                       {date.day}
                     </div>
                   </td>
@@ -132,53 +135,72 @@
   </div>
 </div>
 
+<!-- TODO: get rid of postcss -->
 <style lang="postcss">
-  .cell {
-    @apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded-lg p-4;
-    @apply hover:bg-indigo-100 focus:outline-none focus:ring focus:ring-indigo-400;
-  }
-
   .cell[data-selected] {
-    @apply bg-indigo-100 text-indigo-800;
+    background-color: var(--color-indigo-100);
+    color: var(--color-indigo-800);
   }
 
   .cell[data-disabled] {
-    @apply pointer-events-none opacity-40;
+    pointer-events: none;
+    opacity: 40%;
   }
 
   .cell[data-unavailable] {
-    @apply pointer-events-none text-red-400 line-through;
+    pointer-events: none;
+    color: var(--color-red-400);
+    text-decoration-line: line-through;
   }
 
   .cell[data-outside-visible-months] {
-    @apply pointer-events-none cursor-default opacity-40 hover:bg-transparent;
+    pointer-events: none;
+    cursor: default;
+    opacity: 40%;
+    &:hover {
+      @media (hover: hover) {
+        background-color: transparent;
+      }
+    }
   }
 
   .cell[data-outside-month] {
-    @apply pointer-events-none cursor-default opacity-0 hover:bg-transparent;
+    pointer-events: none;
+    cursor: default;
+    opacity: 0%;
+    &:hover {
+      @media (hover: hover) {
+        background-color: transparent;
+      }
+    }
   }
 
   [data-melt-datefield-field] div:last-of-type {
-    @apply ml-4 flex w-full items-center justify-end;
+    margin-left: var(--spacing-4);
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-end;
   }
 
   [data-melt-datefield-label][data-invalid] {
-    @apply text-red-500;
+    color: var(--color-red-500);
   }
 
   [data-melt-datefield-field][data-invalid] {
-    @apply border-red-400;
+    border-color: var(--color-red-400);
   }
 
   [data-melt-datefield-segment][data-invalid] {
-    @apply text-red-500;
+    color: var(--color-red-500);
   }
 
   [data-melt-datefield-segment]:not([data-segment='literal']) {
-    @apply px-0.5;
+    padding-inline: calc(var(--spacing) * 0.5);
   }
 
   [data-melt-datefield-validation] {
-    @apply self-start text-red-500;
+    align-self: flex-start;
+    color: var(--color-red-500);
   }
 </style>

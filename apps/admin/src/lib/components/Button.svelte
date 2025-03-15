@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
+  import { cn } from '$lib/cn'
 
   export let loadingText: string = 'Завантаження...'
   export let form: string | undefined = undefined
@@ -17,11 +18,17 @@
 </script>
 
 <button
-  class={`flex items-center gap-3 rounded-md px-4 py-3 text-sm leading-none transition-colors ${className}`}
+  class={cn(
+    'flex items-center gap-3 rounded-md px-4 py-3 text-sm leading-none transition-colors',
+    variant === 'filled' &&
+      'bg-indigo-600 text-white transition-colors hover:bg-indigo-500 disabled:bg-indigo-400',
+    variant === 'outline' &&
+      'border bg-white focus:ring focus:ring-gray-300 disabled:opacity-60',
+    variant === 'soft' &&
+      'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 disabled:opacity-60',
+    className
+  )}
   disabled={isDisabled || isLoading}
-  class:filled={variant === 'filled'}
-  class:outline={variant === 'outline'}
-  class:soft={variant === 'soft'}
   {form}
   on:click={click}
 >
@@ -53,17 +60,3 @@
     {/if}
   </span>
 </button>
-
-<style lang="postcss">
-  .filled {
-    @apply bg-indigo-600 text-white transition-colors hover:bg-indigo-500 disabled:bg-indigo-400;
-  }
-
-  .outline {
-    @apply border bg-white focus:ring focus:ring-gray-300 disabled:opacity-60;
-  }
-
-  .soft {
-    @apply bg-indigo-50 text-indigo-700 hover:bg-indigo-100 disabled:opacity-60;
-  }
-</style>

@@ -18,6 +18,7 @@
   import { useAssets, useDeleteAssets } from '$query/assets'
   import { infiniteScroll } from '$lib/actions'
   import { scrollContainer } from '$lib/stores'
+  import { cn } from '$lib/cn'
 
   let selectedAssets: number[] = []
   let alertDialog: DeleteAlertDialog
@@ -144,8 +145,10 @@
                 contentType={asset.contentType}
               />
               <div
-                class="absolute left-2 top-2 z-[2] hidden overflow-hidden group-hover:block"
-                class:selected
+                class={cn(
+                  'absolute left-2 top-2 z-[2] hidden overflow-hidden group-hover:block',
+                  selected && 'block'
+                )}
               >
                 <div
                   class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-200 p-3"
@@ -175,9 +178,3 @@
 </Container>
 
 <DeleteAlertDialog bind:this={alertDialog} on:confirm={deleteSelected} />
-
-<style lang="postcss">
-  .selected {
-    @apply block;
-  }
-</style>

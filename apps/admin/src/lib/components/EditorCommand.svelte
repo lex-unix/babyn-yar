@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Tooltip } from '$components'
+  import { cn } from '$lib/cn'
   import { melt } from '@melt-ui/svelte'
   import { createEventDispatcher } from 'svelte'
 
@@ -20,15 +21,15 @@
     use:melt={trigger}
     type="button"
     on:click={click}
-    class="rounded p-1.5 hover:bg-gray-100"
+    class={cn('rounded p-1.5 hover:bg-gray-100', active && 'bg-gray-100')}
     class:active
   >
     <slot />
   </button>
 </Tooltip>
 
-<style lang="postcss">
+<style>
   .active {
-    @apply bg-gray-100;
+    background-color: var(--color-gray-100);
   }
 </style>

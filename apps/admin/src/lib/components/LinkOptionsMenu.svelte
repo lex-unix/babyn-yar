@@ -78,8 +78,8 @@
   </div>
 {/if}
 
-<style lang="postcss">
+<style>
   .active {
-    @apply text-indigo-600;
+    color: var(--color-indigo-600);
   }
 </style>
