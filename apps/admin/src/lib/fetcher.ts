@@ -11,7 +11,7 @@ export async function fetcher(url: URL | string, opts: RequestInit = {}) {
     try {
       const { error } = await response.json()
       responseError = error
-    } catch (error) {
+    } catch (_error) {
       responseError = response.statusText
     }
     throw new ResponseError(response.status, responseError)
