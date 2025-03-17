@@ -21,7 +21,7 @@ type AssetModel struct {
 	DB *pgxpool.Pool
 }
 
-func (m AssetModel) Insert(asset *Asset) error {
+func (m AssetModel) Insert(assets []*Asset) error {
 	query := `
 		INSERT INTO assets (url, file_name, content_type)
 		VALUES ($1, $2, $3)
@@ -30,9 +30,14 @@ func (m AssetModel) Insert(asset *Asset) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	args := []interface{}{asset.URL, asset.Filename, asset.ContentType}
-
-	return m.DB.QueryRow(ctx, query, args...).Scan(&asset.ID)
+	for _, asset := range assets {
+		args := []any{asset.URL, asset.Filename, asset.ContentType}
+		err := m.DB.QueryRow(ctx, query, args...).Scan(&asset.ID)
+		if err != nil {
+			return ErrIncompleteCopy
+		}
+	}
+	return nil
 }
 
 func (m AssetModel) InsertBulk(assets [][]interface{}) error {
