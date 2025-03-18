@@ -11,38 +11,35 @@
     AssetItem,
     AssetGridItemSkeleton
   } from '$components'
-  import { useAssets } from '$query/assets'
+  import { useAssets } from '$lib/assets/query'
   import type { Asset } from '$lib/types'
   import { createEventDispatcher } from 'svelte'
-  import { writable } from 'svelte/store'
   import { infiniteScroll } from '$lib/actions'
+  import { goto } from '$app/navigation'
+  import { removeUrlParams, updateFilter } from '$lib/url-params'
 
   export function open(type: string) {
     dialog.show()
-    $filters.contentType = type
+    updateFilter('content_type', type)
   }
 
   export function close() {
     dialog.dissmis()
   }
 
+  let scrollRef: HTMLElement
+
   let dialog: Dialog
 
-  let filters = writable({
-    sort: '',
-    search: '',
-    contentType: ''
-  })
-
-  const assets = useAssets(filters)
+  const assets = useAssets()
   const dispatch = createEventDispatcher()
 
   async function sort(e: CustomEvent<string>) {
-    $filters.sort = e.detail
+    updateFilter('sort', e.detail)
   }
 
   async function search(e: CustomEvent<{ search: string }>) {
-    $filters.search = e.detail.search
+    updateFilter('filename', e.detail.search)
   }
 
   function selectAsset(asset: Asset) {
@@ -61,8 +58,17 @@
   }
 </script>
 
-<Dialog bind:this={dialog} size="lg">
-  <DialogContent let:ref>
+<Dialog
+  bind:this={dialog}
+  size="lg"
+  on:close={() => {
+    goto(removeUrlParams('sort', 'filename'), {
+      replaceState: true,
+      keepFocus: true
+    })
+  }}
+>
+  <DialogContent>
     <DialogTitle slot="title">Медіа файли</DialogTitle>
     <DialogDescription slot="description">
       Оберіть потрібний файл
@@ -72,7 +78,7 @@
         <AssetSortMenu slot="filters" on:select={sort} />
       </SearchBar>
     </div>
-    <div class="h-[85%] overflow-y-auto pb-20 pr-3">
+    <div bind:this={scrollRef} class="h-[85%] overflow-y-auto pr-3 pb-20">
       {#if $assets.isLoading}
         <AssetGrid>
           <AssetGridItemSkeleton count={50} />
@@ -113,7 +119,7 @@
           <div
             use:infiniteScroll={{
               onIntersect: $assets.fetchNextPage,
-              root: ref
+              root: scrollRef
             }}
           />
         {/if}

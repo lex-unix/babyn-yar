@@ -1,5 +1,13 @@
 import { browser } from '$app/environment'
 import { goto } from '$app/navigation'
+import { page } from '$app/stores'
+import { derived, get } from 'svelte/store'
+
+export const urlFilters = derived(page, $page => {
+  const params = new URLSearchParams($page.url.search)
+  params.sort()
+  return params.toString()
+})
 
 export function updateFilter<T extends Record<string, string | number>>(
   key: keyof T,
@@ -43,4 +51,24 @@ export function urlWithSearchParams(
     }
   }
   return finalUrl
+}
+
+export function removeUrlParams(...params: string[]) {
+  const nextUrl = get(page).url
+  params.forEach(param => {
+    if (nextUrl.searchParams.has(param)) {
+      nextUrl.searchParams.delete(param)
+    }
+  })
+  return nextUrl.href
+}
+
+export function serializeUrlParams(
+  filters: Record<string, string | number>
+): string {
+  return Object.entries(filters)
+    .filter(([_, value]) => value && value.toString().length > 0)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([param, value]) => `${param}=${encodeURIComponent(value)}`)
+    .join('&')
 }

@@ -11,9 +11,7 @@
     DialogClose,
     Input
   } from '$components'
-  import { addToast } from '$components/Toaster.svelte'
-  import { useUploadAssets } from '$query/assets'
-  import { TOAST } from '$lib/toast-messages'
+  import { useUploadAssets } from '$lib/assets/query'
 
   export function open() {
     dialog.show()
@@ -75,23 +73,9 @@
 
     $uploadAssets.mutate(formData, {
       onSuccess: () => {
-        addToast(TOAST.UPLOAD_ASSETS_SUCCESS)
+        filePrefix = ''
         files = []
         dialog.dissmis()
-      },
-      onError: error => {
-        let toastMessage = 'Спробуйте, будь ласка, ще раз'
-        if (error.isFormError()) {
-          const existingFiles = Object.keys(error.error).join(', ')
-          toastMessage = `Файли вже існують: ${existingFiles}`
-        }
-        addToast({
-          data: {
-            title: 'Помилка',
-            description: toastMessage,
-            variant: 'error'
-          }
-        })
       }
     })
   }
@@ -137,7 +121,7 @@
       {/if}
     </div>
     <div
-      class="-mx-5 -mb-5 flex min-h-[80px] items-center justify-between gap-2.5 rounded-bl-lg rounded-br-lg bg-gray-100 px-9 lg:-mx-9 lg:-mb-9 lg:justify-end"
+      class="-mx-5 -mb-5 flex min-h-[80px] items-center justify-between gap-2.5 rounded-br-lg rounded-bl-lg bg-gray-100 px-9 lg:-mx-9 lg:-mb-9 lg:justify-end"
     >
       <input
         type="file"
@@ -147,7 +131,7 @@
         on:change={addFiles}
       />
       <button
-        class="rounded-md border bg-white px-4 py-3 font-medium leading-none outline-none focus:ring focus:ring-gray-300 disabled:opacity-60"
+        class="rounded-md border bg-white px-4 py-3 leading-none font-medium outline-none focus:ring focus:ring-gray-300 disabled:opacity-60"
         disabled={$uploadAssets.isPending}
         on:click={openFileBrowser}
       >

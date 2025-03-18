@@ -1,8 +1,9 @@
 <script lang="ts">
   import { UserCircle2 } from 'lucide-svelte'
-  import { user, sidebarOpen } from '$lib/stores'
+  import { sidebarOpen } from '$lib/stores'
   import { clickOutside } from '$lib/actions'
   import { cn } from '$lib/cn'
+  import { currentUser } from '$lib/auth/store'
 </script>
 
 <div
@@ -22,7 +23,7 @@
     <ul class="pt-5 lg:w-full">
       <slot />
     </ul>
-    {#if $user}
+    {#if $currentUser}
       <div class="relative mb-4 mt-auto w-full">
         <a
           href="/settings"
@@ -36,7 +37,7 @@
           <span
             class="overflow-hidden overflow-ellipsis whitespace-nowrap font-semibold md:hidden lg:inline"
           >
-            {$user.fullName}
+            {$currentUser.fullName}
           </span>
         </a>
       </div>

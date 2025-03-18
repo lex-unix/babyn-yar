@@ -6,19 +6,19 @@
     SidebarLink,
     SidebarLinkLabel
   } from '$components'
-  import { user } from '$lib/stores'
   import { Layers, Image, Cog, Users2 } from 'lucide-svelte'
-  import { admin, scrollContainer } from '$lib/stores'
-  import { useMe } from '$query/users'
+  import { scrollContainer } from '$lib/stores'
+  import { useLoggedUser } from '$lib/auth/query'
+  import { currentUser, isAdmin } from '$lib/auth/store'
 
   let containerRef: HTMLElement | undefined = undefined
   $: if (containerRef) scrollContainer.set(containerRef)
 
-  const me = useMe()
+  const loggedUser = useLoggedUser()
 
-  $: $me.isError && $me.error.isUnauthorized() && goto('/login')
-  $: if ($me.isSuccess) {
-    $user = $me.data.user
+  $: $loggedUser.isError && $loggedUser.error.isUnauthorized() && goto('/login')
+  $: if ($loggedUser.isSuccess) {
+    $currentUser = $loggedUser.data.user
   }
 
   const links = [
@@ -40,7 +40,7 @@
   ]
 </script>
 
-{#if $me.isSuccess}
+{#if $loggedUser.isSuccess}
   <div class="h-screen bg-gray-50 text-gray-900">
     <MobileHeader />
     <div class="flex h-full">
@@ -55,7 +55,7 @@
             <SidebarLinkLabel>{text}</SidebarLinkLabel>
           </SidebarLink>
         {/each}
-        {#if $admin}
+        {#if $isAdmin}
           <SidebarLink href="/users">
             <Users2
               size={20}
@@ -67,7 +67,7 @@
       </Sidebar>
       <div
         bind:this={containerRef}
-        class="flex-1 overflow-y-auto overflow-x-hidden"
+        class="flex-1 overflow-x-hidden overflow-y-auto"
         id="scrollable-container"
       >
         <slot />

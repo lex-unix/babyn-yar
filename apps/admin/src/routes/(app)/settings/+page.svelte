@@ -1,27 +1,16 @@
 <script lang="ts">
   import { Input, PageHeader, Container, Button } from '$components'
-  import { addToast } from '$components/Toaster.svelte'
-  import { user } from '$lib/stores'
-  import { useUpdateSettings } from '$query/users'
-  import { TOAST } from '$lib/toast-messages'
+  import { currentUser } from '$lib/auth/store'
+  import { useUpdateSettings } from '$lib/users/query'
 
-  let fullName: string = $user?.fullName as string
-  let email: string = $user?.email as string
+  let fullName: string = $currentUser?.fullName as string
+  let email: string = $currentUser?.email as string
   let password: string
 
   const updateSettigs = useUpdateSettings()
 
-  async function submit() {
-    $updateSettigs.mutate(
-      { fullName, email, password },
-      {
-        onSuccess: data => {
-          $user = data.user
-          addToast(TOAST.UPDATE_SETTINGS_SUCCESS)
-        },
-        onError: () => addToast(TOAST.UPDATE_SETTINGS_ERROR)
-      }
-    )
+  function submit() {
+    $updateSettigs.mutate({ fullName, email, password })
   }
 </script>
 

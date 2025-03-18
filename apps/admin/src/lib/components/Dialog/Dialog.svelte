@@ -4,7 +4,7 @@
 
 <script lang="ts">
   import { createDialog } from '@melt-ui/svelte'
-  import { setContext } from 'svelte'
+  import { createEventDispatcher, setContext } from 'svelte'
 
   export function show() {
     $open = true
@@ -14,13 +14,23 @@
     $open = false
   }
 
+  const dispatch = createEventDispatcher()
+
   export let size: Size = 'md'
   export let role: 'dialog' | 'alertdialog' | undefined = 'dialog'
 
   const ctx = createDialog({
     forceVisible: true,
     closeOnOutsideClick: true,
-    role
+    role,
+    onOpenChange: ({ next }) => {
+      if (next) {
+        dispatch('open')
+      } else {
+        dispatch('close')
+      }
+      return next
+    }
   })
   setContext('dialog', ctx)
   setContext('size', size)
