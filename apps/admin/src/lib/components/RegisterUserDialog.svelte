@@ -15,9 +15,7 @@
   } from '$components'
   import { PlusIcon } from 'lucide-svelte'
   import { permissionOptions } from '$lib/select-options'
-  import { addToast } from './Toaster.svelte'
-  import { useRegister } from '$query/auth'
-  import { TOAST } from '$lib/toast-messages'
+  import { useRegister } from '$lib/auth/query'
 
   export function open() {
     dialog.show()
@@ -42,7 +40,6 @@
         onSuccess: () => {
           reset()
           dialog.dissmis()
-          addToast(TOAST.REGISTER_SUCCESS)
         }
       }
     )

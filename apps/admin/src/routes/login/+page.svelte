@@ -1,37 +1,19 @@
 <script lang="ts">
-  import { user } from '$lib/stores'
+  import { currentUser } from '$lib/auth/store'
   import { goto } from '$app/navigation'
   import { Button, Input } from '$components'
-  import { addToast } from '$components/Toaster.svelte'
-  import { TOAST } from '$lib/toast-messages'
-  import { useLogin } from '$query/auth'
-  import { useMe } from '$query/users'
+  import { useLoggedUser, useLogin } from '$lib/auth/query'
 
   let email: string
   let password: string
 
-  const me = useMe()
+  const loggedUser = useLoggedUser()
   const login = useLogin()
 
-  $: ($user || $me.isSuccess) && goto('/content')
+  $: ($currentUser || $loggedUser.isSuccess) && goto('/content')
 
   async function submit() {
-    $login.mutate(
-      { email, password },
-      {
-        onSuccess: data => {
-          $user = data.user
-          goto('/content')
-        },
-        onError: error => {
-          if (error.isUnauthorized()) {
-            addToast(TOAST.CREDENTIALS_ERROR)
-          } else if (error.isServerError()) {
-            addToast(TOAST.SERVER_ERROR)
-          }
-        }
-      }
-    )
+    $login.mutate({ email, password })
   }
 </script>
 

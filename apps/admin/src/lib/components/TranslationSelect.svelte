@@ -119,8 +119,9 @@
   </ul>
 {/if}
 
-<style lang="postcss">
+<style>
   .selected {
-    @apply bg-indigo-100 text-indigo-800;
+    background-color: var(--color-indigo-100);
+    color: var(--color-indigo-800);
   }
 </style>

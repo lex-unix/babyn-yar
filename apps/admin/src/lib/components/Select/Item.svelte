@@ -26,8 +26,8 @@
   {label}
 </div>
 
-<style lang="postcss">
+<style>
   .selected {
-    @apply text-indigo-600;
+    color: var(--color-indigo-600);
   }
 </style>

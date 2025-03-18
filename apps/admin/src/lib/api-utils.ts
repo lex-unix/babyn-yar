@@ -3,7 +3,6 @@ import { PUBLIC_API_URL } from '$env/static/public'
 import type {
   Book,
   MediaArticle,
-  GalleryImage,
   Event,
   HolocaustDocument,
   VictimTestimony,
@@ -23,7 +22,6 @@ type Translations = {
 
 const BOOKS_ENDPOINT = `${PUBLIC_API_URL}/books`
 const MEDIA_ARTICLES_ENDPOINT = `${PUBLIC_API_URL}/media-articles`
-const GALLERY_IMGS_ENDPOINT = `${PUBLIC_API_URL}/gallery`
 const EVENTS_ENDPOINT = `${PUBLIC_API_URL}/events`
 const HOLOCAUST_DOCS_ENDPOINT = `${PUBLIC_API_URL}/holocaust-documents`
 const TESTIMONIES_ENDPOINT = `${PUBLIC_API_URL}/victim-testimonies`
@@ -92,22 +90,6 @@ export function deleteArticles(ids: number[]) {
   const url = new URL(MEDIA_ARTICLES_ENDPOINT)
   url.searchParams.set('ids', ids.join(','))
   return fetcher(url, opts)
-}
-
-export function fetchGalleryImages() {
-  return fetcher<DynamicTypedKey<GalleryImage[], 'images'>>(
-    GALLERY_IMGS_ENDPOINT
-  )
-}
-
-export function createGalleryImage(body: string) {
-  const opts: RequestInit = { method: 'POST', credentials: 'include', body }
-  return fetcher<GalleryImage>(GALLERY_IMGS_ENDPOINT, opts)
-}
-
-export function deleteGalleryImage(id: number) {
-  const opts: RequestInit = { method: 'DELETE', credentials: 'include' }
-  return fetcher(`${GALLERY_IMGS_ENDPOINT}/${id}`, opts)
 }
 
 export function getEvents(params: Record<string, string> = {}) {

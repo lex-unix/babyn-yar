@@ -13,12 +13,10 @@
     Pagination
   } from '$components'
   import { UserIcon, AtSignIcon, CalendarIcon, KeyIcon } from 'lucide-svelte'
-  import { admin } from '$lib/stores'
   import { formatDate } from '$lib/format-date'
-  import { addToast } from '$components/Toaster.svelte'
-  import { deleteErrorMsg, deleteSuccessMsg } from '$lib/toast-messages'
-  import { useDeleteUsers, useUsers } from '$query/users'
+  import { useUsers, useDeleteUsers } from '$lib/users/query'
   import { updateFilter, updateFilters } from '$lib/url-params'
+  import { isAdmin } from '$lib/auth/store'
 
   let selectedUsers: number[] = []
   let alertDialog: DeleteAlertDialog
@@ -46,11 +44,11 @@
 
   async function deleteSelected() {
     $deleteUsers.mutate(selectedUsers, {
-      onSuccess: () => addToast(deleteSuccessMsg),
-      onError: () => addToast(deleteErrorMsg)
+      onSuccess: () => {
+        selectedUsers = []
+        alertDialog.dismiss()
+      }
     })
-    selectedUsers = []
-    alertDialog.dismiss()
   }
 
   function selectPage(e: CustomEvent<{ page: number }>) {
@@ -58,11 +56,11 @@
   }
 
   function selectPageSize(e: CustomEvent<{ size: number }>) {
-    updateFilters({ page: 1, pageSize: e.detail.size })
+    updateFilters({ page: 1, page_size: e.detail.size })
   }
 </script>
 
-{#if $admin}
+{#if $isAdmin}
   <PageHeader>
     <svelte:fragment slot="heading">Користувачі</svelte:fragment>
     <RegisterUserDialog slot="right-items" />

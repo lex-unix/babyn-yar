@@ -16,9 +16,8 @@ func (app *application) createAssetsHandler(w http.ResponseWriter, r *http.Reque
 
 	v := validator.New()
 
-	rows := make([][]interface{}, 0, len(files))
-
-	for _, fileHeader := range files {
+	assets := make([]*data.Asset, len(files))
+	for i, fileHeader := range files {
 		file, err := fileHeader.Open()
 		if err != nil {
 			app.serverErrorResponse(w, r, err)
@@ -49,8 +48,13 @@ func (app *application) createAssetsHandler(w http.ResponseWriter, r *http.Reque
 			app.serverErrorResponse(w, r, err)
 			return
 		}
-		row := []interface{}{url, fileHeader.Filename, contentType}
-		rows = append(rows, row)
+
+		assets[i] = &data.Asset{
+			URL:         url,
+			ContentType: contentType,
+			Filename:    fileHeader.Filename,
+		}
+
 	}
 
 	if !v.Valid() {
@@ -58,13 +62,13 @@ func (app *application) createAssetsHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err := app.models.Assets.InsertBulk(rows)
+	err := app.models.Assets.Insert(assets)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
 
-	err = app.writeJson(w, http.StatusCreated, envelope{"status": "ok"}, nil)
+	err = app.writeJson(w, http.StatusCreated, envelope{"assets": assets}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

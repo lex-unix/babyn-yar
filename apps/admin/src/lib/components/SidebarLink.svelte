@@ -21,8 +21,9 @@
   </a>
 </li>
 
-<style lang="postcss">
+<style>
   .active {
-    @apply bg-gray-50 text-indigo-700;
+    background-color: var(--color-gray-50);
+    color: var(--color-indigo-700);
   }
 </style>

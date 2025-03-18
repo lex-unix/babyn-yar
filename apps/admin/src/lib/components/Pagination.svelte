@@ -87,8 +87,9 @@
   </div>
 </div>
 
-<style lang="postcss">
+<style>
   .active {
-    @apply !border-t-indigo-700 !text-indigo-700;
+    border-top-color: var(--color-indigo-700) !important;
+    color: var(--color-indigo-700) !important;
   }
 </style>

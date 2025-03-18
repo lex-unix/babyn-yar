@@ -12,31 +12,18 @@
     EmptySearchMessage
   } from '$components'
   import { Trash } from 'lucide-svelte'
-  import { addToast } from '$components/Toaster.svelte'
-  import { deleteErrorMsg, deleteSuccessMsg } from '$lib/toast-messages'
-  import { writable } from 'svelte/store'
-  import { useAssets, useDeleteAssets } from '$query/assets'
+  import { useAssets, useDeleteAssets } from '$lib/assets/query'
   import { infiniteScroll } from '$lib/actions'
   import { scrollContainer } from '$lib/stores'
+  import { cn } from '$lib/cn'
+  import { updateFilter } from '$lib/url-params'
+  import { page } from '$app/stores'
 
   let selectedAssets: number[] = []
   let alertDialog: DeleteAlertDialog
 
-  const filters = writable({
-    search: '',
-    sort: ''
-  })
-
-  const assets = useAssets(filters)
+  const assets = useAssets()
   const deleteAssets = useDeleteAssets()
-
-  function sort(e: CustomEvent<string>) {
-    $filters.sort = e.detail
-  }
-
-  function search(e: CustomEvent<{ search: string }>) {
-    $filters.search = e.detail.search
-  }
 
   function clear() {
     selectedAssets = []
@@ -62,10 +49,6 @@
     $deleteAssets.mutate(selectedAssets, {
       onSuccess: () => {
         selectedAssets = []
-        addToast(deleteSuccessMsg)
-      },
-      onError: () => {
-        addToast(deleteErrorMsg)
       }
     })
     alertDialog.dismiss()
@@ -78,8 +61,15 @@
 </PageHeader>
 
 <Container title="Медіа файли">
-  <SearchBar on:search={search} debounceWait={200}>
-    <AssetSortMenu slot="filters" on:select={sort} />
+  <SearchBar
+    on:search={e => updateFilter('filename', e.detail.search)}
+    debounceWait={200}
+    defaultValue={$page.url.searchParams.get('filename') || ''}
+  >
+    <AssetSortMenu
+      slot="filters"
+      on:select={e => updateFilter('sort', e.detail)}
+    />
   </SearchBar>
 
   {#if selectedAssets.length > 0}
@@ -144,8 +134,10 @@
                 contentType={asset.contentType}
               />
               <div
-                class="absolute left-2 top-2 z-[2] hidden overflow-hidden group-hover:block"
-                class:selected
+                class={cn(
+                  'absolute left-2 top-2 z-[2] hidden overflow-hidden group-hover:block',
+                  selected && 'block'
+                )}
               >
                 <div
                   class="flex h-8 w-8 items-center justify-center rounded-md bg-gray-200 p-3"
@@ -175,9 +167,3 @@
 </Container>
 
 <DeleteAlertDialog bind:this={alertDialog} on:confirm={deleteSelected} />
-
-<style lang="postcss">
-  .selected {
-    @apply block;
-  }
-</style>
