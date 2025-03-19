@@ -1,11 +1,19 @@
 export class ResponseError extends Error {
   status: number
+  method: string
+  requestUrl: URL
   error: string | Record<string, string>
 
-  constructor(status: number, error: string | Record<string, string>) {
-    super(`Response error: ${status}`)
+  constructor(status: number, method: string, requestUrl: string, error: string | Record<string, string>) {
+    super(`Request failed with status ${status}: ${method} ${requestUrl}${typeof error === 'string' ? ` - ${error}` : ''}`)
     this.status = status
+    this.method = method
+    this.requestUrl = new URL(requestUrl)
     this.error = error
+  }
+
+  get pathname() {
+    return this.requestUrl.pathname
   }
 
   isUnauthorized(): this is { error: string } {
@@ -24,3 +32,4 @@ export class ResponseError extends Error {
     return this.status === 404
   }
 }
+
