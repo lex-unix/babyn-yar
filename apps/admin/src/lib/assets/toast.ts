@@ -8,9 +8,9 @@ export const assetToasts = {
   },
   uploadError: (description: string) => ({
     data: {
-      title: 'Операція успішна',
+      title: 'Не вдалось завнатажити файл(и)',
       description,
-      variant: 'success' as const
+      variant: 'error' as const
     }
   }),
   deleteSuccess: {

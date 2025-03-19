@@ -1,4 +1,4 @@
-import { ResponseError } from 'shared'
+import { ResponseError } from './response-error'
 
 const DEFAULT_REQUEST_OPTS: RequestInit = {
   credentials: 'include'
@@ -14,7 +14,8 @@ export async function fetcher(url: URL | string, opts: RequestInit = {}) {
     } catch (_error) {
       responseError = response.statusText
     }
-    throw new ResponseError(response.status, responseError)
+    const method = opts.method ?? 'GET'
+    throw new ResponseError(response.status, method, response.url, responseError)
   }
   return response.json()
 }

@@ -45,10 +45,14 @@ jobs:
           build-args: |
             API_URL=${{ secrets.API_URL }}
             PUBLIC_API_URL=${{ secrets.PUBLIC_API_URL }}
+          secrets: |
+            "sentry-org=${{ secrets.SENTRY_ORG }}"
+            "sentry-project=${{ secrets.SENTRY_PROJECT }}"
+            "sentry-auth-token=${{ secrets.SENTRY_AUTH_TOKEN}}"
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.ACTOR }}/${{ matrix.image }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.app }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.app }}
   cleanup:
     needs: publish
     runs-on: ubuntu-latest
