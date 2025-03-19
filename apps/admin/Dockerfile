@@ -26,7 +26,10 @@ ENV PUBLIC_API_URL=${PUBLIC_API_URL}
 COPY --from=builder /app/out/full/ .
 COPY public ./apps/admin/public
 
-RUN npx turbo run build --filter=admin...
+RUN --mount=type=secret,id=sentry-org,env=SENTRY_ORG  \
+  --mount=type=secret,id=sentry-project,env=SENTRY_PROJECT  \
+  --mount=type=secret,id=sentry-auth-token,env=SENTRY_AUTH_TOKEN \
+  npx turbo run build --filter=admin...
 
 FROM nginx:1.24-alpine AS runtime
 
