@@ -1,8 +1,11 @@
 import { PUBLIC_API_URL } from '$env/static/public'
 import { fetcher } from '$lib/fetcher'
+import { parse } from 'valibot'
+import { PaginatedUsersResponse, Settings, UserResponse } from './schema'
 
 export async function fetchUsers(params: string) {
-  return fetcher(`${PUBLIC_API_URL}/users?${params}`)
+  const response = await fetcher(`${PUBLIC_API_URL}/users?${params}`)
+  return parse(PaginatedUsersResponse, response)
 }
 
 export async function deleteUsers(ids: number[]) {
@@ -11,17 +14,18 @@ export async function deleteUsers(ids: number[]) {
   })
 }
 
-export async function updateSettings(settings: {
-  fullName: string
-  email: string
-  password: string
-}) {
-  const body: Record<string, unknown> = {}
+export async function updateSettings(settings: Settings) {
+  const body = { ...settings }
   for (const [key, value] of Object.entries(settings)) {
-    if (value) body[key] = value
+    if (!value) {
+      delete body[key as keyof Settings]
+    }
   }
-  return fetcher(PUBLIC_API_URL + '/users', {
+
+  const response = await fetcher(PUBLIC_API_URL + '/users', {
     method: 'PATCH',
     body: JSON.stringify(body)
   })
+
+  return parse(UserResponse, response)
 }

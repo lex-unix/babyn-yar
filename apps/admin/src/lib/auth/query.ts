@@ -1,6 +1,5 @@
-import type { User } from '$lib/types'
 import { createMutation, createQuery } from '@tanstack/svelte-query'
-import type { ResponseError } from '$lib/response-error'
+import { ResponseError } from '$lib/response-error'
 import { queryClient } from '$lib/query/client'
 import { fetchLoggedUser, login, register } from './api'
 import { userKeys } from '$lib/users/query'
@@ -9,8 +8,9 @@ import { authToasts } from './toast'
 import { currentUser } from './store'
 import { goto } from '$app/navigation'
 import { get } from 'svelte/store'
-import type { UsersResponse } from '$lib/users/query'
+import type { PaginatedUsersResponse } from '$lib/users/schema'
 import { urlFilters } from '$lib/url-params'
+import type { Login, RegisterUser } from './schema'
 
 export const authKeys = {
   all: ['auth'] as const,
@@ -18,39 +18,29 @@ export const authKeys = {
 }
 
 export function useRegister() {
-  return createMutation<
-    { user: User },
-    ResponseError,
-    { fullName: string; email: string; password: string; permission: string }
-  >({
-    mutationFn: async newUser => register(newUser),
+  return createMutation({
+    mutationFn: (newUser: RegisterUser) => register(newUser),
     onSuccess: response => {
       addToast(authToasts.registerSuccess)
-      queryClient.setQueryData(
-        userKeys.table(get(urlFilters)),
-        (data: UsersResponse) => ({
-          metadata: data.metadata,
-          users: [response.user, ...data.users]
-        })
+      queryClient.setQueryData(userKeys.table(get(urlFilters)), (data: PaginatedUsersResponse) => ({
+        metadata: data.metadata,
+        users: [response.user, ...data.users]
+      })
       )
     }
   })
 }
 
 export function useLogin() {
-  return createMutation<
-    { user: User },
-    ResponseError,
-    { email: string; password: string }
-  >({
-    mutationFn: credentials => login(credentials),
+  return createMutation({
+    mutationFn: (credentials: Login) => login(credentials),
     onSuccess: loggedUser => {
       queryClient.setQueryData(authKeys.me(), loggedUser.user)
       currentUser.set(loggedUser.user)
       goto('/content')
     },
     onError: error => {
-      if (error.isUnauthorized()) {
+      if (error instanceof ResponseError && error.isUnauthorized()) {
         addToast(authToasts.credentialsError)
       }
     }
@@ -58,11 +48,13 @@ export function useLogin() {
 }
 
 export function useLoggedUser() {
-  return createQuery<{ user: User }, ResponseError>({
+  return createQuery({
     queryKey: authKeys.me(),
     queryFn: () => fetchLoggedUser(),
     retry: (failureCount, error) => {
-      if (error.isUnauthorized()) return false
+      if (error instanceof ResponseError && error.isUnauthorized()) {
+        return false
+      }
       return failureCount < 3
     }
   })
