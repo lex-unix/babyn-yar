@@ -1,7 +1,7 @@
 import { CalendarDate } from '@internationalized/date'
 
-export function formatDate(dateString: string) {
-  const date = new Date(dateString)
+export function formatDate(inputDate: string | Date) {
+  const date = typeof inputDate === 'string' ? new Date(inputDate) : inputDate
 
   const dateOpts = {
     day: '2-digit',

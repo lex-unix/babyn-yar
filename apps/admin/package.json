@@ -48,10 +48,12 @@
     "@tiptap/extension-youtube": "^2.11.5",
     "@tiptap/pm": "^2.1.11",
     "@tiptap/starter-kit": "^2.1.11",
+    "@valibot/i18n": "^1.0.0",
     "clsx": "^2.1.0",
     "lucide-svelte": "^0.292.0",
     "shared": "*",
     "shared-types": "*",
-    "tailwind-merge": "^2.2.2"
+    "tailwind-merge": "^2.2.2",
+    "valibot": "^1.0.0"
   }
 }

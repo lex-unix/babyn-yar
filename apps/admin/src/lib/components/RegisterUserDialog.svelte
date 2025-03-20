@@ -16,6 +16,9 @@
   import { PlusIcon } from 'lucide-svelte'
   import { permissionOptions } from '$lib/select-options'
   import { useRegister } from '$lib/auth/query'
+  import { useForm } from '$lib/form'
+  import { RegisterUser } from '$lib/auth/schema'
+  import { ResponseError } from '$lib/response-error'
 
   export function open() {
     dialog.show()
@@ -27,29 +30,28 @@
 
   const register = useRegister()
 
-  let fullName: string
-  let email: string
-  let password: string
-  let permission: string
-  let dialog: Dialog
-
-  async function submit() {
-    $register.mutate(
-      { fullName, email, password, permission },
-      {
-        onSuccess: () => {
-          reset()
-          dialog.dissmis()
+  const { values, errors, isSubmitting, handleSubmit } = useForm({
+    schema: RegisterUser,
+    defaultValues: {
+      fullName: '',
+      email: '',
+      password: '',
+      permission: 'publisher'
+    },
+    onSubmit: async ({ value, reset }) => {
+      try {
+        await $register.mutateAsync(value)
+        dialog.dissmis()
+        reset()
+      } catch (error) {
+        if (error instanceof ResponseError && error.isFormError()) {
+          errors.update(prev => ({ ...prev, ...error.formErrors }))
         }
       }
-    )
-  }
+    }
+  })
 
-  function reset() {
-    fullName = ''
-    password = ''
-    email = ''
-  }
+  let dialog: Dialog
 </script>
 
 <Dialog bind:this={dialog}>
@@ -63,31 +65,28 @@
       Зареєструйте нового користувача, вказавши ім'я, адресу електронної пошти,
       пароль та роль. Користувач зможе потім змінити пароль у налаштуваннях.
     </DialogDescription>
-    <form on:submit|preventDefault={submit} class="space-y-3">
+    <form on:submit|preventDefault={handleSubmit} class="space-y-3">
       <Input
         label="Повне ім'я"
         name="fullName"
-        bind:value={fullName}
+        bind:value={$values.fullName}
+        error={$errors.fullName}
         required
       />
       <Input
         type="email"
         label="Email"
         name="email"
-        bind:value={email}
-        error={$register.isError && $register.error.isFormError()
-          ? $register.error.error.email
-          : undefined}
+        bind:value={$values.email}
+        error={$errors.email}
         required
       />
       <Input
         type="password"
         label="Пароль"
         name="password"
-        bind:value={password}
-        error={$register.isError && $register.error.isFormError()
-          ? $register.error.error.password
-          : undefined}
+        bind:value={$values.password}
+        error={$errors.password}
         required
       />
       <div>
@@ -95,7 +94,7 @@
           Роль
         </label>
         <Select
-          bind:selected={permission}
+          bind:selected={$values.permission}
           defaultSelected={permissionOptions[0]}
         >
           <SelectTrigger>Обрати роль</SelectTrigger>
@@ -106,10 +105,10 @@
           </SelectMenu>
         </Select>
         <div class="flex justify-end pt-2">
-          <Button isLoading={$register.isPending}>Додати</Button>
+          <Button isLoading={$isSubmitting}>Додати</Button>
         </div>
       </div>
     </form>
-    <DialogClose isDisabled={$register.isPending} />
+    <DialogClose isDisabled={$isSubmitting} />
   </DialogContent>
 </Dialog>

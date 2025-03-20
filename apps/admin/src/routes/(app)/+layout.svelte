@@ -10,13 +10,18 @@
   import { scrollContainer } from '$lib/stores'
   import { useLoggedUser } from '$lib/auth/query'
   import { currentUser, isAdmin } from '$lib/auth/store'
+  import { ResponseError } from '$lib/response-error'
 
   let containerRef: HTMLElement | undefined = undefined
   $: if (containerRef) scrollContainer.set(containerRef)
 
   const loggedUser = useLoggedUser()
 
-  $: $loggedUser.isError && $loggedUser.error.isUnauthorized() && goto('/login')
+  $: $loggedUser.isError &&
+    $loggedUser.error instanceof ResponseError &&
+    $loggedUser.error.isUnauthorized() &&
+    goto('/login')
+
   $: if ($loggedUser.isSuccess) {
     $currentUser = $loggedUser.data.user
   }
