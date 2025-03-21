@@ -1,24 +1,24 @@
 import { derived, get, writable } from 'svelte/store'
 import * as v from 'valibot'
 
-type FormActionProps<T extends v.GenericSchema> = {
-  schema: T
-  defaultValues?: Partial<v.InferOutput<T>>
+type FormActionProps<TSchema extends v.GenericSchema> = {
+  schema: TSchema
+  defaultValues?: Partial<v.InferOutput<TSchema>>
   onSubmit?: ({
     value,
     reset
   }: {
-    value: v.InferOutput<T>
+    value: v.InferOutput<TSchema>
     reset: () => void
   }) => Promise<void>
 }
 
 export function useForm<
-  Schema extends v.GenericSchema,
-  Fields extends string = keyof v.InferInput<Schema> & string
->({ defaultValues = {}, ...opts }: FormActionProps<Schema>) {
-  const values = writable<v.InferOutput<Schema>>({ ...defaultValues })
-  const errors = writable<Partial<Record<Fields, string>>>({})
+  TSchema extends v.GenericSchema,
+  TFields extends string = keyof v.InferInput<TSchema> & string
+>({ defaultValues = {}, ...opts }: FormActionProps<TSchema>) {
+  const values = writable<v.InferOutput<TSchema>>({ ...defaultValues })
+  const errors = writable<Partial<Record<TFields, string>>>({})
   const isSubmitting = writable(false)
   const isValid = derived(errors, $errors => Object.keys($errors).length === 0)
 
