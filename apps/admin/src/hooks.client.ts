@@ -1,6 +1,6 @@
-import { currentUser } from '$lib/auth/store';
-import * as Sentry from '@sentry/sveltekit';
-import type { HandleClientError } from '@sveltejs/kit';
+import { currentUser } from '$lib/auth/store'
+import * as Sentry from '@sentry/sveltekit'
+import type { HandleClientError } from '@sveltejs/kit'
 
 Sentry.init({
   dsn: 'https://2fa0f5212da27f8a385d59ee059814bc@o4507650143748096.ingest.us.sentry.io/4509004455149568',
@@ -9,8 +9,7 @@ Sentry.init({
   integrations: [Sentry.replayIntegration()],
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 0.2
-});
-
+})
 
 currentUser.subscribe(user => {
   if (user) {
@@ -24,8 +23,7 @@ currentUser.subscribe(user => {
 })
 
 const errorHandler: HandleClientError = ({ event, error }) => {
-  console.error('An error occurred on the client side: ', error, event);
-};
+  console.error('An error occurred on the client side: ', error, event)
+}
 
-export const handleError = Sentry.handleErrorWithSentry(errorHandler);
-
+export const handleError = Sentry.handleErrorWithSentry(errorHandler)

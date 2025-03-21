@@ -8,7 +8,6 @@ export const RegisterUser = v.object({
   permission: v.union([v.literal('admin'), v.literal('publisher')])
 })
 
-
 export const Login = v.object({
   password: v.pipe(v.string(), v.minLength(8)),
   email: v.pipe(v.string(), v.email())

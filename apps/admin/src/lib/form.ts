@@ -1,10 +1,16 @@
-import { derived, get, writable } from "svelte/store"
-import * as v from "valibot"
+import { derived, get, writable } from 'svelte/store'
+import * as v from 'valibot'
 
 type FormActionProps<T extends v.GenericSchema> = {
   schema: T
   defaultValues?: Partial<v.InferOutput<T>>
-  onSubmit?: ({ value, reset }: { value: v.InferOutput<T>, reset: () => void }) => Promise<void>
+  onSubmit?: ({
+    value,
+    reset
+  }: {
+    value: v.InferOutput<T>
+    reset: () => void
+  }) => Promise<void>
 }
 
 export function useForm<
@@ -24,12 +30,15 @@ export function useForm<
     }
 
     const flatErrors = v.flatten(parseResult.issues)
-    const newErrors = Object.entries(flatErrors.nested!).reduce((errors, [field, messages]) => {
-      if (messages) {
-        errors[field] = messages.join('. ')
-      }
-      return errors
-    }, {} as Record<string, string>)
+    const newErrors = Object.entries(flatErrors.nested!).reduce(
+      (errors, [field, messages]) => {
+        if (messages) {
+          errors[field] = messages.join('. ')
+        }
+        return errors
+      },
+      {} as Record<string, string>
+    )
 
     errors.set(newErrors)
     return false

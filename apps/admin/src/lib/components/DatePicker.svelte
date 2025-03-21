@@ -40,13 +40,13 @@
   <span use:melt={$label} class="block text-gray-500">Дата</span>
   <div
     use:melt={$field}
-    class="mt-0.5 flex min-w-[220px] max-w-[220px] items-center rounded border bg-white p-1.5 text-gray-800 hover:border-sky-400"
+    class="mt-0.5 flex max-w-[220px] min-w-[220px] items-center rounded border bg-white p-1.5 text-gray-800 hover:border-sky-400"
   >
     {#key $locale}
       {#each $segmentContents as seg}
         <span
           use:melt={$segment(seg.part)}
-          class="rounded focus:outline-none focus:ring-2 focus:ring-sky-300"
+          class="rounded focus:ring-2 focus:ring-sky-300 focus:outline-none"
         >
           {seg.value}
         </span>
@@ -57,7 +57,7 @@
         type="button"
         use:melt={$trigger}
         aria-label="Open calendar"
-        class="rounded-md bg-indigo-50 p-1 text-indigo-700 transition-colors hover:bg-indigo-100 hover:text-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+        class="rounded-md bg-indigo-50 p-1 text-indigo-700 transition-colors hover:bg-indigo-100 hover:text-indigo-800 focus:ring-2 focus:ring-indigo-300 focus:outline-none"
       >
         <CalendarIcon size={16} />
       </button>
@@ -100,7 +100,7 @@
               {#each $weekdays as day}
                 <th class="text-sm font-semibold">
                   <div
-                    class="size-6 flex select-none items-center justify-center p-4 text-gray-500"
+                    class="flex size-6 items-center justify-center p-4 text-gray-500 select-none"
                   >
                     {day}
                   </div>
@@ -120,7 +120,7 @@
                   >
                     <div
                       use:melt={$cell(date, month.value)}
-                      class="cell size-6 flex cursor-pointer select-none items-center justify-center rounded-lg p-4 hover:bg-indigo-100 focus:outline-none focus:ring focus:ring-indigo-400"
+                      class="cell flex size-6 cursor-pointer items-center justify-center rounded-lg p-4 select-none hover:bg-indigo-100 focus:ring focus:ring-indigo-400 focus:outline-none"
                     >
                       {date.day}
                     </div>

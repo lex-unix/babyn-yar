@@ -38,7 +38,7 @@
 </script>
 
 <div
-  class="flex w-full items-center justify-between rounded-bl-md rounded-br-md border bg-white px-8 font-medium"
+  class="flex w-full items-center justify-between rounded-br-md rounded-bl-md border bg-white px-8 font-medium"
 >
   <div class="-mt-[1px] flex flex-1 items-center">
     <button

@@ -24,7 +24,7 @@
       <slot />
     </ul>
     {#if $currentUser}
-      <div class="relative mb-4 mt-auto w-full">
+      <div class="relative mt-auto mb-4 w-full">
         <a
           href="/settings"
           class="group inline-flex w-full items-center justify-center gap-3 text-sm text-gray-700 hover:text-indigo-700"
@@ -35,7 +35,7 @@
             class="text-gray-400 group-hover:text-indigo-700"
           />
           <span
-            class="overflow-hidden overflow-ellipsis whitespace-nowrap font-semibold md:hidden lg:inline"
+            class="overflow-hidden font-semibold overflow-ellipsis whitespace-nowrap md:hidden lg:inline"
           >
             {$currentUser.fullName}
           </span>

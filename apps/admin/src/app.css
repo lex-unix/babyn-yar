@@ -1,7 +1,6 @@
 @import 'tailwindcss';
 
 @layer base {
-
   *,
   ::after,
   ::before,

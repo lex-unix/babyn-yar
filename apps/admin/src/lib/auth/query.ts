@@ -22,10 +22,12 @@ export function useRegister() {
     mutationFn: (newUser: RegisterUser) => register(newUser),
     onSuccess: response => {
       addToast(authToasts.registerSuccess)
-      queryClient.setQueryData(userKeys.table(get(urlFilters)), (data: PaginatedUsersResponse) => ({
-        metadata: data.metadata,
-        users: [response.user, ...data.users]
-      })
+      queryClient.setQueryData(
+        userKeys.table(get(urlFilters)),
+        (data: PaginatedUsersResponse) => ({
+          metadata: data.metadata,
+          users: [response.user, ...data.users]
+        })
       )
     }
   })

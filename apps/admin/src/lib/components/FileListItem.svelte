@@ -29,7 +29,7 @@
 >
   <button
     on:click={remove}
-    class="absolute right-3 top-3 z-10 hidden items-center justify-center p-1.5 text-gray-400 hover:text-red-400 group-hover:inline-flex"
+    class="absolute top-3 right-3 z-10 hidden items-center justify-center p-1.5 text-gray-400 group-hover:inline-flex hover:text-red-400"
     aria-label="Видалити файл"
   >
     <Trash2Icon size={16} />
@@ -62,17 +62,17 @@
         type="text"
         value={fileName}
         on:input={change}
-        class="w-full rounded-bl-md rounded-tl-md border px-4 py-3 text-sm outline-none hover:border-sky-400"
+        class="w-full rounded-tl-md rounded-bl-md border px-4 py-3 text-sm outline-none hover:border-sky-400"
       />
       <span
-        class="rounded-br-md rounded-tr-md border border-l-0 bg-white px-4 py-3 text-sm text-gray-400"
+        class="rounded-tr-md rounded-br-md border border-l-0 bg-white px-4 py-3 text-sm text-gray-400"
       >
         {extension}
       </span>
     </div>
     <div class="mt-4 hidden w-full items-center justify-end">
       <button
-        class="rounded-md border border-gray-700/20 bg-white px-4 py-3 text-sm leading-none outline-none transition-colors hover:bg-gray-200 focus:ring focus:ring-gray-300"
+        class="rounded-md border border-gray-700/20 bg-white px-4 py-3 text-sm leading-none transition-colors outline-none hover:bg-gray-200 focus:ring focus:ring-gray-300"
       >
         Додаткові опції
       </button>

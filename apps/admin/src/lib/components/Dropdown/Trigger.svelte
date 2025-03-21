@@ -16,7 +16,7 @@
   use:melt={$trigger}
   type="button"
   class={cn(
-    'flex items-center gap-3 rounded-md bg-indigo-600 px-4 py-3 text-sm font-semibold leading-none text-white hover:bg-indigo-500 disabled:opacity-70',
+    'flex items-center gap-3 rounded-md bg-indigo-600 px-4 py-3 text-sm leading-none font-semibold text-white hover:bg-indigo-500 disabled:opacity-70',
     className
   )}
 >

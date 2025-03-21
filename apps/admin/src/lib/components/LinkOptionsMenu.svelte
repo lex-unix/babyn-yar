@@ -60,13 +60,13 @@
 {#if open}
   <div
     use:melt={$menu}
-    class="absolute !left-1/2 bottom-5 z-50 mt-2.5 h-fit max-h-[300px] w-full -translate-x-1/2 flex-col overflow-y-auto rounded-md bg-white p-1 shadow-lg shadow-gray-900/30"
+    class="absolute bottom-5 !left-1/2 z-50 mt-2.5 h-fit max-h-[300px] w-full -translate-x-1/2 flex-col overflow-y-auto rounded-md bg-white p-1 shadow-lg shadow-gray-900/30"
   >
     {#each options as option}
       <div
         use:melt={$item}
         on:m-click={() => select(option)}
-        class="relative z-50 flex h-10 min-h-[24px] select-none items-center gap-3 rounded py-2 pl-6 pr-1 text-sm leading-none text-gray-600 outline-none data-[highlighted]:bg-gray-100"
+        class="relative z-50 flex h-10 min-h-[24px] items-center gap-3 rounded py-2 pr-1 pl-6 text-sm leading-none text-gray-600 outline-none select-none data-[highlighted]:bg-gray-100"
         class:active={selected.value === option.value}
       >
         <svelte:component this={option.icon} size={16} />
