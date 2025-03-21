@@ -15,7 +15,12 @@ export async function fetcher(url: URL | string, opts: RequestInit = {}) {
       responseError = response.statusText
     }
     const method = opts.method ?? 'GET'
-    throw new ResponseError(response.status, method, response.url, responseError)
+    throw new ResponseError({
+      method,
+      status: response.status,
+      url: response.url,
+      error: responseError
+    })
   }
   return response.json()
 }
