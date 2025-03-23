@@ -53,7 +53,7 @@
     "lucide-svelte": "^0.292.0",
     "shared": "*",
     "shared-types": "*",
-    "tailwind-merge": "^2.2.2",
+    "tailwind-merge": "^3.0.2",
     "valibot": "^1.0.0"
   }
 }
