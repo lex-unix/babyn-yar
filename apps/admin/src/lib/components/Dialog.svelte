@@ -24,7 +24,6 @@
     closeOnOutsideClick: true,
     onOpenChange: ({ next }) => {
       if (next) {
-        console.log('here')
         dispatch('open')
       } else {
         dispatch('close')

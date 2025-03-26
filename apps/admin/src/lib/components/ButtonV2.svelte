@@ -36,9 +36,7 @@
 >
   <slot name="icon" />
 
-  {#if $$slots.default}
-    <span class="truncate">
-      <slot />
-    </span>
-  {/if}
+  <span class="truncate empty:hidden">
+    <slot />
+  </span>
 </button>
