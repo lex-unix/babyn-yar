@@ -135,7 +135,7 @@
               />
               <div
                 class={cn(
-                  'absolute left-2 top-2 z-[2] hidden overflow-hidden group-hover:block',
+                  'absolute top-2 left-2 z-[2] hidden overflow-hidden group-hover:block',
                   selected && 'block'
                 )}
               >

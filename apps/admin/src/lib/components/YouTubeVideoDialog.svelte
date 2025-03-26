@@ -39,11 +39,11 @@
       <Input bind:value={link} type="text" label="Посилання" name="link" />
     </div>
     <div
-      class="-mb-6 -ml-3 -mr-3 flex min-h-[80px] items-center justify-end gap-2.5 rounded-bl-lg rounded-br-lg bg-gray-100 px-6 lg:-ml-6 lg:-mr-6"
+      class="-mr-3 -mb-6 -ml-3 flex min-h-[80px] items-center justify-end gap-2.5 rounded-br-lg rounded-bl-lg bg-gray-100 px-6 lg:-mr-6 lg:-ml-6"
     >
       <button
         on:click={() => dialog.dissmis()}
-        class="rounded-md border bg-white px-4 py-3 text-sm font-semibold leading-none outline-none focus:ring focus:ring-gray-300 disabled:opacity-60"
+        class="rounded-md border bg-white px-4 py-3 text-sm leading-none font-semibold outline-none focus:ring focus:ring-gray-300 disabled:opacity-60"
       >
         Відмінити
       </button>

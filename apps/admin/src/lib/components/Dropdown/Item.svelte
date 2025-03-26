@@ -23,7 +23,7 @@
   on:click={select}
   type="button"
   class={cn(
-    'flex h-10 min-h-[24px] select-none items-center gap-1 rounded py-2 pl-6 pr-1 leading-none text-gray-600 outline-none data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-800',
+    'flex h-10 min-h-[24px] items-center gap-1 rounded py-2 pr-1 pl-6 leading-none text-gray-600 outline-none select-none data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-800',
     className
   )}
 >

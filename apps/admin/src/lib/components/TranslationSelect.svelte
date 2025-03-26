@@ -64,13 +64,13 @@
         use:melt={$input}
         on:input={debounce(search, 200)}
         placeholder="Пошук перекладу..."
-        class="flex h-10 w-full rounded border bg-white py-2 pl-10 pr-10 leading-none outline-none hover:border-sky-400 focus:border-sky-400 focus:ring focus:ring-sky-100 data-[state=open]:border-sky-400 data-[state=open]:ring data-[state=open]:ring-sky-100"
+        class="flex h-10 w-full rounded border bg-white py-2 pr-10 pl-10 leading-none outline-none hover:border-sky-400 focus:border-sky-400 focus:ring focus:ring-sky-100 data-[state=open]:border-sky-400 data-[state=open]:ring data-[state=open]:ring-sky-100"
       />
       <SearchIcon
-        class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-900"
+        class="absolute top-1/2 left-4 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-900"
         size={16}
       />
-      <div class="absolute right-2 top-1/2 z-10 -translate-y-1/2">
+      <div class="absolute top-1/2 right-2 z-10 -translate-y-1/2">
         {#if $selectedState}
           <button
             type="button"
@@ -98,11 +98,11 @@
       {#each translations as translation, index (index)}
         <li
           use:melt={$option(toOption(translation))}
-          class="relative cursor-pointer scroll-my-2 rounded py-2 pl-4 pr-4 hover:bg-indigo-100 hover:text-indigo-800 data-[highlighted]:bg-indigo-100 data-[highlighted]:text-indigo-800"
+          class="relative cursor-pointer scroll-my-2 rounded py-2 pr-4 pl-4 hover:bg-indigo-100 hover:text-indigo-800 data-[highlighted]:bg-indigo-100 data-[highlighted]:text-indigo-800"
           class:selected={selected?.id === translation.id}
         >
           {#if selected?.id === translation.id}
-            <div class="absolute left-2 top-1/2 -translate-y-1/2">
+            <div class="absolute top-1/2 left-2 -translate-y-1/2">
               <Check class="h-4 w-4" />
             </div>
           {/if}

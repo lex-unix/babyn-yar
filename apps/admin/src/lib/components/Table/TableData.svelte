@@ -7,7 +7,7 @@
 
 <td
   class={cn(
-    'whitespace-nowrap px-3.5 py-2.5 text-left first:pl-8 last:pr-8',
+    'px-3.5 py-2.5 text-left whitespace-nowrap first:pl-8 last:pr-8',
     className
   )}
 >

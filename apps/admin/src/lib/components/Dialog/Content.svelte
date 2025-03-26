@@ -21,7 +21,7 @@
       class="fixed inset-0 bg-black/10 backdrop-blur-sm"
     />
     <div
-      class="fixed inset-0 flex w-full min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden p-2 md:p-6"
+      class="fixed inset-0 flex w-full min-w-full shrink-0 items-center justify-center overflow-x-hidden overflow-y-auto p-2 md:p-6"
     >
       <div
         bind:this={ref}
@@ -30,7 +30,7 @@
           'relative overflow-hidden rounded-lg bg-white shadow-[0_16px_20px_hsla(0,0%,0%,20%)]',
           size === 'sm' && 'w-[90vw] max-w-md p-3 md:p-6',
           size === 'md' &&
-            'w-full p-5 lg:min-w-[720px] lg:max-w-[800px] lg:p-9',
+            'w-full p-5 lg:max-w-[800px] lg:min-w-[720px] lg:p-9',
           size === 'lg' && 'h-full w-full p-5 md:p-9'
         )}
       >

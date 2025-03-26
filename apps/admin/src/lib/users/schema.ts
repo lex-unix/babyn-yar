@@ -7,7 +7,7 @@ v.setGlobalConfig({ lang: 'uk' })
 
 const OptionalPassword = v.pipe(
   v.string(),
-  v.transform(value => value.length > 0 ? value : undefined),
+  v.transform(value => (value.length > 0 ? value : undefined)),
   v.undefinedable(v.pipe(v.string(), v.minLength(8)))
 )
 
@@ -18,7 +18,7 @@ export const User = v.pipe(
     email: Email,
     permissions: v.array(v.string()),
     createdAt: v.string(),
-    updatedAt: v.string(),
+    updatedAt: v.string()
   }),
   v.transform(input => ({
     ...input,
@@ -32,7 +32,6 @@ export const Settings = v.object({
   email: Email,
   password: OptionalPassword
 })
-
 
 export const RegisterUser = v.object({
   email: Email,
@@ -52,6 +51,8 @@ export const PaginatedUsersResponse = v.object({
 
 export type User = v.InferOutput<typeof User>
 export type UserResponse = v.InferOutput<typeof UserResponse>
-export type PaginatedUsersResponse = v.InferOutput<typeof PaginatedUsersResponse>
+export type PaginatedUsersResponse = v.InferOutput<
+  typeof PaginatedUsersResponse
+>
 export type Settings = v.InferOutput<typeof Settings>
 export type RegisterUser = v.InferInput<typeof RegisterUser>

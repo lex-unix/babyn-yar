@@ -34,7 +34,7 @@
         class="w-full border-none bg-transparent py-3.5 pl-10 outline-none placeholder:text-gray-400"
       />
       <SearchIcon
-        class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-900"
+        class="absolute top-1/2 left-4 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-900"
         size={16}
       />
     </div>

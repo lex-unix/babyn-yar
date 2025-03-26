@@ -1,10 +1,15 @@
 <script lang="ts">
-  import { Input, PageHeader, Container, Button } from '$components'
+  import Label from '$components/Label.svelte'
+  import PageHeader from '$components/PageHeader.svelte'
+  import InputV2 from '$components/InputV2.svelte'
   import { currentUser } from '$lib/auth/store'
   import { useForm } from '$lib/form'
   import { ResponseError } from '$lib/response-error'
   import { useUpdateSettings } from '$lib/users/query'
   import { Settings } from '$lib/users/schema'
+  import Field from '$components/Field.svelte'
+  import ButtonV2 from '$components/ButtonV2.svelte'
+  import FieldError from '$components/FieldError.svelte'
 
   const updateSettigs = useUpdateSettings()
 
@@ -31,36 +36,45 @@
   <svelte:fragment slot="heading">Налаштування</svelte:fragment>
 </PageHeader>
 
-<Container title="Налаштування">
-  <div class="flex flex-col items-center">
-    <div class="mx-auto w-full max-w-xl">
-      <div class="rounded-md border bg-white p-6 shadow md:p-12">
-        <form on:submit|preventDefault={handleSubmit} class="space-y-5">
-          <Input
-            bind:value={$values.fullName}
-            label="Повне ім'я"
-            name="fullName"
-            error={$errors.fullName}
-          />
-          <Input
-            bind:value={$values.email}
-            type="email"
-            label="Email"
-            name="email"
-            error={$errors.email}
-          />
-          <Input
-            bind:value={$values.password}
-            type="password"
-            label="Новий пароль"
-            name="password"
-            error={$errors.password}
-          />
-          <Button isLoading={$isSubmitting} class="w-full justify-center">
-            Зберегти зміни
-          </Button>
-        </form>
-      </div>
+<div class="mx-auto my-20 max-w-md">
+  <form class="flex flex-col gap-y-10" on:submit|preventDefault={handleSubmit}>
+    <Field>
+      <Label for="fullName">Повне ім&apos;я</Label>
+      <InputV2
+        id="fullName"
+        bind:value={$values.fullName}
+        invalid={!!$errors.fullName}
+      />
+      {#if $errors.fullName}
+        <FieldError>{$errors.fullName}</FieldError>
+      {/if}
+    </Field>
+    <Field>
+      <Label for="email">Email</Label>
+      <InputV2
+        id="email"
+        bind:value={$values.email}
+        invalid={!!$errors.email}
+      />
+      {#if $errors.email}
+        <FieldError>{$errors.email}</FieldError>
+      {/if}
+    </Field>
+    <Field>
+      <Label for="password">Пароль</Label>
+      <InputV2
+        id="password"
+        name="passwrod"
+        type="password"
+        bind:value={$values.password}
+        invalid={!!$errors.password}
+      />
+      {#if $errors.password}
+        <FieldError>{$errors.password}</FieldError>
+      {/if}
+    </Field>
+    <div class="self-end">
+      <ButtonV2 disabled={$isSubmitting}>Зберегти зміни</ButtonV2>
     </div>
-  </div>
-</Container>
+  </form>
+</div>

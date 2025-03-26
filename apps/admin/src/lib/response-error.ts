@@ -5,11 +5,19 @@ export class ResponseError extends Error {
   error: string | Record<string, string>
   formErrors: Record<string, string>
 
-  constructor(status: number, method: string, requestUrl: string, error: string | Record<string, string>) {
-    super(`Request failed with status ${status}: ${method} ${requestUrl}${typeof error === 'string' ? ` - ${error}` : ''}`)
+  constructor(opts: {
+    status: number
+    method: string
+    url: string
+    error: string | Record<string, string>
+  }) {
+    const { status, method, url, error } = opts
+    super(
+      `Request failed with status ${status}: ${method} ${url}${typeof error === 'string' ? ` - ${error}` : ''}`
+    )
     this.status = status
     this.method = method
-    this.requestUrl = new URL(requestUrl)
+    this.requestUrl = new URL(url)
     this.error = error
     this.formErrors = error as Record<string, string>
   }
@@ -34,4 +42,3 @@ export class ResponseError extends Error {
     return this.status === 404
   }
 }
-

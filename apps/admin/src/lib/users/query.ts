@@ -39,10 +39,12 @@ export function useDeleteUsers() {
     },
     onSuccess: (_, deletedIds) => {
       addToast(userToasts.deleteUsersSuccess)
-      queryClient.setQueryData(userKeys.table(get(urlFilters)), (data: PaginatedUsersResponse) => ({
-        metadata: data.metadata,
-        users: data.users.filter(user => !deletedIds.includes(user.id))
-      })
+      queryClient.setQueryData(
+        userKeys.table(get(urlFilters)),
+        (data: PaginatedUsersResponse) => ({
+          metadata: data.metadata,
+          users: data.users.filter(user => !deletedIds.includes(user.id))
+        })
       )
       queryClient.invalidateQueries({
         queryKey: userKeys.all,
@@ -65,7 +67,7 @@ export function useUpdateSettings() {
       addToast(userToasts.updateSettingsSuccess)
       queryClient.invalidateQueries({ queryKey: userKeys.all })
     },
-    onError: (error) => {
+    onError: error => {
       if (error instanceof ResponseError && error.isServerError()) {
         addToast(userToasts.updateSettingsError)
       }

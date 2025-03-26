@@ -8,7 +8,7 @@
 </script>
 
 <DropdownTrigger
-  class="gap-0.5 !bg-transparent p-1.5 text-sm text-gray-400 outline-none transition-all hover:text-gray-900 focus:text-gray-900 focus:ring focus:ring-sky-300"
+  class="gap-0.5 !bg-transparent p-1.5 text-sm text-gray-400 transition-all outline-none hover:text-gray-900 focus:text-gray-900 focus:ring focus:ring-sky-300"
 >
   <span>
     Сортувати:

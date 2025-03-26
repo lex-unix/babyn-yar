@@ -42,7 +42,7 @@
       </div>
     </div>
     <div
-      class="absolute left-0 top-0 z-10 m-2 hidden rounded bg-gray-200 p-1.5 group-hover:block"
+      class="absolute top-0 left-0 z-10 m-2 hidden rounded bg-gray-200 p-1.5 group-hover:block"
       class:checked
     >
       <label class="">

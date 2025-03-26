@@ -1,46 +1,75 @@
-<script lang="ts">
-  import { UserCircle2 } from 'lucide-svelte'
-  import { sidebarOpen } from '$lib/stores'
-  import { clickOutside } from '$lib/actions'
-  import { cn } from '$lib/cn'
-  import { currentUser } from '$lib/auth/store'
+<script>
+  import SidebarLink from './SidebarLink.svelte'
+  import { isAdmin } from '$lib/auth/store'
 </script>
 
-<div
-  class={cn(
-    'absolute inset-0 z-40 hidden bg-black/20',
-    $sidebarOpen && 'block'
-  )}
-/>
-<aside
-  class={cn(
-    'absolute inset-y-0 left-0 z-40 hidden min-h-full w-[280px] max-w-[80px] border-r bg-white transition-[max-width] md:relative md:block lg:max-w-[280px]',
-    $sidebarOpen && 'block w-[280px] max-w-[280px]'
-  )}
-  use:clickOutside={{ cb: () => ($sidebarOpen = false) }}
->
-  <div class="flex min-h-full flex-col px-4">
-    <ul class="pt-5 lg:w-full">
-      <slot />
-    </ul>
-    {#if $currentUser}
-      <div class="relative mb-4 mt-auto w-full">
-        <a
-          href="/settings"
-          class="group inline-flex w-full items-center justify-center gap-3 text-sm text-gray-700 hover:text-indigo-700"
-          on:click={() => ($sidebarOpen = false)}
+<nav class="flex h-full min-h-0 flex-col">
+  <div class="flex flex-1 flex-col overflow-y-auto p-4">
+    <div class="flex flex-col gap-0.5">
+      <SidebarLink href="/content">
+        <svg
+          slot="icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
         >
-          <UserCircle2
-            size={20}
-            class="text-gray-400 group-hover:text-indigo-700"
+          <path
+            d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z"
           />
-          <span
-            class="overflow-hidden overflow-ellipsis whitespace-nowrap font-semibold md:hidden lg:inline"
+          <path
+            d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z"
+          />
+        </svg>
+
+        Контент
+      </SidebarLink>
+      <SidebarLink href="/assets">
+        <svg
+          slot="icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+
+        Медіа файли
+      </SidebarLink>
+      {#if $isAdmin}
+        <SidebarLink href="/users">
+          <svg
+            slot="icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
           >
-            {$currentUser.fullName}
-          </span>
-        </a>
-      </div>
-    {/if}
+            <path
+              d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z"
+            />
+          </svg>
+
+          Користувачі
+        </SidebarLink>
+      {/if}
+      <SidebarLink href="/settings">
+        <svg
+          slot="icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 0 0-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 0 0-2.282.819l-.922 1.597a1.875 1.875 0 0 0 .432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 0 0 0 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 0 0-.432 2.385l.922 1.597a1.875 1.875 0 0 0 2.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 0 0 2.28-.819l.923-1.597a1.875 1.875 0 0 0-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 0 0 0-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 0 0-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 0 0-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 0 0-1.85-1.567h-1.843ZM12 15.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        Налаштування
+      </SidebarLink>
+    </div>
   </div>
-</aside>
+</nav>

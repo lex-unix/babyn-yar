@@ -33,13 +33,13 @@
     <div class="mt-6 flex justify-between gap-4 md:justify-end">
       <button
         on:click={() => dialog.dissmis()}
-        class="inline-flex h-8 items-center justify-center rounded-[4px] bg-gray-50 px-4 font-medium leading-none text-gray-600 hover:bg-gray-100"
+        class="inline-flex h-8 items-center justify-center rounded-[4px] bg-gray-50 px-4 leading-none font-medium text-gray-600 hover:bg-gray-100"
       >
         Відмінити
       </button>
       <button
         on:click={confirm}
-        class="inline-flex h-8 items-center justify-center rounded bg-red-50 px-4 font-medium leading-none text-red-600 hover:bg-red-100"
+        class="inline-flex h-8 items-center justify-center rounded bg-red-50 px-4 leading-none font-medium text-red-600 hover:bg-red-100"
       >
         Видалити
       </button>
