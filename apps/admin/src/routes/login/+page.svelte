@@ -1,7 +1,11 @@
 <script lang="ts">
+  import Button from '$components/ButtonV2.svelte'
+  import Field from '$components/Field.svelte'
+  import Label from '$components/Label.svelte'
+  import Input from '$components/InputV2.svelte'
+  import FieldError from '$components/FieldError.svelte'
   import { currentUser } from '$lib/auth/store'
   import { goto } from '$app/navigation'
-  import { Button, Input } from '$components'
   import { useLoggedUser, useLogin } from '$lib/auth/query'
   import { useForm } from '$lib/form'
   import { Login } from '$lib/auth/schema'
@@ -23,40 +27,38 @@
   $: ($currentUser || $loggedUser.isSuccess) && goto('/content')
 </script>
 
-<div class="flex min-h-screen flex-col bg-gray-50 text-gray-900">
-  <div class="flex flex-1 flex-col justify-center">
-    <div class="mx-auto w-full max-w-[28rem]">
-      <h2 class="text-center text-2xl font-bold tracking-tight">
+<div class="flex w-full flex-col justify-center bg-white">
+  <div class="px-6 py-12 lg:p-6">
+    <div class="mx-auto w-full max-w-md">
+      <h1 class="mb-8 text-center text-2xl/8 font-semibold sm:text-xl/8">
         Увійдіть у свій обліковий запис
-      </h2>
-    </div>
-    <div class="mx-auto mt-10 w-full max-w-md">
-      <div class="rounded-lg border bg-white p-6 shadow md:p-12">
-        <form
-          on:submit|preventDefault={handleSubmit}
-          class="mx-auto max-w-md space-y-6"
-        >
+      </h1>
+      <form on:submit|preventDefault={handleSubmit} class="flex flex-col gap-6">
+        <Field>
+          <Label for="email">Email</Label>
           <Input
-            name="email"
-            type="email"
-            label="Email"
+            id="email"
             bind:value={$values.email}
-            error={$errors.email}
-            required
+            invalid={!!$errors.email}
           />
+          {#if $errors.email}
+            <FieldError>{$errors.email}</FieldError>
+          {/if}
+        </Field>
+        <Field>
+          <Label for="password">Пароль</Label>
           <Input
-            name="password"
+            id="password"
             type="password"
-            label="Пароль"
             bind:value={$values.password}
-            error={$errors.password}
-            required
+            invalid={!!$errors.password}
           />
-          <Button isLoading={$login.isPending} class="w-full justify-center">
-            Продовжити
-          </Button>
-        </form>
-      </div>
+          {#if $errors.password}
+            <FieldError>{$errors.password}</FieldError>
+          {/if}
+        </Field>
+        <Button disabled={$login.isPending}>Продовжити</Button>
+      </form>
     </div>
   </div>
 </div>
