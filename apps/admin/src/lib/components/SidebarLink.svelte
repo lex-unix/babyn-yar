@@ -1,3 +1,13 @@
+<script context="module">
+  import { crossfade } from 'svelte/transition'
+  import { cubicInOut } from 'svelte/easing'
+
+  const [send, receive] = crossfade({
+    duration: 300,
+    easing: cubicInOut
+  })
+</script>
+
 <script lang="ts">
   import { page } from '$app/stores'
   import { cn } from '$lib/cn'
@@ -6,17 +16,19 @@
 
   export let href: string
 
-  const isActive = derived(page, $page => $page.url.pathname === href)
+  const isActive = derived(page, $page => $page.url.pathname.startsWith(href))
 </script>
 
 <div class="flex flex-col gap-0.5">
   <span class="relative">
-    <span
-      class="absolute inset-y-2 -left-4 w-0.5 rounded-full bg-zinc-950 {!$isActive
-        ? 'hidden'
-        : 'inline-block'}"
-      aria-hidden={!isActive}
-    ></span>
+    {#if $isActive}
+      <span
+        class="absolute inset-y-2 -left-4 inline-block w-0.5 rounded-full bg-zinc-950"
+        aria-hidden={!isActive}
+        in:receive={{ key: 'indicator' }}
+        out:send={{ key: 'indicator' }}
+      ></span>
+    {/if}
     <a
       {href}
       class={cn(
