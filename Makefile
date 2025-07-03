@@ -44,6 +44,16 @@ run/live:
 db/psql:
 	psql ${DATABASE_URL}
 
+## docker/up
+.PHONY: docker/up
+docker/up:
+	docker compose -f ./docker-compose.dev.yml up --detach
+
+## docker/down
+.PHONY: docker/down
+docker/down:
+	docker compose -f ./docker-compose.dev.yml down
+
 ## db/migrations/new name=$1: create a new database migration
 .PHONY: db/migrations/new
 db/migrations/new:
