@@ -9,4 +9,4 @@ export {
 } from './src/util'
 export { fetcher } from './src/fetcher'
 
-export const EMAIL = 'babinyar@ukr.net'
+export const EMAIL = 'contact@babynyar.gov.ua'
