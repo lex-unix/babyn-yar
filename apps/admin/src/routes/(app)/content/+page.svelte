@@ -1,5 +1,7 @@
 <script>
-  import { PageHeader, Container, ContentCard } from '$components'
+  import Container from '$components/Container.svelte'
+  import ContentCard from '$components/ContentCard.svelte'
+  import PageHeader from '$components/PageHeader.svelte'
 
   const links = [
     {
@@ -33,23 +35,21 @@
     {
       href: '/content/development-concept',
       text: 'Концепція розвитку'
+    },
+    {
+      href: '/content/gallery',
+      text: 'Галерея',
+      showCreate: false
     }
   ]
 </script>
 
-<PageHeader>
-  <svelte:fragment slot="heading">Контент</svelte:fragment>
-</PageHeader>
+<PageHeader title="Контент" />
 
 <Container title="Контент">
   <ul class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6">
-    {#each links as { href, text }}
-      <ContentCard {href}>
-        <svelte:fragment slot="title">{text}</svelte:fragment>
-      </ContentCard>
+    {#each links as { href, text, showCreate } (href)}
+      <ContentCard title={text} {href} {showCreate} />
     {/each}
-    <ContentCard href="/content/gallery" showCreate={false}>
-      <svelte:fragment slot="title">Галерея</svelte:fragment>
-    </ContentCard>
   </ul>
 </Container>

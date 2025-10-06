@@ -1,76 +1,59 @@
 <script lang="ts">
-  import { ContentPage, LinkButton, PageHeader } from '$components'
-  import type { ContentData, Metadata } from '$lib/types'
-  import { onMount } from 'svelte'
-  import { getTestimonies, deleteTestimonies } from '$lib/api-utils'
-  import { addToast } from '$components/Toaster.svelte'
-  import { deleteErrorMsg, fetchErrorMsg } from '$lib/toast-messages'
-  import { page } from '$app/stores'
-  import { Plus } from 'lucide-svelte'
+  import ContentPage from '$components/ContentPage.svelte'
+  import Plus from 'phosphor-svelte/lib/Plus'
+  import PageHeader from '$components/PageHeader.svelte'
+  import { useContentFilters } from '$lib/use-content-filters'
+  import { useDeleteTestimonies, useTestimonies } from '$lib/content/query'
+  import type { ContentFilters } from '$lib/content/schema'
+  import Button from '$components/Button.svelte'
 
-  let data: ContentData[] = []
-  let metadata: Metadata
-  let isLoading = false
+  const slug = 'victim-testimonies'
+  const filters = useContentFilters()
+  const content = useTestimonies(() => filters.current)
+  const deleteContent = useDeleteTestimonies()
 
-  onMount(async () => {
-    isLoading = true
-    const params = Object.fromEntries($page.url.searchParams)
-    await load(replaceSearch(params))
-    isLoading = false
-  })
-
-  function replaceSearch(params: Record<string, string>) {
-    if (params.search) {
-      params.title = params.search
-    }
-    return params
+  function handleDelete(selected: number[]) {
+    deleteContent.mutate(selected)
   }
 
-  async function load(params: Record<string, string> = {}) {
-    const response = await getTestimonies(params)
-    if (!response.ok) {
-      addToast(fetchErrorMsg)
-      return
-    }
-    data = response.data.testimonies.map(t => ({
-      id: t.id,
-      title: t.title,
-      author: t.user.fullName,
-      lastChange: t.updatedAt
-    }))
-    metadata = response.data.metadata
+  function handleFilter(title: string) {
+    filters.set(prev => ({ ...prev, page: 1, title }))
   }
 
-  async function _delete(e: CustomEvent<{ selected: number[] }>) {
-    const { ok } = await deleteTestimonies(e.detail.selected)
-    if (!ok) {
-      addToast(deleteErrorMsg)
-      return
-    }
-    const params = Object.fromEntries($page.url.searchParams)
-    await load(replaceSearch(params))
+  function handlePageSelect(page: number) {
+    filters.set(prev => ({ ...prev, page }))
   }
 
-  async function filter(e: CustomEvent<Record<string, string>>) {
-    const filters = replaceSearch(e.detail)
-    await load({ ...filters })
+  function handleSort(sort: ContentFilters['sort']) {
+    filters.set(prev => ({ ...prev, page: 1, sort }))
   }
 </script>
 
-<PageHeader>
-  <svelte:fragment slot="heading">Свідчення очевидців трагедії</svelte:fragment>
-  <LinkButton slot="right-items" href="/content/victim-testimonies/create">
-    <Plus slot="icon" size={16} />
+<PageHeader title="Свідчення очевидців трагедії">
+  <Button href={`/content/${slug}/create`}>
+    {#snippet icon()}
+      <Plus />
+    {/snippet}
     Cтворити
-  </LinkButton>
+  </Button>
 </PageHeader>
 
 <ContentPage
-  {metadata}
-  {data}
-  {isLoading}
+  data={content.data?.testimonies.map(e => ({
+    id: e.id,
+    title: e.title,
+    author: e.user.fullName,
+    lastChange: e.updatedAt
+  })) || []}
+  metadata={content.data?.metadata}
+  isLoading={content.isLoading}
   title="Свідчення очевидців трагедії"
-  entryHref="/content/victim-testimonies"
-  on:filter={filter}
-  on:delete={_delete}
+  entryHref={`/content/${slug}`}
+  searchValue={filters.current?.title}
+  sortValue={filters.current?.sort}
+  isDeleting={deleteContent.isPending}
+  onFilter={handleFilter}
+  onDelete={handleDelete}
+  onPageSelect={handlePageSelect}
+  onSort={handleSort}
 />

@@ -1,94 +1,131 @@
 <script lang="ts">
-  import {
-    Dialog,
-    DialogTitle,
-    DialogDescription,
-    DialogContent,
-    DialogClose,
-    SearchBar,
-    AssetGrid,
-    AssetSortMenu,
-    AssetItem,
-    AssetGridItemSkeleton
-  } from '$components'
+  import Dialog from './Dialog.svelte'
+  import DialogTitle from './DialogTitle.svelte'
+  import DialogDescription from './DialogDescription.svelte'
+  import AssetGrid from './AssetGrid.svelte'
+  import AssetItem from './AssetItem.svelte'
+  import AssetSkeleton from './Skeletons/AssetSkeleton.svelte'
+  import DialogBody from './DialogBody.svelte'
+  import Input from './Input.svelte'
+  import InputGroup from './InputGroup.svelte'
+  import Select from './Select.svelte'
+  import SelectOption from './SelectOption.svelte'
+  import ArrowUp from 'phosphor-svelte/lib/ArrowUp'
+  import ArrowDown from 'phosphor-svelte/lib/ArrowDown'
+  import MagnifyingGlass from 'phosphor-svelte/lib/MagnifyingGlass'
+  import { useIntersect } from '$lib/use-intersect.svelte'
   import { useAssets } from '$lib/assets/query'
-  import type { Asset } from '$lib/types'
-  import { createEventDispatcher } from 'svelte'
-  import { infiniteScroll } from '$lib/actions'
-  import { goto } from '$app/navigation'
-  import { removeUrlParams, updateFilter } from '$lib/url-params'
+  import { DEFAULT_SORT_OPTION, sortOptions } from '$lib/select-options'
+  import { Asset, AssetFilters } from '$lib/assets/schema'
+  import { untrack } from 'svelte'
+  import { useAssetFilters } from '$lib/use-asset-filters'
 
-  export function open(type: string) {
-    dialog.show()
-    updateFilter('content_type', type)
+  type Props = {
+    open?: boolean
+    contentType?: string
+    onSelect: (asset: Asset) => void
   }
 
-  export function close() {
-    dialog.dissmis()
-  }
+  let { open = $bindable(false), contentType, onSelect }: Props = $props()
 
-  let scrollRef: HTMLElement
+  let filters = useAssetFilters({ content_type: contentType })
 
-  let dialog: Dialog
+  let rootRef: HTMLElement | null = $state(null)
+  let bottomRef: HTMLElement | null = $state(null)
 
-  const assets = useAssets()
-  const dispatch = createEventDispatcher()
+  $effect(() => {
+    filters.current.content_type = contentType
+  })
 
-  async function sort(e: CustomEvent<string>) {
-    updateFilter('sort', e.detail)
-  }
-
-  async function search(e: CustomEvent<{ search: string }>) {
-    updateFilter('filename', e.detail.search)
-  }
-
-  function selectAsset(asset: Asset) {
-    let type = ''
-    if (asset.contentType.startsWith('image')) {
-      type = 'image'
-    } else if (asset.contentType.startsWith('video')) {
-      type = 'video'
+  $effect(() => {
+    if (!open) {
+      untrack(() => filters.set(prev => ({ ...prev, content_type: undefined })))
     }
-    dispatch('select', {
-      type,
-      id: asset.id,
-      url: asset.url,
-      fileName: asset.fileName
-    })
+  })
+
+  const assets = useAssets(() => ({ enabled: open, staleTime: 1000 * 10 }))
+
+  useIntersect(() => bottomRef, loadMore, {
+    root: () => rootRef,
+    rootMargin: '300px'
+  })
+
+  function loadMore() {
+    if (assets.hasNextPage && !assets.isFetching) {
+      assets.fetchNextPage()
+    }
+  }
+
+  function handleSort(sort: AssetFilters['sort']) {
+    filters.set(prev => ({ ...prev, sort }))
+  }
+
+  function handleSearch(e: Event) {
+    const filename = (e.target as HTMLInputElement).value
+    filters.set(prev => ({ ...prev, filename }))
+  }
+
+  function handleSelect(asset: Asset) {
+    onSelect(asset)
+    open = false
   }
 </script>
 
-<Dialog
-  bind:this={dialog}
-  size="lg"
-  on:close={() => {
-    goto(removeUrlParams('sort', 'filename'), {
-      replaceState: true,
-      keepFocus: true
-    })
-  }}
->
-  <DialogContent>
-    <DialogTitle slot="title">Медіа файли</DialogTitle>
-    <DialogDescription slot="description">
-      Оберіть потрібний файл
-    </DialogDescription>
-    <div class="mb-5">
-      <SearchBar on:search={search}>
-        <AssetSortMenu slot="filters" on:select={sort} />
-      </SearchBar>
+<Dialog bind:open class="sm:max-w-full">
+  <DialogTitle>Медіа файли</DialogTitle>
+  <DialogDescription>Оберіть потрібний файл</DialogDescription>
+  <DialogBody>
+    <div class="mb-4">
+      <div class="flex max-w-2xl flex-col gap-5 sm:flex-1 sm:flex-row">
+        <div class="flex-1">
+          <InputGroup>
+            <MagnifyingGlass weight="regular" />
+            <Input
+              placeholder="Пошук&hellip;"
+              oninput={handleSearch}
+              value={filters.current.filename}
+            />
+          </InputGroup>
+        </div>
+        <div class="sm:w-44">
+          <Select
+            items={Object.entries(sortOptions).map(([value, opts]) => ({
+              value: value,
+              ...opts
+            }))}
+            onSelect={handleSort}
+            value={filters.current?.sort || DEFAULT_SORT_OPTION}
+          >
+            {#each Object.entries(sortOptions) as [key, value] (key)}
+              <SelectOption value={key} label={value.label}>
+                {#snippet icon()}
+                  {#if value.order === 'asc'}
+                    <ArrowUp weight="fill" />
+                  {:else}
+                    <ArrowDown weight="fill" />
+                  {/if}
+                {/snippet}
+                {value.label}
+              </SelectOption>
+            {/each}
+          </Select>
+        </div>
+      </div>
     </div>
-    <div bind:this={scrollRef} class="h-[85%] overflow-y-auto pr-3 pb-20">
-      {#if $assets.isLoading}
+    <div
+      bind:this={rootRef}
+      class="h-(--height) overflow-y-auto pr-3 pb-20 [--height:calc(100vh-300px)]"
+    >
+      {#if assets.isLoading}
         <AssetGrid>
-          <AssetGridItemSkeleton count={50} />
+          <AssetSkeleton count={50} />
         </AssetGrid>
-      {:else if $assets.isError}
+      {:else if assets.isError}
         <div class="mt-6 text-center font-medium text-red-700">
           <p class="pb-4">Сталася помилка при завантажені</p>
-          <p class="font-mono text-sm">{$assets.error.message}</p>
+          <p class="font-mono text-sm">{assets.error.message}</p>
         </div>
-      {:else if $assets.isSuccess && $assets.data.pages[0].assets.length === 0}
+      {:else if assets.isSuccess && assets.data.pages[0].assets.length === 0}
         <div
           class="col-span-full flex h-full w-full flex-col items-center justify-center"
         >
@@ -96,14 +133,14 @@
             Вибачте, ми не змогли знайти жодного файлу за вашими критеріями
           </p>
         </div>
-      {:else if $assets.isSuccess}
+      {:else if assets.isSuccess}
         <AssetGrid>
-          {#each $assets.data.pages as { assets }}
-            {#each assets as asset}
-              <li class="p-2.5">
+          {#each assets.data.pages as page}
+            {#each page.assets as asset (asset.id)}
+              <li>
                 <button
                   class="group relative w-full"
-                  on:click={() => selectAsset(asset)}
+                  onclick={() => handleSelect(asset)}
                 >
                   <AssetItem
                     src={asset.url}
@@ -115,16 +152,8 @@
             {/each}
           {/each}
         </AssetGrid>
-        {#if $assets.hasNextPage && !$assets.isFetching}
-          <div
-            use:infiniteScroll={{
-              onIntersect: $assets.fetchNextPage,
-              root: scrollRef
-            }}
-          />
-        {/if}
+        <div bind:this={bottomRef}></div>
       {/if}
     </div>
-    <DialogClose />
-  </DialogContent>
+  </DialogBody>
 </Dialog>

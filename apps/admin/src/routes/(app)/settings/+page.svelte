@@ -1,80 +1,158 @@
 <script lang="ts">
-  import Label from '$components/Label.svelte'
-  import PageHeader from '$components/PageHeader.svelte'
-  import InputV2 from '$components/InputV2.svelte'
-  import { currentUser } from '$lib/auth/store'
-  import { useForm } from '$lib/form'
+  import Divider from '$components/Divider.svelte'
+  import Field from '$components/Field.svelte'
+  import Input from '$components/Input.svelte'
+  import FieldError from '$components/FieldError.svelte'
+  import Button from '$components/Button.svelte'
   import { ResponseError } from '$lib/response-error'
   import { useUpdateSettings } from '$lib/users/query'
   import { Settings } from '$lib/users/schema'
-  import Field from '$components/Field.svelte'
-  import ButtonV2 from '$components/ButtonV2.svelte'
-  import FieldError from '$components/FieldError.svelte'
+  import Description from '$components/Description.svelte'
+  import { createForm } from '@tanstack/svelte-form'
+  import { getLoggedUserContext } from '$lib/context'
+  import PageHeader from '$components/PageHeader.svelte'
 
   const updateSettigs = useUpdateSettings()
+  const loggedUser = getLoggedUserContext()
 
-  const { values, errors, isSubmitting, handleSubmit } = useForm({
-    schema: Settings,
+  const form = createForm(() => ({
     defaultValues: {
-      fullName: $currentUser?.fullName ?? '',
-      email: $currentUser?.email ?? '',
-      password: undefined
-    },
-    onSubmit: async ({ value }) => {
-      try {
-        await $updateSettigs.mutateAsync(value)
-      } catch (error) {
-        if (error instanceof ResponseError && error.isFormError()) {
-          errors.update(prev => ({ ...prev, ...error.formErrors }))
+      fullName: loggedUser.fullName ?? '',
+      email: loggedUser.email ?? '',
+      password: ''
+    } as Settings,
+    validators: {
+      onSubmit: Settings,
+      onBlur: Settings,
+      onSubmitAsync: async ({ value }) => {
+        try {
+          await updateSettigs.mutateAsync(value)
+        } catch (error) {
+          if (error instanceof ResponseError && error.isFormError()) {
+            return { fields: error.formErrors }
+          }
         }
       }
     }
-  })
+  }))
+
+  function handleSubmit(event: SubmitEvent) {
+    event.preventDefault()
+    form.handleSubmit()
+  }
 </script>
 
-<PageHeader>
-  <svelte:fragment slot="heading">Налаштування</svelte:fragment>
-</PageHeader>
-
-<div class="mx-auto my-20 max-w-md">
-  <form class="flex flex-col gap-y-10" on:submit|preventDefault={handleSubmit}>
-    <Field>
-      <Label for="fullName">Повне ім&apos;я</Label>
-      <InputV2
-        id="fullName"
-        bind:value={$values.fullName}
-        invalid={!!$errors.fullName}
-      />
-      {#if $errors.fullName}
-        <FieldError>{$errors.fullName}</FieldError>
-      {/if}
-    </Field>
-    <Field>
-      <Label for="email">Email</Label>
-      <InputV2
-        id="email"
-        bind:value={$values.email}
-        invalid={!!$errors.email}
-      />
-      {#if $errors.email}
-        <FieldError>{$errors.email}</FieldError>
-      {/if}
-    </Field>
-    <Field>
-      <Label for="password">Пароль</Label>
-      <InputV2
-        id="password"
-        name="passwrod"
-        type="password"
-        bind:value={$values.password}
-        invalid={!!$errors.password}
-      />
-      {#if $errors.password}
-        <FieldError>{$errors.password}</FieldError>
-      {/if}
-    </Field>
-    <div class="self-end">
-      <ButtonV2 disabled={$isSubmitting}>Зберегти зміни</ButtonV2>
+<div class="mx-auto max-w-4xl">
+  <PageHeader title="Налаштування" />
+  <form class="flex flex-col" onsubmit={handleSubmit}>
+    <section class="grid gap-x-8 gap-y-6 sm:grid-cols-2">
+      <div class="space-y-1">
+        <h2 class="text-base/7 font-semibold text-zinc-950 sm:text-sm/6">
+          Повне ім&apos;я
+        </h2>
+      </div>
+      <form.Field name="fullName">
+        {#snippet children(field)}
+          <Field>
+            <Input
+              id={field.name}
+              name={field.name}
+              value={field.state.value}
+              invalid={field.state.meta.errors.length !== 0}
+              onblur={() => field.handleBlur()}
+              oninput={event => {
+                field.handleChange(event.currentTarget.value)
+              }}
+            />
+            {#if field.state.meta.isTouched}
+              <!-- eslint-disable-next-line svelte/require-each-key -->
+              {#each field.state.meta.errors as error}
+                <FieldError>{error?.message}</FieldError>
+              {/each}
+            {/if}
+          </Field>
+        {/snippet}
+      </form.Field>
+    </section>
+    <Divider class="my-10" />
+    <section class="grid gap-x-8 gap-y-6 sm:grid-cols-2">
+      <div class="space-y-1">
+        <h2 class="text-base/7 font-semibold text-zinc-950 sm:text-sm/6">
+          Email
+        </h2>
+      </div>
+      <form.Field name="email">
+        {#snippet children(field)}
+          <Field>
+            <Input
+              id={field.name}
+              name={field.name}
+              value={field.state.value}
+              invalid={field.state.meta.errors.length !== 0}
+              onblur={() => field.handleBlur()}
+              oninput={event => {
+                field.handleChange(event.currentTarget.value)
+              }}
+            />
+            {#if field.state.meta.isTouched}
+              <!-- eslint-disable-next-line svelte/require-each-key -->
+              {#each field.state.meta.errors as error}
+                <FieldError>{error?.message}</FieldError>
+              {/each}
+            {/if}
+          </Field>
+        {/snippet}
+      </form.Field>
+    </section>
+    <Divider class="my-10" />
+    <section class="grid gap-x-8 gap-y-6 sm:grid-cols-2">
+      <div class="space-y-1">
+        <h2 class="text-base/7 font-semibold text-zinc-950 sm:text-sm/6">
+          Пароль
+        </h2>
+        <Description>Має бути не менше 8 символів</Description>
+      </div>
+      <form.Field name="password">
+        {#snippet children(field)}
+          <Field>
+            <Input
+              type="password"
+              id={field.name}
+              name={field.name}
+              value={field.state.value}
+              invalid={field.state.meta.errors.length !== 0}
+              onblur={() => field.handleBlur()}
+              oninput={event => {
+                field.handleChange(event.currentTarget.value)
+              }}
+            />
+            {#if field.state.meta.isTouched}
+              <!-- eslint-disable-next-line svelte/require-each-key -->
+              {#each field.state.meta.errors as error}
+                <FieldError>{error?.message}</FieldError>
+              {/each}
+            {/if}
+          </Field>
+        {/snippet}
+      </form.Field>
+    </section>
+    <Divider class="my-10" />
+    <div class="flex gap-4 self-end">
+      <form.Subscribe
+        selector={state => ({
+          canSubmit: state.canSubmit,
+          isSubmitting: state.isSubmitting
+        })}
+      >
+        {#snippet children({ canSubmit, isSubmitting })}
+          <Button plain type="button" onclick={() => form.reset()}>
+            Скинути
+          </Button>
+          <Button disabled={!canSubmit}>
+            {isSubmitting ? 'Збереження...' : 'Зберегти зміни'}
+          </Button>
+        {/snippet}
+      </form.Subscribe>
     </div>
   </form>
 </div>

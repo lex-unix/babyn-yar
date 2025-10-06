@@ -1,142 +1,90 @@
 <script lang="ts">
-  import { page } from '$app/stores'
+  import PageHeader from '$components/PageHeader.svelte'
+  import Button from '$components/Button.svelte'
+  import Container from '$components/Container.svelte'
+  import { page } from '$app/state'
+  import EditorSkeleton from '$components/Skeletons/EditorSkeleton.svelte'
   import {
-    Input,
-    LangSelect,
-    CoverSelect,
-    RichTextEditor,
-    Button,
-    PageHeader,
-    Container,
-    NotFound,
-    DatePicker,
-    TranslationSelect
-  } from '$components'
-  import type { HolocaustDocument, Translation } from '$lib/types'
-  import type { ResponseError } from '$lib/response-error'
-  import {
-    getHolocaustDoc,
-    updateHolocaustDoc,
-    getHolocaustDocs
-  } from '$lib/api-utils'
-  import { onMount } from 'svelte'
-  import { addToast } from '$components/Toaster.svelte'
-  import { SaveIcon } from 'lucide-svelte'
-  import { updateRecordSuccessMsg } from '$lib/toast-messages'
+    useHolocaustDocument,
+    useHolocaustDocuments,
+    useUpdateHolocaustDocument
+  } from '$lib/content/query'
+  import ContentFormSimple from '$components/ContentFormSimple.svelte'
+  import { type ContentFormSimple as Form } from '$lib/content/schema'
+  import { toast } from 'svelte-sonner'
+  import { trimText } from '$lib/trim-text'
 
-  let isSubmitting = false
-  let doc: HolocaustDocument
-  let translations: Translation[] = []
-  let selectedTranslation: Translation | undefined
-  let error: ResponseError | undefined
+  let id = $derived(page.params.id) as string
+  let isTranslationQueryEnabled = $state(false)
+  let canSubmit = $state(true)
+  let isSubmitting = $state(false)
 
-  onMount(async function () {
-    const response = await getHolocaustDoc($page.params.id)
-    if (!response.ok) {
-      error = response.error
-      return
-    }
-    doc = response.data.document
-    doc.content = JSON.parse(doc.content as unknown as string)
+  const content = useHolocaustDocument(() => ({ id }))
+  const updateContent = useUpdateHolocaustDocument(() => ({ id }))
 
-    if (response.data.translation) {
-      const translation = response.data.translation
-      selectedTranslation =
-        doc.lang === 'ua'
-          ? { id: translation.englishId, title: translation.englishTitle }
-          : { id: translation.ukrainianId, title: translation.ukrainianTitle }
-    }
+  let translation = $derived(
+    content.data?.translation &&
+      content.data.document &&
+      content.data.translation
+      ? content.data.document.lang === 'en'
+        ? {
+            id: content.data.translation.ukrainianId,
+            title: content.data.translation.ukrainianTitle
+          }
+        : {
+            id: content.data.translation.englishId,
+            title: content.data.translation.englishTitle
+          }
+      : undefined
+  )
 
-    const translationResponse = await getHolocaustDocs()
-    if (translationResponse.ok) {
-      translations = translationResponse.data.documents
-    }
-  })
+  let currentLanguage = $derived<'ua' | 'en'>(
+    content.data?.document.lang || 'ua'
+  )
+  let translationSearch = $derived(translation?.title || '')
 
-  async function submit() {
-    isSubmitting = true
-    const body = JSON.stringify({
-      title: doc.title,
-      occuredOn: new Date(doc.occuredOn).toISOString(),
-      description: doc.description,
-      lang: doc.lang,
-      cover: doc.cover,
-      content: JSON.stringify(doc.content),
-      translationId: selectedTranslation ? selectedTranslation.id : null
+  const translations = useHolocaustDocuments(() => ({
+    title: translationSearch,
+    lang: currentLanguage === 'en' ? 'ua' : 'en',
+    page_size: 20,
+    staleTime: 1000 * 15,
+    enabled: isTranslationQueryEnabled
+  }))
+
+  async function handleSubmit(form: Form) {
+    const promise = updateContent.mutateAsync(form)
+    toast.promise(promise, {
+      loading: 'Loading...',
+      success: data => `Запис "${trimText(data.document.title, 20)}" змінено`,
+      error: 'Помилка'
     })
-    const response = await updateHolocaustDoc($page.params.id, body)
-    if (!response.ok) {
-      error = response.error
-      isSubmitting = false
-      return
-    }
-    addToast(updateRecordSuccessMsg)
-    isSubmitting = false
-    error = undefined
-  }
-
-  async function searchTranslations(e: CustomEvent<{ search: string }>) {
-    const response = await getHolocaustDocs({ title: e.detail.search })
-    if (response.ok) {
-      translations = response.data.documents
+    try {
+      await promise
+    } catch (error) {
+      console.error(error)
     }
   }
 </script>
 
-{#if !error?.isNotFoundError()}
-  <PageHeader>
-    <svelte:fragment slot="heading">Редагувати запис</svelte:fragment>
-    <Button slot="right-items" isLoading={isSubmitting} form="edit-record">
-      <SaveIcon size={16} slot="icon" />
-      Зберегти зміни
-    </Button>
-  </PageHeader>
-
-  <Container title="Редагувати запис">
-    {#if doc}
-      <form
-        on:submit|preventDefault={submit}
-        id="edit-record"
-        class="space-y-5"
-      >
-        <LangSelect
-          bind:lang={doc.lang}
-          error={error?.isFormError() ? error.error.lang : undefined}
-        />
-        <DatePicker bind:datetime={doc.occuredOn} />
-        <TranslationSelect
-          {translations}
-          bind:selected={selectedTranslation}
-          on:search={searchTranslations}
-        />
-        <CoverSelect
-          bind:cover={doc.cover}
-          error={error?.isFormError() ? error.error.cover : undefined}
-        />
-        <Input
-          bind:value={doc.title}
-          name="title"
-          label="Назва"
-          error={error?.isFormError() ? error.error.title : undefined}
-          required
-        />
-        <Input
-          bind:value={doc.description}
-          name="description"
-          label="Опис"
-          error={error?.isFormError() ? error.error.description : undefined}
-          required
-        />
-        <div>
-          <p class="mb-1.5 text-gray-500">Контент</p>
-          {#if error?.isFormError() && error?.error.content}
-            <p class="text-red-500">{error.error.content}</p>
-          {/if}
-          <RichTextEditor bind:content={doc.content} />
-        </div>
-      </form>
-    {/if}
-  </Container>
-{:else if error?.isNotFoundError()}
-  <NotFound />
-{/if}
+<PageHeader title="Редагування запису">
+  <Button disabled={!canSubmit || isSubmitting} form="record-form">
+    Зберегти зміни
+  </Button>
+</PageHeader>
+<Container title="Редагувати запис">
+  {#if content.isLoading}
+    <EditorSkeleton />
+  {:else}
+    <ContentFormSimple
+      bind:searchTerm={translationSearch}
+      bind:currentLanguage
+      bind:isTranslationOpen={isTranslationQueryEnabled}
+      bind:isSubmitting
+      bind:canSubmit
+      content={content.data?.document}
+      selectedTranslation={translation}
+      translations={translations.data?.documents}
+      onSubmit={handleSubmit}
+    />
+  {/if}
+</Container>

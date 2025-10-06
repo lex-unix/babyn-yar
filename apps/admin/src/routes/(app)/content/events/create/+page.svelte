@@ -1,132 +1,50 @@
 <script lang="ts">
-  import {
-    Input,
-    RichTextEditor,
-    LangSelect,
-    CoverSelect,
-    PageHeader,
-    Container,
-    Button,
-    DatePicker,
-    TranslationSelect,
-    DocumentsSelect
-  } from '$components'
-  import type { ResponseError } from '$lib/response-error'
-  import type { JSONContent } from '@tiptap/core'
-  import { createEvent, getEvents } from '$lib/api-utils'
-  import { PlusIcon } from 'lucide-svelte'
-  import { addToast } from '$components/Toaster.svelte'
+  import PageHeader from '$components/PageHeader.svelte'
+  import Button from '$components/Button.svelte'
+  import Container from '$components/Container.svelte'
+  import { useEvents, useCreateEvent } from '$lib/content/query'
+  import ContentForm from '$components/ContentForm.svelte'
+  import { type ContentForm as Form } from '$lib/content/schema'
+  import Plus from 'phosphor-svelte/lib/Plus'
   import { goto } from '$app/navigation'
-  import type { Translation } from '$lib/types'
-  import { onMount } from 'svelte'
+  import { resolve } from '$app/paths'
 
-  let isSubmitting = false
-  let content: JSONContent
-  let title = ''
-  let description = ''
-  let lang = ''
-  let cover = ''
-  let date = ''
-  let documents: string[] = []
-  let translations: Translation[] = []
-  let selectedTranslation: Translation | undefined
-  let error: ResponseError | undefined
+  let isTranslationQueryEnabled = $state(false)
+  let translationSearch = $state('')
+  let currentLanguage = $state<Form['lang']>('ua')
+  let canSubmit = $state(true)
+  let isSubmitting = $state(false)
 
-  onMount(async function () {
-    const translationResponse = await getEvents()
-    if (translationResponse.ok) {
-      translations = translationResponse.data.events
-    }
-  })
+  const translations = useEvents(() => ({
+    title: translationSearch,
+    lang: currentLanguage === 'en' ? 'ua' : 'en',
+    page_size: 20,
+    staleTime: 1000 * 15,
+    enabled: isTranslationQueryEnabled
+  }))
 
-  async function submit() {
-    isSubmitting = true
-    const body = JSON.stringify({
-      title,
-      description,
-      lang,
-      cover,
-      documents,
-      content: JSON.stringify(content),
-      occuredOn: new Date(date).toISOString(),
-      translationId: selectedTranslation ? selectedTranslation.id : null
-    })
-    const response = await createEvent(body)
-    if (!response.ok) {
-      error = response.error
-      isSubmitting = false
-      return
-    }
-    addToast({
-      data: {
-        title: 'Чудово!',
-        description: 'Новий запис було успішно створено',
-        variant: 'success'
-      }
-    })
-    isSubmitting = false
-    error = undefined
-    goto('/content/events')
-  }
-
-  async function searchTranslations(e: CustomEvent<{ search: string }>) {
-    const response = await getEvents({ title: e.detail.search })
-    if (response.ok) {
-      translations = response.data.events
-    }
-  }
+  const createEvent = useCreateEvent()
 </script>
 
-<PageHeader>
-  <svelte:fragment slot="heading">Новий запис</svelte:fragment>
-  <Button
-    slot="right-items"
-    isLoading={isSubmitting}
-    loadingText="Створення..."
-    form="create-record"
-  >
-    <PlusIcon slot="icon" size={16} />
-    Створити
+<PageHeader title="Новий запис">
+  <Button disabled={!canSubmit || isSubmitting} form="record-form">
+    {#snippet icon()}
+      <Plus size={16} />
+    {/snippet}
+    Cтворити
   </Button>
 </PageHeader>
-
 <Container title="Створити запис">
-  <form id="create-record" on:submit|preventDefault={submit} class="space-y-5">
-    <LangSelect
-      bind:lang
-      error={error?.isFormError() ? error.error.lang : undefined}
-    />
-    <DatePicker bind:datetime={date} />
-    <TranslationSelect
-      {translations}
-      bind:selected={selectedTranslation}
-      on:search={searchTranslations}
-    />
-    <CoverSelect
-      bind:cover
-      error={error?.isFormError() ? error.error.cover : undefined}
-    />
-    <Input
-      name="title"
-      label="Назва"
-      error={error?.isFormError() ? error.error.title : undefined}
-      bind:value={title}
-      required
-    />
-    <Input
-      name="description"
-      label="Опис"
-      error={error?.isFormError() ? error.error.description : undefined}
-      bind:value={description}
-      required
-    />
-    <DocumentsSelect bind:documents />
-    <div>
-      <p class="mb-1.5 text-gray-500">Контент</p>
-      {#if error?.isFormError() && error?.error.content}
-        <p class="text-red-500">{error.error.content}</p>
-      {/if}
-      <RichTextEditor bind:content />
-    </div>
-  </form>
+  <ContentForm
+    bind:searchTerm={translationSearch}
+    bind:currentLanguage
+    bind:isTranslationOpen={isTranslationQueryEnabled}
+    bind:isSubmitting
+    bind:canSubmit
+    translations={translations.data?.events}
+    onSubmit={async form => {
+      await createEvent.mutateAsync(form)
+      goto(resolve('/content/events'))
+    }}
+  />
 </Container>

@@ -1,35 +1,23 @@
 <script lang="ts">
-  import { Tooltip } from '$components'
+  import { type Snippet } from 'svelte'
   import { cn } from '$lib/cn'
-  import { melt } from '@melt-ui/svelte'
-  import { createEventDispatcher } from 'svelte'
 
-  export let active: boolean = false
-  export let tooltip: string
-
-  const dispatch = createEventDispatcher()
-
-  function click() {
-    dispatch('click')
+  type Props = {
+    active?: boolean
+    onClick: VoidFunction
+    children: Snippet
   }
+
+  let { active = false, onClick, children }: Props = $props()
 </script>
 
-<Tooltip text={tooltip} placement="top" offest={11}>
-  <button
-    slot="trigger"
-    let:trigger
-    use:melt={trigger}
-    type="button"
-    on:click={click}
-    class={cn('rounded p-1.5 hover:bg-gray-100', active && 'bg-gray-100')}
-    class:active
-  >
-    <slot />
-  </button>
-</Tooltip>
-
-<style>
-  .active {
-    background-color: var(--color-gray-100);
-  }
-</style>
+<button
+  type="button"
+  onclick={onClick}
+  class={cn(
+    'rounded p-1.5 hover:bg-zinc-950/5 *:data-[slot=icon]:size-5 sm:*:data-[slot=icon]:size-4',
+    active && 'bg-zinc-950/5'
+  )}
+>
+  {@render children()}
+</button>

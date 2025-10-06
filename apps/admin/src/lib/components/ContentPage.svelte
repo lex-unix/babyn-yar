@@ -1,173 +1,216 @@
 <script lang="ts">
-  import {
-    DeleteAlertDialog,
-    Table,
-    TableData,
-    TableHeader,
-    TableRow,
-    Container,
-    RecordActionBar,
-    TableSkeleton,
-    Pagination,
-    SearchBar,
-    ContentSortMenu,
-    EmptySearchMessage
-  } from '$components'
-  import { File, History, User } from 'lucide-svelte'
   import { formatDate } from '$lib/format-date'
   import { trimText } from '$lib/trim-text'
-  import type { Metadata, ContentData } from '$lib/types'
-  import { createEventDispatcher } from 'svelte'
-  import { calculateNewPage } from '$lib/pagination'
-  import { page } from '$app/stores'
+  import Table from './Table.svelte'
+  import TableHeader from './TableHeader.svelte'
+  import TableRow from './TableRow.svelte'
+  import TableCell from './TableCell.svelte'
+  import TableBody from './TableBody.svelte'
+  import TableHead from './TableHead.svelte'
+  import PaginationV2 from './PaginationV2.svelte'
+  import Container from './Container.svelte'
+  import EmptySearchMessage from './EmptySearchMessage.svelte'
+  import TableSkeleton from './Skeletons/TableSkeleton.svelte'
+  import TableIconCell from './TableIconCell.svelte'
+  import Dropdown from './Dropdown.svelte'
+  import DropdownButton from './DropdownButton.svelte'
+  import DotsThree from 'phosphor-svelte/lib/DotsThree'
+  import DropdownMenu from './DropdownMenu.svelte'
+  import DropdownItem from './DropdownItem.svelte'
+  import Trash from 'phosphor-svelte/lib/Trash'
+  import Pencil from 'phosphor-svelte/lib/Pencil'
+  import InputGroup from './InputGroup.svelte'
+  import MagnifyingGlass from 'phosphor-svelte/lib/MagnifyingGlass'
+  import Input from './Input.svelte'
+  import { debounce } from '$lib/debounce'
+  import Select from './Select.svelte'
+  import SelectOption from './SelectOption.svelte'
+  import ArrowUp from 'phosphor-svelte/lib/ArrowUp'
+  import ArrowDown from 'phosphor-svelte/lib/ArrowDown'
+  import {
+    contentSortOptions,
+    DEFAULT_CONTENT_SORT_OPTION
+  } from '$lib/select-options'
+  import Alert from './Alert.svelte'
+  import AlertTitle from './AlertTitle.svelte'
+  import AlertDescription from './AlertDescription.svelte'
+  import AlertActions from './AlertActions.svelte'
+  import Button from './Button.svelte'
   import { goto } from '$app/navigation'
+  import type { Metadata } from '$lib/pagination/schema'
 
-  export let data: ContentData[] = []
-  export let metadata: Metadata
-
-  export let isLoading = true
-  export let entryHref: string
-  export let title: string
-
-  let selected: number[] = []
-  let alertDialog: DeleteAlertDialog
-
-  const dispatch = createEventDispatcher()
-
-  function mergeParams(newParams: Record<string, string | number>) {
-    const oldParams = Object.fromEntries(
-      new URLSearchParams($page.url.searchParams)
-    )
-    const stringifiedNewParams = Object.fromEntries(
-      Object.entries(newParams).map(([key, value]) => [key, value.toString()])
-    )
-    return new URLSearchParams({ ...oldParams, ...stringifiedNewParams })
+  type ContentData = {
+    id: number
+    title: string
+    author: string
+    lastChange: string
   }
 
-  function dispatchAndUpdateParams(
-    event: string,
-    params: Record<string, string | number>
-  ) {
-    const mergedParams = mergeParams(params)
-    dispatch(event, Object.fromEntries(mergedParams))
-    goto(`?${mergedParams.toString()}`, { replaceState: true, keepFocus: true })
+  type Props = {
+    data: ContentData[]
+    metadata?: Metadata
+    isLoading: boolean
+    entryHref: string
+    title: string
+    searchValue?: string
+    sortValue?: keyof typeof contentSortOptions
+    isDeleting: boolean
+    onFilter: (value: string) => void
+    onDelete: (ids: number[]) => void
+    onPageSelect: (page: number) => void
+    onSort: (sort: keyof typeof contentSortOptions) => void
   }
 
-  function toggleSelect(id: number) {
-    if (selected.includes(id)) {
-      selected = selected.filter(t => t !== id)
-    } else {
-      selected = [...selected, id]
-    }
+  let {
+    data,
+    metadata,
+    isLoading,
+    entryHref,
+    title,
+    searchValue,
+    sortValue,
+    isDeleting,
+    onFilter,
+    onDelete,
+    onPageSelect,
+    onSort
+  }: Props = $props()
+
+  let selected: ContentData | undefined = $state(undefined)
+  let isAlertOpen = $state(false)
+
+  function handleEdit(content: ContentData) {
+    // eslint-disable-next-line svelte/no-navigation-without-resolve
+    goto(`${entryHref}/${content.id}`)
   }
 
-  function toggleSelectAll() {
-    if (selected.length === data.length) {
-      selected = []
-    } else {
-      selected = data.map(t => t.id)
-    }
+  function handleShowAlert(content: ContentData) {
+    selected = content
+    isAlertOpen = true
   }
 
-  function deleteSelected() {
-    dispatch('delete', { selected: [...selected] })
-    alertDialog.dismiss()
-    selected = []
+  function handleCancelDeletion() {
+    selected = undefined
+    isAlertOpen = false
   }
 
-  function search(e: CustomEvent<{ search: string }>) {
-    dispatchAndUpdateParams('filter', { page: 1, search: e.detail.search })
+  function handleDelete() {
+    if (!selected) return
+    onDelete([selected.id])
+    selected = undefined
+    isAlertOpen = false
   }
 
-  function sort(e: CustomEvent<{ sortValue: string }>) {
-    dispatchAndUpdateParams('filter', { page: 1, sort: e.detail.sortValue })
-  }
-
-  function selectPage(e: CustomEvent<{ page: number }>) {
-    dispatchAndUpdateParams('filter', { page: e.detail.page })
-  }
-
-  function selectPageSize(e: CustomEvent<{ size: number }>) {
-    const newPageSize = e.detail.size
-    const { currentPage, pageSize: currentPageSize } = metadata
-    if (newPageSize === currentPageSize) return
-    const page = calculateNewPage(currentPage, currentPageSize, newPageSize)
-    dispatchAndUpdateParams('filter', { page, page_size: newPageSize })
+  function handleSearch(e: Event) {
+    onFilter((e.target as HTMLInputElement).value)
   }
 </script>
 
 <Container {title}>
   <div class="mb-5">
-    <SearchBar on:search={search}>
-      <ContentSortMenu slot="filters" on:select={sort} />
-    </SearchBar>
+    <div class="flex max-w-xl flex-col gap-5 sm:flex-1 sm:flex-row">
+      <div class="flex-1">
+        <InputGroup>
+          <MagnifyingGlass weight="regular" />
+          <Input
+            placeholder="Пошук&hellip;"
+            oninput={debounce(handleSearch)}
+            value={searchValue}
+          />
+        </InputGroup>
+      </div>
+      <div class="sm:w-44">
+        <Select
+          items={Object.entries(contentSortOptions).map(([value, opts]) => ({
+            value: value,
+            ...opts
+          }))}
+          onSelect={onSort}
+          value={sortValue || DEFAULT_CONTENT_SORT_OPTION}
+        >
+          {#each Object.entries(contentSortOptions) as [key, value] (key)}
+            <SelectOption value={key} label={value.label}>
+              {#snippet icon()}
+                {#if value.order === 'asc'}
+                  <ArrowUp weight="fill" />
+                {:else}
+                  <ArrowDown weight="fill" />
+                {/if}
+              {/snippet}
+              {value.label}
+            </SelectOption>
+          {/each}
+        </Select>
+      </div>
+    </div>
   </div>
-  <RecordActionBar bind:selected on:delete={() => alertDialog.show()} />
   {#if isLoading}
     <TableSkeleton />
   {:else if !isLoading && data.length === 0}
     <EmptySearchMessage />
   {:else}
     <Table>
-      <thead>
-        <tr>
-          <TableHeader>
-            <input
-              type="checkbox"
-              checked={selected.length === data.length && selected.length > 0}
-              on:input={toggleSelectAll}
-            />
-          </TableHeader>
-          <TableHeader>
-            <div class="inline-flex items-center gap-2">
-              <File size={16} />
-              <span>Сторінка</span>
-            </div>
-          </TableHeader>
-          <TableHeader>
-            <div class="flex items-center gap-2">
-              <History size={16} />
-              <span>Остання зміна</span>
-            </div>
-          </TableHeader>
-          <TableHeader>
-            <div class="inline-flex items-center gap-2">
-              <User size={16} />
-              <span>Автор</span>
-            </div>
-          </TableHeader>
-        </tr>
-      </thead>
-      <tbody>
-        {#each data as entry}
-          <TableRow>
-            <TableData>
-              <input
-                type="checkbox"
-                on:input={() => toggleSelect(entry.id)}
-                checked={selected.includes(entry.id)}
-              />
-            </TableData>
-            <TableData class="w-full">
-              <a href={`${entryHref}/${entry.id}`}>{trimText(entry.title)}</a>
-            </TableData>
-            <TableData>{formatDate(entry.lastChange)}</TableData>
-            <TableData>{entry.author}</TableData>
+      <TableHead>
+        <TableHeader>Сторінка</TableHeader>
+        <TableHeader>Остання зміна</TableHeader>
+        <TableHeader>Автор</TableHeader>
+        <TableHeader class="relative w-0">
+          <span class="sr-only">Дії</span>
+        </TableHeader>
+      </TableHead>
+      <TableBody>
+        {#each data as record (record.id)}
+          <TableRow href={`${entryHref}/${record.id}`}>
+            <TableCell>{trimText(record.title, 100)}</TableCell>
+            <TableCell>{formatDate(record.lastChange)}</TableCell>
+            <TableCell>{record.author}</TableCell>
+            <TableIconCell>
+              <Dropdown>
+                <DropdownButton plain>
+                  {#snippet icon()}
+                    <DotsThree />
+                  {/snippet}
+                </DropdownButton>
+                <DropdownMenu offset={3}>
+                  <DropdownItem onSelect={() => handleEdit(record)}>
+                    {#snippet icon()}
+                      <Pencil weight="fill" />
+                    {/snippet}
+                    Редагувати
+                  </DropdownItem>
+                  <DropdownItem onSelect={() => handleShowAlert(record)}>
+                    {#snippet icon()}
+                      <Trash weight="fill" />
+                    {/snippet}
+                    Видалити
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </TableIconCell>
           </TableRow>
         {/each}
-      </tbody>
-      <svelte:fragment slot="pagination">
-        {#if metadata}
-          <Pagination
-            currentPage={metadata.currentPage}
-            lastPage={metadata.lastPage}
-            on:select={selectPage}
-            on:selectSize={selectPageSize}
-          />
-        {/if}
-      </svelte:fragment>
+      </TableBody>
     </Table>
+    {#if metadata}
+      <div class="mt-5">
+        <PaginationV2
+          currentPage={metadata.currentPage}
+          totalPages={metadata.totalRecords}
+          perPage={metadata.pageSize}
+          {onPageSelect}
+        />
+      </div>
+    {/if}
   {/if}
 </Container>
 
-<DeleteAlertDialog bind:this={alertDialog} on:confirm={deleteSelected} />
+<Alert bind:open={isAlertOpen}>
+  <AlertTitle>Видалення запису</AlertTitle>
+  <AlertDescription>
+    Ви дійсно хочете видалити цей запис? Ця дія незворотна.
+  </AlertDescription>
+  <AlertActions>
+    <Button plain onclick={handleCancelDeletion}>Скасувати</Button>
+    <Button onclick={handleDelete} disabled={isDeleting}>Видалити</Button>
+  </AlertActions>
+</Alert>

@@ -2,75 +2,86 @@ import { queryClient } from '$query/client'
 import {
   createMutation,
   keepPreviousData,
-  createQuery
+  createQuery,
+  useQueryClient
 } from '@tanstack/svelte-query'
-import { ResponseError } from '$lib/response-error'
-import { derived, get } from 'svelte/store'
-import { urlFilters } from '$lib/url-params'
-import { currentUser } from '$lib/auth/store'
 import { deleteUsers, fetchUsers, updateSettings } from './api'
-import { addToast } from '$components/Toaster.svelte'
+import type { PaginatedUsersResponse, Settings, UserFilters } from './schema'
 import { userToasts } from './toast'
-import type { PaginatedUsersResponse, Settings } from './schema'
+import { authKeys } from '$lib/auth/query'
+import { useUserFilters } from '$lib/use-user-filters'
 
 export const userKeys = {
   all: ['users'] as const,
-  table: (filters: string) => [...userKeys.all, filters]
+  table: (filters: UserFilters) => [...userKeys.all, filters]
 }
 
 export function useUsers() {
-  return createQuery(
-    derived(urlFilters, $filters => {
-      return {
-        placeholderData: keepPreviousData,
-        queryKey: userKeys.table($filters),
-        queryFn: ({ queryKey }: { queryKey: string[] }) => {
-          return fetchUsers(queryKey[1] as string)
-        }
-      }
-    })
-  )
+  const filters = useUserFilters()
+
+  return createQuery(() => ({
+    queryKey: userKeys.table(filters.current),
+    queryFn: () => {
+      return fetchUsers(filters.current)
+    },
+    placeholderData: keepPreviousData
+  }))
 }
 
 export function useDeleteUsers() {
-  return createMutation({
-    mutationFn: (ids: number[]) => {
-      return deleteUsers(ids)
+  const filters = useUserFilters()
+  const client = useQueryClient()
+
+  return createMutation(() => ({
+    mutationFn: async (userIds: number[]) => {
+      await new Promise(res => setTimeout(res, 1500))
+      return deleteUsers(userIds)
     },
-    onSuccess: (_, deletedIds) => {
-      addToast(userToasts.deleteUsersSuccess)
-      queryClient.setQueryData(
-        userKeys.table(get(urlFilters)),
-        (data: PaginatedUsersResponse) => ({
-          metadata: data.metadata,
-          users: data.users.filter(user => !deletedIds.includes(user.id))
-        })
+    onMutate: async userIds => {
+      await client.cancelQueries({ queryKey: userKeys.all })
+      const prevUsers = client.getQueryData<PaginatedUsersResponse>(
+        userKeys.table(filters.current)
       )
-      queryClient.invalidateQueries({
-        queryKey: userKeys.all,
-        refetchType: 'none'
-      })
+
+      if (!prevUsers) return
+
+      client.setQueryData<PaginatedUsersResponse>(
+        userKeys.table(filters.current),
+        old => {
+          if (!old) return old
+          return {
+            ...old,
+            users: old.users.filter(user => !userIds.includes(user.id))
+          }
+        }
+      )
+
+      return { prevUsers }
     },
-    onError: () => {
-      addToast(userToasts.deleteUsersError)
+    onSettled: () => {
+      client.invalidateQueries({ queryKey: userKeys.all })
+    },
+    onSuccess: () => {
+      userToasts.deleteUsersSuccess()
+    },
+    onError: (error, _userIds, context) => {
+      console.error(error)
+      userToasts.deleteUsersError()
+      if (context?.prevUsers) {
+        client.setQueryData(userKeys.all, context.prevUsers)
+      }
     }
-  })
+  }))
 }
 
 export function useUpdateSettings() {
-  return createMutation({
+  return createMutation(() => ({
     mutationFn: (settings: Settings) => {
       return updateSettings(settings)
     },
-    onSuccess: response => {
-      currentUser.set(response.user)
-      addToast(userToasts.updateSettingsSuccess)
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all })
-    },
-    onError: error => {
-      if (error instanceof ResponseError && error.isServerError()) {
-        addToast(userToasts.updateSettingsError)
-      }
+      queryClient.invalidateQueries({ queryKey: authKeys.me() })
     }
-  })
+  }))
 }

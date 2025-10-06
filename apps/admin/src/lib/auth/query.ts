@@ -1,16 +1,13 @@
-import { createMutation, createQuery } from '@tanstack/svelte-query'
+import {
+  createMutation,
+  createQuery,
+  useQueryClient
+} from '@tanstack/svelte-query'
 import { ResponseError } from '$lib/response-error'
-import { queryClient } from '$lib/query/client'
 import { fetchLoggedUser, login, register } from './api'
 import { userKeys } from '$lib/users/query'
-import { addToast } from '$components/Toaster.svelte'
-import { authToasts } from './toast'
-import { currentUser } from './store'
-import { goto } from '$app/navigation'
-import { get } from 'svelte/store'
-import type { PaginatedUsersResponse } from '$lib/users/schema'
-import { urlFilters } from '$lib/url-params'
 import type { Login, RegisterUser } from './schema'
+import { authToasts } from './toast'
 
 export const authKeys = {
   all: ['auth'] as const,
@@ -18,40 +15,35 @@ export const authKeys = {
 }
 
 export function useRegister() {
-  return createMutation({
+  const client = useQueryClient()
+
+  return createMutation(() => ({
     mutationFn: (newUser: RegisterUser) => register(newUser),
-    onSuccess: response => {
-      addToast(authToasts.registerSuccess)
-      queryClient.setQueryData(
-        userKeys.table(get(urlFilters)),
-        (data: PaginatedUsersResponse) => ({
-          metadata: data.metadata,
-          users: [response.user, ...data.users]
-        })
-      )
+    onSettled: () => {
+      client.invalidateQueries({ queryKey: userKeys.all })
+    },
+    onSuccess: () => {
+      authToasts.registerSuccess()
     }
-  })
+  }))
 }
 
 export function useLogin() {
-  return createMutation({
+  const client = useQueryClient()
+
+  return createMutation(() => ({
     mutationFn: (credentials: Login) => login(credentials),
     onSuccess: loggedUser => {
-      queryClient.setQueryData(authKeys.me(), loggedUser.user)
-      currentUser.set(loggedUser.user)
-      goto('/content')
-    },
-    onError: error => {
-      if (error instanceof ResponseError && error.isUnauthorized()) {
-        addToast(authToasts.credentialsError)
-      }
+      client.setQueryData(authKeys.me(), loggedUser.user)
     }
-  })
+  }))
 }
 
 export function useLoggedUser() {
-  return createQuery({
+  return createQuery(() => ({
     queryKey: authKeys.me(),
+    refetchInterval: 1000 * 60 * 5,
+    refetchIntervalInBackground: true,
     queryFn: () => fetchLoggedUser(),
     retry: (failureCount, error) => {
       if (error instanceof ResponseError && error.isUnauthorized()) {
@@ -59,5 +51,5 @@ export function useLoggedUser() {
       }
       return failureCount < 3
     }
-  })
+  }))
 }

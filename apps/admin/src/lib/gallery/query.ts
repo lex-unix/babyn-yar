@@ -1,68 +1,73 @@
-import { createMutation, createQuery } from '@tanstack/svelte-query'
+import {
+  createMutation,
+  createQuery,
+  useQueryClient
+} from '@tanstack/svelte-query'
 import {
   createGalleryImage,
   deleteGalleryImage,
   fetchGalleryImages
 } from './api'
-import type { GalleryImage } from '$lib/types'
-import type { ResponseError } from '$lib/response-error'
-import { queryClient } from '$query/client'
-import { addToast } from '$components/Toaster.svelte'
-import { galleryToasts } from './toast'
+import type { GalleryImage } from './schema'
 
 const galleryKeys = {
   all: ['gallery'] as const
 }
 
-type GalleryResponse = {
-  images: GalleryImage[]
-}
-
 export function useGalleryImages() {
-  return createQuery<GalleryResponse>({
+  return createQuery(() => ({
     queryKey: galleryKeys.all,
     queryFn: () => {
       return fetchGalleryImages()
     }
-  })
+  }))
 }
 
 export function useCreateGalleryImage() {
-  return createMutation<
-    { image: GalleryImage },
-    ResponseError,
-    { url: string; id: number }
-  >({
-    mutationFn: image => {
+  const client = useQueryClient()
+
+  return createMutation(() => ({
+    mutationFn: (image: { url: string; id: number }) => {
       return createGalleryImage(image)
     },
-    onSuccess: newImage => {
-      addToast(galleryToasts.createSuccess)
-      queryClient.setQueryData(galleryKeys.all, (data: GalleryResponse) => {
-        return {
-          images: [...data.images, newImage.image]
-        }
-      })
-    },
-    onError: () => {
-      addToast(galleryToasts.createError)
+    onSettled: () => {
+      client.invalidateQueries({ queryKey: galleryKeys.all })
     }
-  })
+  }))
 }
 
 export function useDeleteGalleryImage() {
-  return createMutation<Record<string, string>, ResponseError, number>({
-    mutationFn: id => {
+  const client = useQueryClient()
+
+  return createMutation(() => ({
+    mutationFn: (id: number) => {
       return deleteGalleryImage(id)
     },
-    onSuccess: (_, deletedId) => {
-      addToast(galleryToasts.deleteSuccess)
-      queryClient.setQueryData(galleryKeys.all, (data: GalleryResponse) => ({
-        images: data.images.filter(i => i.id !== deletedId)
-      }))
+    onMutate: async id => {
+      await client.cancelQueries({ queryKey: galleryKeys.all })
+      const prevGallery = client.getQueryData<{ images: GalleryImage[] }>(
+        galleryKeys.all
+      )
+
+      if (!prevGallery) return prevGallery
+
+      client.setQueryData<{ images: GalleryImage[] }>(galleryKeys.all, old => {
+        if (!old) return old
+        return {
+          images: old.images.filter(image => image.id !== id)
+        }
+      })
+
+      return { prevGallery }
     },
-    onError: () => {
-      addToast(galleryToasts.deleteError)
+    onSettled: () => {
+      client.invalidateQueries({ queryKey: galleryKeys.all })
+    },
+    onError: (error, _id, context) => {
+      console.error(error)
+      if (context?.prevGallery) {
+        client.setQueryData(galleryKeys.all, context.prevGallery)
+      }
     }
-  })
+  }))
 }

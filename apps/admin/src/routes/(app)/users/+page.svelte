@@ -1,147 +1,170 @@
 <script lang="ts">
-  import {
-    Table,
-    TableHeader,
-    TableRow,
-    TableData,
-    DeleteAlertDialog,
-    RegisterUserDialog,
-    PageHeader,
-    Container,
-    RecordActionBar,
-    TableSkeleton,
-    Pagination
-  } from '$components'
-  import { UserIcon, AtSignIcon, CalendarIcon, KeyIcon } from 'lucide-svelte'
+  import Table from '$components/Table.svelte'
+  import TableBody from '$components/TableBody.svelte'
+  import TableCell from '$components/TableCell.svelte'
+  import TableHead from '$components/TableHead.svelte'
+  import TableHeader from '$components/TableHeader.svelte'
+  import TableRow from '$components/TableRow.svelte'
+  import TableSkeleton from '$components/Skeletons/TableSkeleton.svelte'
+  import Dropdown from '$components/Dropdown.svelte'
+  import DropdownButton from '$components/DropdownButton.svelte'
+  import DropdownMenu from '$components/DropdownMenu.svelte'
+  import DropdownItem from '$components/DropdownItem.svelte'
+  import PaginationV2 from '$components/PaginationV2.svelte'
+  import Button from '$components/Button.svelte'
+  import RegisterUserDialog from '$components/RegisterUserDialog.svelte'
+  import EditUserDialog from '$components/EditUserDialog.svelte'
+  import Alert from '$components/Alert.svelte'
+  import AlertTitle from '$components/AlertTitle.svelte'
+  import AlertDescription from '$components/AlertDescription.svelte'
+  import AlertActions from '$components/AlertActions.svelte'
+  import DotsThree from 'phosphor-svelte/lib/DotsThree'
+  import Pencil from 'phosphor-svelte/lib/Pencil'
+  import Trash from 'phosphor-svelte/lib/Trash'
+  import LockOpen from 'phosphor-svelte/lib/LockOpen'
   import { formatDate } from '$lib/format-date'
   import { useUsers, useDeleteUsers } from '$lib/users/query'
-  import { updateFilter, updateFilters } from '$lib/url-params'
-  import { isAdmin } from '$lib/auth/store'
+  import type { User } from '$lib/users/schema'
+  import TableIconCell from '$components/TableIconCell.svelte'
+  import ResetPasswordDialog from '$components/ResetPasswordDialog.svelte'
+  import { useUserFilters } from '$lib/use-user-filters'
+  import { getLoggedUserContext } from '$lib/context'
 
-  let selectedUsers: number[] = []
-  let alertDialog: DeleteAlertDialog
+  let selectedUser: User | undefined = $state()
+  let isRegisterDialogOpen = $state(false)
+  let isEditDialogOpen = $state(false)
+  let isResetPassswrodDialogOpen = $state(false)
+  let isAlertOpen = $state(false)
+  let filters = useUserFilters()
 
+  const loggedUser = getLoggedUserContext()
   const users = useUsers()
-  const deleteUsers = useDeleteUsers()
+  const deleteUser = useDeleteUsers()
 
-  function toggleSelect(id: number) {
-    if (selectedUsers.includes(id)) {
-      selectedUsers = selectedUsers.filter(e => e !== id)
-    } else {
-      selectedUsers = [...selectedUsers, id]
-    }
+  function handleShowResetPasswordDialog() {
+    isResetPassswrodDialogOpen = true
   }
 
-  function toggleSelectAll() {
-    if ($users.isSuccess) {
-      if (selectedUsers.length === $users.data.users.length) {
-        selectedUsers = []
-      } else {
-        selectedUsers = $users.data.users.map(e => e.id)
-      }
-    }
+  function handleShowEditDialog(user: User) {
+    selectedUser = user
+    isEditDialogOpen = true
   }
 
-  async function deleteSelected() {
-    $deleteUsers.mutate(selectedUsers, {
-      onSuccess: () => {
-        selectedUsers = []
-        alertDialog.dismiss()
-      }
-    })
+  function handleShowAlert(user: User) {
+    selectedUser = user
+    isAlertOpen = true
   }
 
-  function selectPage(e: CustomEvent<{ page: number }>) {
-    updateFilter('page', e.detail.page)
+  function confirmDeletion() {
+    if (!selectedUser) return
+    deleteUser.mutate([selectedUser.id])
+    isAlertOpen = false
+    selectedUser = undefined
   }
 
-  function selectPageSize(e: CustomEvent<{ size: number }>) {
-    updateFilters({ page: 1, page_size: e.detail.size })
+  function cancelDeletion() {
+    selectedUser = undefined
+    isAlertOpen = false
+  }
+
+  function selectPage(page: number) {
+    filters.set(prev => ({ ...prev, page }))
   }
 </script>
 
-{#if $isAdmin}
-  <PageHeader>
-    <svelte:fragment slot="heading">Користувачі</svelte:fragment>
-    <RegisterUserDialog slot="right-items" />
-  </PageHeader>
+{#if loggedUser.permissions.includes('admin')}
+  <div class="flex items-center justify-between gap-4">
+    <h1 class="text-2xl/8 font-semibold text-zinc-950 sm:text-xl/8">
+      Користувачі
+    </h1>
+    <Button onclick={() => (isRegisterDialogOpen = true)}>Додати</Button>
+  </div>
 
-  <Container title="Управління користувачами">
-    <RecordActionBar
-      bind:selected={selectedUsers}
-      on:delete={() => alertDialog.show()}
-    />
-
-    {#if $users.isLoading}
+  <div class="mt-8">
+    {#if users.isLoading}
       <TableSkeleton />
-    {:else if $users.isSuccess}
+    {:else if users.isSuccess}
       <Table>
-        <thead>
-          <tr>
-            <TableHeader>
-              <input
-                type="checkbox"
-                checked={selectedUsers.length > 0 &&
-                  selectedUsers.length === $users.data.users.length}
-                on:input={toggleSelectAll}
-              />
-            </TableHeader>
-            <TableHeader>
-              <div class="inline-flex items-center gap-2">
-                <UserIcon size={16} />
-                <span>Користувач</span>
-              </div>
-            </TableHeader>
-            <TableHeader>
-              <div class="inline-flex items-center gap-2">
-                <AtSignIcon size={16} />
-                <span>Email</span>
-              </div>
-            </TableHeader>
-            <TableHeader>
-              <div class="inline-flex items-center gap-2">
-                <CalendarIcon size={16} />
-                <span>Дата реєстрації</span>
-              </div>
-            </TableHeader>
-            <TableHeader>
-              <div class="inline-flex items-center gap-2">
-                <KeyIcon size={16} />
-                <span>Дозволи</span>
-              </div>
-            </TableHeader>
-          </tr>
-        </thead>
-        <tbody>
-          {#each $users.data.users as user}
+        <TableHead>
+          <TableHeader>Користувачі</TableHeader>
+          <TableHeader>Email</TableHeader>
+          <TableHeader>Дозволи</TableHeader>
+          <TableHeader>Дата реєстрації</TableHeader>
+          <TableHeader class="relative w-0">
+            <span class="sr-only">Дії</span>
+          </TableHeader>
+        </TableHead>
+        <TableBody>
+          {#each users.data.users as user (user.id)}
             <TableRow>
-              <TableData>
-                <input
-                  type="checkbox"
-                  on:input={() => toggleSelect(user.id)}
-                  checked={selectedUsers.includes(user.id)}
-                />
-              </TableData>
-              <TableData>{user.fullName}</TableData>
-              <TableData>{user.email}</TableData>
-              <TableData>{formatDate(user.createdAt)}</TableData>
-              <TableData>{user.permissions.join(', ')}</TableData>
+              <TableCell>{user.fullName}</TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>{user.permissions.join(', ')}</TableCell>
+              <TableCell>{formatDate(user.createdAt)}</TableCell>
+              <TableIconCell>
+                <Dropdown>
+                  <DropdownButton plain>
+                    {#snippet icon()}
+                      <DotsThree />
+                    {/snippet}
+                  </DropdownButton>
+                  <DropdownMenu offset={3}>
+                    <DropdownItem onSelect={() => handleShowEditDialog(user)}>
+                      {#snippet icon()}
+                        <Pencil weight="fill" />
+                      {/snippet}
+                      Редагувати
+                    </DropdownItem>
+                    <DropdownItem onSelect={() => handleShowAlert(user)}>
+                      {#snippet icon()}
+                        <Trash weight="fill" />
+                      {/snippet}
+                      Видалити
+                    </DropdownItem>
+                    <DropdownItem
+                      onSelect={() => handleShowResetPasswordDialog()}
+                    >
+                      {#snippet icon()}
+                        <LockOpen weight="fill" />
+                      {/snippet}
+                      Скинути пароль
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </TableIconCell>
             </TableRow>
           {/each}
-        </tbody>
-        <svelte:fragment slot="pagination">
-          <Pagination
-            currentPage={$users.data.metadata.currentPage}
-            lastPage={$users.data.metadata.lastPage}
-            on:select={selectPage}
-            on:selectSize={selectPageSize}
-          />
-        </svelte:fragment>
+        </TableBody>
       </Table>
+      <PaginationV2
+        currentPage={users.data.metadata.currentPage}
+        totalPages={users.data.metadata.totalRecords}
+        perPage={users.data.metadata.pageSize}
+        onPageSelect={selectPage}
+        class="mt-6"
+      />
     {/if}
-  </Container>
+  </div>
 
-  <DeleteAlertDialog bind:this={alertDialog} on:confirm={deleteSelected} />
+  <RegisterUserDialog bind:open={isRegisterDialogOpen} />
+  <ResetPasswordDialog bind:open={isResetPassswrodDialogOpen} />
+  {#if selectedUser}
+    <EditUserDialog bind:open={isEditDialogOpen} {selectedUser} />
+  {/if}
+
+  <Alert bind:open={isAlertOpen}>
+    <AlertTitle>Видалення користувачів</AlertTitle>
+    <AlertDescription>
+      Ви дійсно хочете видалити обраних користувачів? Цю дію неможливо
+      скасувати.
+    </AlertDescription>
+    <AlertActions>
+      <Button plain onclick={cancelDeletion}>Скасувати</Button>
+      <Button onclick={confirmDeletion} disabled={deleteUser.isPending}>
+        Видалити
+      </Button>
+    </AlertActions>
+  </Alert>
 {:else}
   <div class="flex h-full flex-col items-center justify-center text-center">
     <h1 class="text-xl font-semibold">У вас не має доступа до цієї сторінки</h1>

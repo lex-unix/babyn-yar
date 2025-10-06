@@ -1,3 +1,7 @@
+<script lang="ts">
+  const { children } = $props()
+</script>
+
 <div class="mt-6">
-  <slot />
+  {@render children()}
 </div>

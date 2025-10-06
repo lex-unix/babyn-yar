@@ -38,7 +38,8 @@ export const queryClient = new QueryClient({
   }),
   defaultOptions: {
     queries: {
-      enabled: browser
+      enabled: browser,
+      staleTime: 1000 * 5
     }
   }
 })

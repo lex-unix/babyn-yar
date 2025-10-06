@@ -1,26 +1,34 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
-  import { Trash2Icon, FileVideo2Icon, FileTextIcon } from 'lucide-svelte'
+  import Trash from 'phosphor-svelte/lib/Trash'
+  import VideoCamera from 'phosphor-svelte/lib/VideoCamera'
+  import FileText from 'phosphor-svelte/lib/FileText'
 
-  export let src: string
-  export let fileName: string
-  export let extension: string
-  export let index: number
-  export let type: string
-
-  const dispatch = createEventDispatcher<{
-    remove: { index: number }
-    change: { i: number; fileName: string }
-  }>()
-
-  function remove() {
-    dispatch('remove', { index })
+  type Props = {
+    file: File
+    fileName: string
+    extension: string
+    index: number
+    onRemove: () => void
+    onChange: (fileName: string) => void
   }
 
-  function change(
+  let { file, fileName, extension, index, onRemove, onChange }: Props = $props()
+
+  const fileType = file.type.startsWith('image')
+    ? 'image'
+    : file.type.startsWith('video')
+      ? 'video'
+      : 'other'
+  const imageUrl = fileType === 'image' ? URL.createObjectURL(file) : undefined
+
+  function handleRemove() {
+    onRemove()
+  }
+
+  function handleChange(
     e: Event & { currentTarget: EventTarget & HTMLInputElement }
   ) {
-    dispatch('change', { i: index, fileName: e.currentTarget.value })
+    onChange(e.currentTarget.value)
   }
 </script>
 
@@ -28,25 +36,25 @@
   class="group relative grid w-full grid-cols-[230px_auto] gap-5 rounded-md p-4 hover:bg-gray-50"
 >
   <button
-    on:click={remove}
+    onclick={handleRemove}
     class="absolute top-3 right-3 z-10 hidden items-center justify-center p-1.5 text-gray-400 group-hover:inline-flex hover:text-red-400"
     aria-label="Видалити файл"
   >
-    <Trash2Icon size={16} />
+    <Trash size={16} />
   </button>
   <div
     class="flex h-[160px] items-center justify-center overflow-hidden rounded-lg bg-gray-100"
   >
-    {#if type.startsWith('image')}
+    {#if fileType === 'image'}
       <img
-        {src}
+        src={imageUrl}
         alt="Файл для завантаження"
         class="max-h-full w-full object-cover"
       />
-    {:else if type.startsWith('video')}
-      <FileVideo2Icon class="h-12 w-12 text-amber-400 lg:h-16 lg:w-16" />
+    {:else if fileType === 'video'}
+      <VideoCamera class="h-12 w-12 text-amber-400 lg:h-16 lg:w-16" />
     {:else}
-      <FileTextIcon class="h-12 w-12 text-blue-400 lg:h-16  lg:w-16" />
+      <FileText class="h-12 w-12 text-blue-400 lg:h-16  lg:w-16" />
     {/if}
   </div>
   <div class="w-full">
@@ -61,7 +69,7 @@
         id={`asset-name-${index}`}
         type="text"
         value={fileName}
-        on:input={change}
+        oninput={handleChange}
         class="w-full rounded-tl-md rounded-bl-md border px-4 py-3 text-sm outline-none hover:border-sky-400"
       />
       <span
@@ -69,13 +77,6 @@
       >
         {extension}
       </span>
-    </div>
-    <div class="mt-4 hidden w-full items-center justify-end">
-      <button
-        class="rounded-md border border-gray-700/20 bg-white px-4 py-3 text-sm leading-none transition-colors outline-none hover:bg-gray-200 focus:ring focus:ring-gray-300"
-      >
-        Додаткові опції
-      </button>
     </div>
   </div>
 </li>

@@ -1,7 +1,20 @@
+<script lang="ts">
+  import { cn } from '$lib/cn'
+  import type { Snippet } from 'svelte'
+
+  type Props = {
+    class?: string
+    children: Snippet
+  }
+  const { children, class: className = '' }: Props = $props()
+</script>
+
 <span
-  class="relative isolate block has-[svg:first-child]:[&_input]:pl-10 sm:has-[svg:first-child]:[&_input]:pl-8
-  *:[svg]:pointer-events-none *:[svg]:absolute *:[svg]:top-3 *:[svg]:left-2.5 *:[svg]:z-10
-  *:[svg]:size-4 *:[svg]:text-zinc-500 sm:*:[svg]:top-2.5 sm:*:[svg]:left-2.5"
+  data-slot="control"
+  class={cn(
+    'relative isolate block *:data-[slot=icon]:pointer-events-none *:data-[slot=icon]:absolute *:data-[slot=icon]:top-3 *:data-[slot=icon]:z-10 *:data-[slot=icon]:size-5 *:data-[slot=icon]:text-zinc-500 sm:*:data-[slot=icon]:top-2.5 sm:*:data-[slot=icon]:size-4 has-[[data-slot=icon]:first-child]:[&_input]:pl-10 sm:has-[[data-slot=icon]:first-child]:[&_input]:pl-9 [&>[data-slot=icon]:first-child]:left-3 sm:[&>[data-slot=icon]:first-child]:left-2.5',
+    className
+  )}
 >
-  <slot />
+  {@render children()}
 </span>

@@ -1,33 +1,44 @@
 <script lang="ts">
-  import { AssetDialog } from '$components'
-  import { ImageIcon, PlusIcon } from 'lucide-svelte'
+  import Image from 'phosphor-svelte/lib/Image'
+  import Plus from 'phosphor-svelte/lib/Plus'
+  import AssetDialog from './AssetDialog.svelte'
+  import { Asset } from '$lib/assets/schema'
 
-  export let cover: string
-  export let error: string | undefined = undefined
+  type Props = {
+    id?: string
+    cover?: string
+    invalid?: boolean
+    onSelect: (url: string) => void
+  }
 
-  let dialog: AssetDialog
+  let {
+    id = 'select-cover',
+    cover,
+    invalid = false,
+    onSelect
+  }: Props = $props()
 
-  function select(e: CustomEvent<{ url: string }>) {
-    cover = e.detail.url
-    dialog.close()
+  let isDialogOpen = $state(false)
+
+  function handleCoverSelect(asset: Asset) {
+    onSelect(asset.url)
+    isDialogOpen = false
   }
 </script>
 
-<div>
-  <label for="select-cover" class="mb-1.5 block text-gray-500">
-    Обкладинка
-  </label>
-  {#if error}
-    <p class="-mt-1.5 mb-1.5 text-red-500">{error}</p>
-  {/if}
+<span
+  class="relative block w-full before:absolute before:inset-px before:rounded-lg before:bg-white before:shadow-sm after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:ring-transparent after:ring-inset has-data-disabled:opacity-50 has-data-disabled:before:bg-zinc-950/5 has-data-disabled:before:shadow-none has-data-invalid:before:shadow-red-500/10 sm:focus-within:after:ring-2 sm:focus-within:after:ring-blue-500"
+  data-slot="control"
+>
   <button
-    on:click={() => dialog.open('image')}
-    id="select-cover"
+    {id}
     type="button"
-    class="flex w-full items-center gap-5 rounded border bg-white px-3 py-2 outline-none hover:border-sky-400 focus:border-sky-400 focus:ring focus:ring-sky-100"
+    class="relative flex w-full items-center gap-5 rounded-lg border border-zinc-950/10 bg-transparent p-3.5 text-base/6 text-zinc-950 hover:border-zinc-950/20 focus:outline-hidden data-disabled:border-zinc-950/20 data-invalid:border-red-500 data-invalid:hover:border-red-500 sm:px-3 sm:text-sm/6"
+    onclick={() => (isDialogOpen = true)}
+    data-invalid={invalid || undefined}
   >
     <div
-      class="flex h-20 w-[120px] items-center justify-center overflow-hidden rounded-lg bg-gray-100"
+      class="flex h-20 w-[120px] items-center justify-center overflow-hidden rounded-xs bg-gray-100"
     >
       {#if cover}
         <img
@@ -36,24 +47,22 @@
           class="h-full max-w-full object-contain"
         />
       {:else}
-        <ImageIcon class="h-6 w-6" />
+        <Image class="size-6" />
       {/if}
     </div>
     <div class="flex items-center gap-1">
       {#if cover}
-        <button
-          on:click|stopPropagation={() => dialog.open('image')}
-          type="button"
-          class="text-sm"
-        >
-          Змінити
-        </button>
+        <span class="text-sm"> Змінити </span>
       {:else}
-        <PlusIcon class="h-4 w-4" />
+        <Plus class="size-4" />
         <p class="text-sm">Додати обкладинку</p>
       {/if}
     </div>
   </button>
-</div>
+</span>
 
-<AssetDialog bind:this={dialog} on:select={select} />
+<AssetDialog
+  bind:open={isDialogOpen}
+  contentType="image"
+  onSelect={handleCoverSelect}
+/>
