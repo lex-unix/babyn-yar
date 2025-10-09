@@ -9,10 +9,10 @@ const translatePath = useTranslatedPath(lang)
 
 <nav
   id="mobile-nav"
-  class="fixed inset-x-0 bottom-0 top-28 z-20 hidden bg-white px-4 md:hidden"
+  class="fixed inset-x-0 top-28 bottom-0 z-20 hidden bg-white px-4 md:hidden"
 >
   <ul
-    class="max-h-full space-y-8 overflow-y-auto overflow-x-visible overscroll-contain pb-4"
+    class="max-h-full space-y-8 overflow-x-visible overflow-y-auto overscroll-contain pb-4"
   >
     <li class="my-4 text-lg font-bold lowercase">
       <a href={translatePath('/events')}>{t('mobile.events')}</a>

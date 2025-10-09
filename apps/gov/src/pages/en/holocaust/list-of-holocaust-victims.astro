@@ -118,11 +118,11 @@ if (response.ok) {
             <table class="w-full max-w-4xl table-auto border-collapse">
               <thead>
                 <tr>
-                  <th class="border-l border-t" />
+                  <th class="border-t border-l" />
                   <th class="border-t py-2 pl-3 text-left font-bold">
                     Full name
                   </th>
-                  <th class="border-r border-t py-2 pl-3 text-left font-bold">
+                  <th class="border-t border-r py-2 pl-3 text-left font-bold">
                     Info
                   </th>
                 </tr>
@@ -130,14 +130,14 @@ if (response.ok) {
               <tbody>
                 {victims.map((victim: Victim, i) => (
                   <tr class="text-base odd:bg-zinc-50 even:bg-white">
-                    <td class="border-b border-l border-t pl-3">
+                    <td class="border-t border-b border-l pl-3">
                       {metadata &&
                         (metadata.currentPage - 1) * metadata.pageSize + i + 1}
                     </td>
-                    <td class="border-b border-t py-2 pl-3">
+                    <td class="border-t border-b py-2 pl-3">
                       {victim.fullname}
                     </td>
-                    <td class="border-b border-r border-t py-2 pl-3">
+                    <td class="border-t border-r border-b py-2 pl-3">
                       {victim.info}
                     </td>
                   </tr>

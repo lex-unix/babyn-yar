@@ -1,10 +1,11 @@
 import { defineConfig } from 'astro/config'
-import tailwind from '@astrojs/tailwind'
 import react from '@astrojs/react'
 import mdx from '@astrojs/mdx'
 import node from '@astrojs/node'
 import robots from 'astro-robots'
 import sitemap from '@astrojs/sitemap'
+
+import tailwindcss from '@tailwindcss/vite'
 
 const isProd = import.meta.env.PROD
 
@@ -12,9 +13,10 @@ const isProd = import.meta.env.PROD
 export default defineConfig({
   site: 'https://babynyar.gov.ua',
   publicDir: isProd ? './public' : '../../public',
-  integrations: [tailwind(), react(), mdx(), sitemap(), robots()],
-  adapter: node({
-    mode: 'standalone'
-  }),
-  output: 'hybrid'
+  integrations: [react(), mdx(), sitemap(), robots()],
+  adapter: node({ mode: 'standalone' }),
+
+  vite: {
+    plugins: [tailwindcss()]
+  }
 })

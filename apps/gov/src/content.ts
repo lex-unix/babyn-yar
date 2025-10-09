@@ -1,7 +1,4 @@
-import { getCollection, getEntry } from 'astro:content'
+import { getCollection, render } from 'astro:content'
 
-export const allPages = await getCollection('site')
-export const allLegislativeBasis = await getEntry(
-  'legislative-basis',
-  'legislative-basis'
-)
+export { render }
+export const getAllPages = async () => await getCollection('site')
