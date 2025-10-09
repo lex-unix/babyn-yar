@@ -23,7 +23,6 @@
     "@types/react-dom": "^18.2.7",
     "astro": "^5.14.3",
     "astro-robots": "^2.0.1",
-    "content-schema": "*",
     "i18n": "*",
     "lucide-react": "^0.292.0",
     "react": "^18.0.0",

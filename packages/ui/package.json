@@ -16,7 +16,6 @@
   },
   "devDependencies": {
     "eslint-config-custom": "*",
-    "tailwindcss": "^3.3.5",
-    "tsconfig": "*"
+    "tailwindcss": "^3.3.5"
   }
 }

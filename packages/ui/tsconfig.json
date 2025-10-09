@@ -1,3 +1,7 @@
 {
-  "extends": "tsconfig/base"
+  "$schema": "https://www.schemastore.org/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "jsxImportSource": "react"
+  }
 }
