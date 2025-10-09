@@ -1,30 +1,44 @@
 <script lang="ts">
-  import Button from '$components/ButtonV2.svelte'
+  import Button from '$components/Button.svelte'
   import Field from '$components/Field.svelte'
   import Label from '$components/Label.svelte'
-  import Input from '$components/InputV2.svelte'
+  import Input from '$components/Input.svelte'
   import FieldError from '$components/FieldError.svelte'
-  import { currentUser } from '$lib/auth/store'
-  import { goto } from '$app/navigation'
   import { useLoggedUser, useLogin } from '$lib/auth/query'
-  import { useForm } from '$lib/form'
   import { Login } from '$lib/auth/schema'
+  import { createForm } from '@tanstack/svelte-form'
+  import { ResponseError } from '$lib/response-error'
+  import { goto } from '$app/navigation'
+  import { resolve } from '$app/paths'
 
-  const loggedUser = useLoggedUser()
   const login = useLogin()
+  const loggedUser = useLoggedUser()
 
-  const { values, errors, handleSubmit } = useForm({
-    schema: Login,
+  const form = createForm(() => ({
     defaultValues: {
       email: '',
       password: ''
-    },
-    onSubmit: async ({ value }) => {
-      $login.mutate(value)
+    } as Login,
+    validators: {
+      onSubmit: Login,
+      onSubmitAsync: async ({ value }) => {
+        try {
+          await login.mutateAsync(value)
+          await loggedUser.refetch()
+          goto(resolve('/content'))
+        } catch (error) {
+          if (error instanceof ResponseError && error.isFormError()) {
+            return { fields: error.formErrors }
+          }
+        }
+      }
     }
-  })
+  }))
 
-  $: ($currentUser || $loggedUser.isSuccess) && goto('/content')
+  function handleSubmit(event: SubmitEvent) {
+    event.preventDefault()
+    form.handleSubmit()
+  }
 </script>
 
 <div class="flex w-full flex-col justify-center bg-white">
@@ -33,31 +47,51 @@
       <h1 class="mb-8 text-center text-2xl/8 font-semibold sm:text-xl/8">
         Увійдіть у свій обліковий запис
       </h1>
-      <form on:submit|preventDefault={handleSubmit} class="flex flex-col gap-6">
-        <Field>
-          <Label for="email">Email</Label>
-          <Input
-            id="email"
-            bind:value={$values.email}
-            invalid={!!$errors.email}
-          />
-          {#if $errors.email}
-            <FieldError>{$errors.email}</FieldError>
-          {/if}
-        </Field>
-        <Field>
-          <Label for="password">Пароль</Label>
-          <Input
-            id="password"
-            type="password"
-            bind:value={$values.password}
-            invalid={!!$errors.password}
-          />
-          {#if $errors.password}
-            <FieldError>{$errors.password}</FieldError>
-          {/if}
-        </Field>
-        <Button disabled={$login.isPending}>Продовжити</Button>
+      <form onsubmit={handleSubmit} class="flex flex-col gap-6">
+        <form.Field name="email">
+          {#snippet children(field)}
+            <Field>
+              <Label for={field.name}>Email</Label>
+              <Input
+                id={field.name}
+                name={field.name}
+                value={field.state.value}
+                invalid={field.state.meta.errors.length !== 0}
+                oninput={event => {
+                  field.handleChange(event.currentTarget.value)
+                }}
+              />
+              {#if field.state.meta.isTouched}
+                <!-- eslint-disable-next-line svelte/require-each-key -->
+                {#each field.state.meta.errors as error}
+                  <FieldError>{error?.message}</FieldError>
+                {/each}
+              {/if}
+            </Field>
+          {/snippet}
+        </form.Field>
+        <form.Field name="password">
+          {#snippet children(field)}
+            <Field>
+              <Label for="password">Пароль</Label>
+              <Input
+                id={field.name}
+                type={field.name}
+                value={field.state.value}
+                invalid={field.state.meta.errors.length !== 0}
+                oninput={event => {
+                  field.handleChange(event.currentTarget.value)
+                }}
+              />
+              {#if field.state.meta.isTouched}
+                {#each field.state.meta.errors as error}
+                  <FieldError>{error?.message}</FieldError>
+                {/each}
+              {/if}
+            </Field>
+          {/snippet}
+        </form.Field>
+        <Button disabled={login.isPending}>Продовжити</Button>
       </form>
     </div>
   </div>

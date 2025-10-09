@@ -1,76 +1,58 @@
 <script lang="ts">
-  import { ContentPage, LinkButton, PageHeader } from '$components'
-  import type { ContentData, Metadata } from '$lib/types'
-  import { onMount } from 'svelte'
-  import { getEvents, deleteEvents } from '$lib/api-utils'
-  import { addToast } from '$components/Toaster.svelte'
-  import { deleteErrorMsg, fetchErrorMsg } from '$lib/toast-messages'
-  import { page } from '$app/stores'
-  import { Plus } from 'lucide-svelte'
+  import ContentPage from '$components/ContentPage.svelte'
+  import Plus from 'phosphor-svelte/lib/Plus'
+  import PageHeader from '$components/PageHeader.svelte'
+  import { ContentFilters } from '$lib/content/schema'
+  import { useDeleteEvents, useEvents } from '$lib/content/query'
+  import { useContentFilters } from '$lib/use-content-filters'
+  import Button from '$components/Button.svelte'
 
-  let data: ContentData[] = []
-  let metadata: Metadata
-  let isLoading = false
+  const filters = useContentFilters()
+  const events = useEvents(() => filters.current)
+  const deleteEvent = useDeleteEvents()
 
-  onMount(async () => {
-    isLoading = true
-    const params = Object.fromEntries($page.url.searchParams)
-    await load(replaceSearch(params))
-    isLoading = false
-  })
-
-  function replaceSearch(params: Record<string, string>) {
-    if (params.search) {
-      params.title = params.search
-    }
-    return params
+  function handleDelete(selected: number[]) {
+    deleteEvent.mutate(selected)
   }
 
-  async function load(params: Record<string, string> = {}) {
-    const response = await getEvents(params)
-    if (!response.ok) {
-      addToast(fetchErrorMsg)
-      return
-    }
-    data = response.data.events.map(e => ({
-      id: e.id,
-      title: e.title,
-      author: e.user.fullName,
-      lastChange: e.updatedAt
-    }))
-    metadata = response.data.metadata
+  function handleFilter(title: string) {
+    filters.set(prev => ({ ...prev, page: 1, title }))
   }
 
-  async function _delete(e: CustomEvent<{ selected: number[] }>) {
-    const { ok } = await deleteEvents(e.detail.selected)
-    if (!ok) {
-      addToast(deleteErrorMsg)
-      return
-    }
-    const params = Object.fromEntries($page.url.searchParams)
-    await load(replaceSearch(params))
+  function handlePageSelect(page: number) {
+    filters.set(prev => ({ ...prev, page }))
   }
 
-  async function filter(e: CustomEvent<Record<string, string>>) {
-    const filters = replaceSearch(e.detail)
-    await load({ ...filters })
+  function handleSort(sort: ContentFilters['sort']) {
+    filters.set(prev => ({ ...prev, page: 1, sort }))
   }
 </script>
 
-<PageHeader>
-  <svelte:fragment slot="heading">Події</svelte:fragment>
-  <LinkButton slot="right-items" href="/content/events/create">
-    <Plus slot="icon" size={16} />
+<PageHeader title="Події">
+  <Button href="/content/events/create">
+    {#snippet icon()}
+      <Plus size={16} />
+    {/snippet}
     Cтворити
-  </LinkButton>
+  </Button>
 </PageHeader>
 
 <ContentPage
-  {metadata}
-  {data}
-  {isLoading}
+  data={events.data?.events.map(e => ({
+    id: e.id,
+    title: e.title,
+    author: e.user.fullName,
+    lastChange: e.updatedAt
+  })) || []}
+  metadata={events.data?.metadata}
+  isLoading={events.isLoading}
   title="Події"
   entryHref="/content/events"
-  on:filter={filter}
-  on:delete={_delete}
+  searchValue={filters.current?.title}
+  sortValue={filters.current?.sort}
+  isDeleting={deleteEvent.isPending}
+  onFilter={handleFilter}
+  onDelete={handleDelete}
+  onPageSelect={handlePageSelect}
+  onSort={handleSort}
 />

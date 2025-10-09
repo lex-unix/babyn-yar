@@ -1,122 +1,90 @@
 <script lang="ts">
-  import { page } from '$app/stores'
+  import PageHeader from '$components/PageHeader.svelte'
+  import Button from '$components/Button.svelte'
+  import Container from '$components/Container.svelte'
+  import { page } from '$app/state'
+  import EditorSkeleton from '$components/Skeletons/EditorSkeleton.svelte'
   import {
-    Input,
-    LangSelect,
-    CoverSelect,
-    RichTextEditor,
-    PageHeader,
-    Button,
-    Container,
-    NotFound,
-    EditorSkeleton,
-    DatePicker
-  } from '$components'
-  import type { DevConcept } from '$lib/types'
-  import type { ResponseError } from '$lib/response-error'
-  import { getDevConcept, updateDevConcept } from '$lib/api-utils'
-  import { onMount } from 'svelte'
-  import { addToast } from '$components/Toaster.svelte'
-  import { SaveIcon } from 'lucide-svelte'
+    useDevelopmentConcept,
+    useDevelopmentConcepts,
+    useUpdateDevelopmentConcept
+  } from '$lib/content/query'
+  import ContentFormSimple from '$components/ContentFormSimple.svelte'
+  import { type ContentFormSimple as Form } from '$lib/content/schema'
+  import { toast } from 'svelte-sonner'
+  import { trimText } from '$lib/trim-text'
 
-  let isSubmitting = false
-  let isLoading = false
-  let concept: DevConcept
-  let error: ResponseError | undefined
+  let id = $derived(page.params.id) as string
+  let isTranslationQueryEnabled = $state(false)
+  let canSubmit = $state(true)
+  let isSubmitting = $state(false)
 
-  onMount(async function () {
-    isLoading = true
-    const response = await getDevConcept($page.params.id)
-    if (response.ok) {
-      concept = response.data.concept
-      concept.content = JSON.parse(concept.content as unknown as string)
-      isLoading = false
-      return
-    }
-    error = response.error
-    isLoading = false
-  })
+  const content = useDevelopmentConcept(() => ({ id }))
+  const updateContent = useUpdateDevelopmentConcept(() => ({ id }))
 
-  async function submit() {
-    isSubmitting = true
-    const body = JSON.stringify({
-      title: concept.title,
-      description: concept.description,
-      lang: concept.lang,
-      cover: concept.cover,
-      content: JSON.stringify(concept.content),
-      occuredOn: new Date(concept.occuredOn).toISOString()
+  let translation = $derived(
+    content.data?.translation &&
+      content.data.concept &&
+      content.data.translation
+      ? content.data.concept.lang === 'en'
+        ? {
+            id: content.data.translation.ukrainianId,
+            title: content.data.translation.ukrainianTitle
+          }
+        : {
+            id: content.data.translation.englishId,
+            title: content.data.translation.englishTitle
+          }
+      : undefined
+  )
+
+  let currentLanguage = $derived<'ua' | 'en'>(
+    content.data?.concept.lang || 'ua'
+  )
+  let translationSearch = $derived(translation?.title || '')
+
+  const translations = useDevelopmentConcepts(() => ({
+    title: translationSearch,
+    lang: currentLanguage === 'en' ? 'ua' : 'en',
+    page_size: 20,
+    staleTime: 1000 * 15,
+    enabled: isTranslationQueryEnabled
+  }))
+
+  async function handleSubmit(form: Form) {
+    const promise = updateContent.mutateAsync(form)
+    toast.promise(promise, {
+      loading: 'Loading...',
+      success: data => `Запис "${trimText(data.concept.title, 20)}" змінено`,
+      error: 'Помилка'
     })
-    const response = await updateDevConcept($page.params.id, body)
-    isSubmitting = false
-    if (!response.ok) {
-      error = response.error
-      return
+    try {
+      await promise
+    } catch (error) {
+      console.error(error)
     }
-    addToast({
-      data: {
-        title: 'Чудово!',
-        description: 'Ваші зміни було збережено',
-        variant: 'success'
-      }
-    })
-    error = undefined
   }
 </script>
 
-{#if !error?.isNotFoundError()}
-  <PageHeader>
-    <svelte:fragment slot="heading">Редагування запису</svelte:fragment>
-    <Button
-      slot="right-items"
-      isLoading={isSubmitting}
-      loadingText="Збереження..."
-      form="edit-record"
-    >
-      <SaveIcon size={16} slot="icon" />
-      Зберегти зміни
-    </Button>
-  </PageHeader>
-  <Container title="Редагувати запис">
-    {#if !concept || isLoading}
-      <EditorSkeleton />
-    {:else}
-      <form
-        on:submit|preventDefault={submit}
-        id="edit-record"
-        class="space-y-5"
-      >
-        <LangSelect
-          bind:lang={concept.lang}
-          error={error?.isFormError() ? error.error.lang : undefined}
-        />
-        <DatePicker bind:datetime={concept.occuredOn} />
-        <CoverSelect
-          bind:cover={concept.cover}
-          error={error?.isFormError() ? error.error.cover : undefined}
-        />
-        <Input
-          bind:value={concept.title}
-          name="title"
-          label="Назва"
-          error={error?.isFormError() ? error.error.title : undefined}
-        />
-        <Input
-          bind:value={concept.description}
-          name="description"
-          label="Опис"
-          error={error?.isFormError() ? error.error.description : undefined}
-        />
-        <div>
-          <p class="mb-1.5 text-gray-500">Контент</p>
-          {#if error?.isFormError() && error?.error.content}
-            <p class="text-red-500">{error.error.content}</p>
-          {/if}
-          <RichTextEditor bind:content={concept.content} />
-        </div>
-      </form>
-    {/if}
-  </Container>
-{:else if error?.isNotFoundError()}
-  <NotFound />
-{/if}
+<PageHeader title="Редагування запису">
+  <Button disabled={!canSubmit || isSubmitting} form="record-form">
+    Зберегти зміни
+  </Button>
+</PageHeader>
+<Container title="Редагувати запис">
+  {#if content.isLoading}
+    <EditorSkeleton />
+  {:else}
+    <ContentFormSimple
+      bind:searchTerm={translationSearch}
+      bind:currentLanguage
+      bind:isTranslationOpen={isTranslationQueryEnabled}
+      bind:isSubmitting
+      bind:canSubmit
+      content={content.data?.concept}
+      selectedTranslation={translation}
+      translations={translations.data?.concepts}
+      onSubmit={handleSubmit}
+    />
+  {/if}
+</Container>

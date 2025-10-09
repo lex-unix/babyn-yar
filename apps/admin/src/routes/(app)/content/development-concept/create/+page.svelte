@@ -1,103 +1,53 @@
 <script lang="ts">
+  import PageHeader from '$components/PageHeader.svelte'
+  import Button from '$components/Button.svelte'
+  import Container from '$components/Container.svelte'
   import {
-    Input,
-    RichTextEditor,
-    LangSelect,
-    CoverSelect,
-    PageHeader,
-    Container,
-    Button,
-    DatePicker
-  } from '$components'
-  import type { ResponseError } from '$lib/response-error'
-  import type { JSONContent } from '@tiptap/core'
-  import { createDevConcept } from '$lib/api-utils'
-  import { PlusIcon } from 'lucide-svelte'
-  import { addToast } from '$components/Toaster.svelte'
+    useDevelopmentConcepts,
+    useCreateDevelopmentConcept
+  } from '$lib/content/query'
+  import ContentFormSimple from '$components/ContentFormSimple.svelte'
+  import { type ContentFormSimple as Form } from '$lib/content/schema'
+  import Plus from 'phosphor-svelte/lib/Plus'
   import { goto } from '$app/navigation'
+  import { resolve } from '$app/paths'
 
-  let isSubmitting = false
-  let content: JSONContent
-  let title = ''
-  let description = ''
-  let lang = ''
-  let cover = ''
-  let date = ''
-  let error: ResponseError | undefined
+  let isTranslationQueryEnabled = $state(false)
+  let translationSearch = $state('')
+  let currentLanguage = $state<Form['lang']>('ua')
+  let canSubmit = $state(true)
+  let isSubmitting = $state(false)
 
-  async function submit() {
-    isSubmitting = true
-    const body = JSON.stringify({
-      title,
-      description,
-      lang,
-      cover,
-      content: JSON.stringify(content),
-      occuredOn: new Date(date).toISOString()
-    })
-    const response = await createDevConcept(body)
-    if (!response.ok) {
-      error = response.error
-      isSubmitting = false
-      return
-    }
-    addToast({
-      data: {
-        title: 'Чудово!',
-        description: 'Новий запис було успішно створено',
-        variant: 'success'
-      }
-    })
-    isSubmitting = false
-    error = undefined
-    goto('/content/development-concept')
-  }
+  const translations = useDevelopmentConcepts(() => ({
+    title: translationSearch,
+    lang: currentLanguage === 'en' ? 'ua' : 'en',
+    page_size: 20,
+    staleTime: 1000 * 15,
+    enabled: isTranslationQueryEnabled
+  }))
+
+  const createDevelopmentConceptMutation = useCreateDevelopmentConcept()
 </script>
 
-<PageHeader>
-  <svelte:fragment slot="heading">Новий запис</svelte:fragment>
-  <Button
-    slot="right-items"
-    isLoading={isSubmitting}
-    loadingText="Створення..."
-    form="create-record"
-  >
-    <PlusIcon slot="icon" size={16} />
+<PageHeader title="Новий запис">
+  <Button disabled={!canSubmit || isSubmitting} form="record-form">
+    {#snippet icon()}
+      <Plus size={16} />
+    {/snippet}
     Створити
   </Button>
 </PageHeader>
-
 <Container title="Створити запис">
-  <form id="create-record" on:submit|preventDefault={submit} class="space-y-5">
-    <LangSelect
-      bind:lang
-      error={error?.isFormError() ? error.error.lang : undefined}
-    />
-    <DatePicker bind:datetime={date} />
-    <CoverSelect
-      bind:cover
-      error={error?.isFormError() ? error.error.cover : undefined}
-    />
-    <Input
-      name="title"
-      label="Назва"
-      error={error?.isFormError() ? error.error.title : undefined}
-      bind:value={title}
-      required
-    />
-    <Input
-      name="description"
-      label="Опис"
-      error={error?.isFormError() ? error.error.description : undefined}
-      bind:value={description}
-      required
-    />
-    <div>
-      <p class="mb-1.5 text-gray-500">Контент</p>
-      {#if error?.isFormError() && error?.error.content}
-        <p class="text-red-500">{error.error.content}</p>
-      {/if}
-      <RichTextEditor bind:content />
-    </div>
-  </form>
+  <ContentFormSimple
+    bind:searchTerm={translationSearch}
+    bind:currentLanguage
+    bind:isTranslationOpen={isTranslationQueryEnabled}
+    bind:isSubmitting
+    bind:canSubmit
+    translations={translations.data?.concepts}
+    onSubmit={async form => {
+      await createDevelopmentConceptMutation.mutateAsync(form)
+      goto(resolve('/content/development-concept'))
+    }}
+  />
 </Container>

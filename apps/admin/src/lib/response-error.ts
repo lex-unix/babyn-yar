@@ -3,7 +3,6 @@ export class ResponseError extends Error {
   method: string
   requestUrl: URL
   error: string | Record<string, string>
-  formErrors: Record<string, string>
 
   constructor(opts: {
     status: number
@@ -19,18 +18,27 @@ export class ResponseError extends Error {
     this.method = method
     this.requestUrl = new URL(url)
     this.error = error
-    this.formErrors = error as Record<string, string>
   }
 
   get pathname() {
     return this.requestUrl.pathname
   }
 
+  get formErrors() {
+    return Object.entries(this.error).reduce(
+      (errors, [key, value]) => {
+        errors[key] = [{ message: value }]
+        return errors
+      },
+      {} as Record<string, { message: string }[]>
+    )
+  }
+
   isUnauthorized(): this is { error: string } {
     return this.status === 401
   }
 
-  isFormError(): this is { formErrors: Record<string, string> } {
+  isFormError() {
     return this.status === 422
   }
 

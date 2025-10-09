@@ -1,252 +1,256 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
-  import { Editor, type JSONContent } from '@tiptap/core'
+  import EditorCommand from './EditorCommand.svelte'
+  import EditorCommandDivider from './EditorCommandDivider.svelte'
+  import AssetDialog from './AssetDialog.svelte'
+  import YouTubeLinkDialog from './YouTubeLinkDialog.svelte'
+  import TextHOne from 'phosphor-svelte/lib/TextHOne'
+  import TextHTwo from 'phosphor-svelte/lib/TextHTwo'
+  import TextHThree from 'phosphor-svelte/lib/TextHThree'
+  import Paragraph from 'phosphor-svelte/lib/Paragraph'
+  import Link from 'phosphor-svelte/lib/Link'
+  import LinkBreak from 'phosphor-svelte/lib/LinkBreak'
+  import ListBullets from 'phosphor-svelte/lib/ListBullets'
+  import ListNumbers from 'phosphor-svelte/lib/ListNumbers'
+  import TextB from 'phosphor-svelte/lib/TextB'
+  import TextItalic from 'phosphor-svelte/lib/TextItalic'
+  import TextUnderline from 'phosphor-svelte/lib/TextUnderline'
+  import TextStrikethrough from 'phosphor-svelte/lib/TextStrikethrough'
+  import TextAlignLeft from 'phosphor-svelte/lib/TextAlignLeft'
+  import TextAlignCenter from 'phosphor-svelte/lib/TextAlignCenter'
+  import TextAlignRight from 'phosphor-svelte/lib/TextAlignRight'
+  import ArrowElbowDownLeft from 'phosphor-svelte/lib/ArrowElbowDownLeft'
+  import ImageSquare from 'phosphor-svelte/lib/ImageSquare'
+  import VideoCamera from 'phosphor-svelte/lib/VideoCamera'
+  import YoutubeLogo from 'phosphor-svelte/lib/YoutubeLogo'
+  import { Editor } from '@tiptap/core'
   import { extensions } from '$lib/editor-extensions'
-  import {
-    BoldIcon,
-    PilcrowIcon,
-    ListIcon,
-    Heading1Icon,
-    Heading2Icon,
-    Heading3Icon,
-    ListOrderedIcon,
-    ItalicIcon,
-    StrikethroughIcon,
-    UnderlineIcon,
-    AlignCenterIcon,
-    AlignLeftIcon,
-    AlignRightIcon,
-    ImageIcon,
-    VideoIcon,
-    LinkIcon,
-    UnlinkIcon,
-    CornerDownLeftIcon,
-    YoutubeIcon
-  } from 'lucide-svelte'
-  import { AssetDialog, LinkDialog, EditorCommand } from '$components'
-  import YouTubeVideoDialog from './YouTubeVideoDialog.svelte'
+  import { onDestroy, onMount } from 'svelte'
+  import { type JSONContent } from '@tiptap/core'
+  import LinkDialog from './LinkDialog.svelte'
+  import { Asset } from '$lib/assets/schema'
 
-  export let content: JSONContent | undefined
-
-  let element: HTMLDivElement
-  let editor: Editor
-  let assetsDialog: AssetDialog
-  let linkDialog: LinkDialog
-  let youtubeDialog: YouTubeVideoDialog
-
-  function selectAsset(e: CustomEvent<{ url: string; type: string }>) {
-    const { url, type } = e.detail
-    assetsDialog.close()
-    if (type === 'image') {
-      editor.commands.setImage({ src: url })
-    } else {
-      editor.commands.setVideo(url)
-    }
+  type Props = {
+    content: JSONContent | undefined
+    onChange: (content: JSONContent) => void
   }
 
-  type LinkProps = Parameters<typeof editor.commands.setLink>[0]
+  let { content, onChange }: Props = $props()
 
-  function addLink(
-    e: CustomEvent<{ type: 'email' | 'internal' | 'external'; value: string }>
-  ) {
-    linkDialog.close()
-    const { value, type } = e.detail
-    if (!value) return
+  let isAssetDialogOpen = $state(false)
+  let assetContentType = $state('')
 
-    const linkProps: LinkProps = { href: '' }
+  let isLinkDialogOpen = $state(false)
+  let isYoutubeDialogOpen = $state(false)
 
-    if (type === 'email') {
-      linkProps.href = 'mailto:' + value
-    } else if (type === 'external') {
-      linkProps.href = value
-      linkProps.target = '_blank'
-    } else {
-      linkProps.href = value
-      linkProps.target = null
-    }
-
-    editor.chain().focus().setLink(linkProps).run()
-  }
-
-  function addYouTubeVideo(e: CustomEvent<{ link: string }>) {
-    youtubeDialog.close()
-    editor.chain().focus().setYoutubeVideo({ src: e.detail.link }).run()
-  }
+  let editor: Editor | undefined = $state(undefined)
+  let element: HTMLElement | null = $state(null)
 
   onMount(() => {
     editor = new Editor({
       editorProps: {
         attributes: {
-          class:
-            'border p-4 rounded-br rounded-bl min-h-[300px] bg-white outline-none'
+          class: 'outline-none'
         }
       },
-      element: element,
+      element: element!,
       extensions,
-      content,
-      onTransaction: () => {
-        editor = editor
-      },
-      onUpdate: () => {
-        content = editor.getJSON()
+      content: content,
+      onUpdate: event => {
+        onChange(event.editor.getJSON())
       }
     })
   })
 
   onDestroy(() => {
-    if (editor) {
-      editor.destroy()
-    }
+    editor?.destroy()
   })
+
+  function handleOpenLinkDialog() {
+    isLinkDialogOpen = true
+  }
+
+  function handleAddLink(
+    link: string,
+    type: 'internal' | 'external' | 'email'
+  ) {
+    if (!link) return
+    let href = link
+    let target: string | null = null
+    if (type === 'email') {
+      href = 'mailto:' + href
+    } else if (type === 'external') {
+      target = '_blank'
+    }
+    editor?.chain().focus().setLink({ href, target }).run()
+    isLinkDialogOpen = false
+  }
+
+  function handleOpenVideoDialog() {
+    assetContentType = 'video'
+    isAssetDialogOpen = true
+  }
+
+  function handleOpenImageDialog() {
+    isAssetDialogOpen = true
+    assetContentType = 'image'
+  }
+
+  function handleAddAsset(asset: Asset) {
+    const { url } = asset
+    if (assetContentType === 'image') {
+      editor?.commands.setImage({ src: url })
+    } else {
+      editor?.commands.setVideo(url)
+    }
+    isAssetDialogOpen = false
+  }
+
+  function handleOpenYouTubeDialog() {
+    isYoutubeDialogOpen = true
+  }
+
+  function handleAddYouTubeVideo(link: string) {
+    editor?.chain().focus().setYoutubeVideo({ src: link }).run()
+    isYoutubeDialogOpen = false
+  }
 </script>
 
-<div>
-  {#if editor}
-    <div
-      class="min-w-full overflow-x-auto rounded-tl rounded-tr border border-b-0 bg-white"
-    >
-      <div class="flex items-center gap-1 p-2">
-        <EditorCommand
-          on:click={() =>
-            editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          active={editor.isActive('heading', { level: 1 })}
-          tooltip="Заголовок 1"
-        >
-          <Heading1Icon size={16} />
-        </EditorCommand>
-        <EditorCommand
-          on:click={() =>
-            editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          active={editor.isActive('heading', { level: 2 })}
-          tooltip="Заголовок 2"
-        >
-          <Heading2Icon size={16} />
-        </EditorCommand>
-        <EditorCommand
-          on:click={() =>
-            editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          active={editor.isActive('heading', { level: 3 })}
-          tooltip="Заголовок 3"
-        >
-          <Heading3Icon size={16} />
-        </EditorCommand>
-        <EditorCommand
-          on:click={() => editor.chain().focus().setParagraph().run()}
-          active={editor.isActive('paragraph')}
-          tooltip="Параграф"
-        >
-          <PilcrowIcon size={16} />
-        </EditorCommand>
-        <EditorCommand
-          on:click={() => linkDialog.open()}
-          active={editor.isActive('link')}
-          tooltip="Додати посилання"
-        >
-          <LinkIcon size={16} />
-        </EditorCommand>
-        {#if editor.isActive('link')}
+<span
+  data-slot="control"
+  class="relative block w-full before:absolute before:inset-px before:rounded-lg before:bg-white before:shadow-sm"
+>
+  <div
+    class="relative isolate rounded-lg border border-zinc-950/10 bg-transparent px-4"
+  >
+    {#if editor}
+      <div
+        class="sticky top-0 z-10 -mx-4 mb-3 min-w-full overflow-x-auto rounded-t-lg border-b border-b-zinc-950/10 bg-white"
+      >
+        <div class="flex items-center gap-1 p-2">
           <EditorCommand
-            on:click={() => editor.chain().focus().unsetLink().run()}
-            tooltip="Видалити посилання"
+            onClick={() =>
+              editor?.chain().focus().toggleHeading({ level: 1 }).run()}
+            active={editor.isActive('heading', { level: 1 })}
           >
-            <UnlinkIcon size={16} />
+            <TextHOne size={16} />
           </EditorCommand>
-        {/if}
-        <EditorCommand
-          on:click={() => editor.chain().focus().toggleBulletList().run()}
-          active={editor.isActive('bulletList')}
-          tooltip="Маркерований список"
-        >
-          <ListIcon size={16} />
-        </EditorCommand>
-        <EditorCommand
-          on:click={() => editor.chain().focus().toggleOrderedList().run()}
-          active={editor.isActive('orderedList')}
-          tooltip="Нумерований список"
-        >
-          <ListOrderedIcon size={16} />
-        </EditorCommand>
-        <div class="min-h-full w-[1px] self-stretch bg-gray-200" />
-        <EditorCommand
-          on:click={() => editor.chain().focus().toggleBold().run()}
-          active={editor.isActive('bold')}
-          tooltip="Жирний текст"
-        >
-          <BoldIcon size={16} />
-        </EditorCommand>
-        <EditorCommand
-          on:click={() => editor.chain().focus().toggleItalic().run()}
-          active={editor.isActive('italic')}
-          tooltip="Курсив"
-        >
-          <ItalicIcon size={16} />
-        </EditorCommand>
-        <EditorCommand
-          on:click={() => editor.chain().focus().toggleUnderline().run()}
-          active={editor.isActive('underline')}
-          tooltip="Підкреслений текст"
-        >
-          <UnderlineIcon size={16} />
-        </EditorCommand>
-        <EditorCommand
-          on:click={() => editor.chain().focus().toggleStrike().run()}
-          active={editor.isActive('strike')}
-          tooltip="Закреслений текст"
-        >
-          <StrikethroughIcon size={16} />
-        </EditorCommand>
-        <div class="min-h-full w-[1px] self-stretch bg-gray-200" />
-        <EditorCommand
-          on:click={() => editor.chain().focus().setTextAlign('left').run()}
-          tooltip="Вирівняти по лівому краю"
-        >
-          <AlignLeftIcon size={16} />
-        </EditorCommand>
-        <EditorCommand
-          on:click={() => editor.chain().focus().setTextAlign('center').run()}
-          tooltip="Вирівняти по центру"
-        >
-          <AlignCenterIcon size={16} />
-        </EditorCommand>
-        <EditorCommand
-          on:click={() => editor.chain().focus().setTextAlign('right').run()}
-          tooltip="Вирівняти по правому краю"
-        >
-          <AlignRightIcon size={16} />
-        </EditorCommand>
-        <EditorCommand
-          on:click={() => editor.chain().focus().setHardBreak().run()}
-          tooltip="Перенос рядка"
-        >
-          <CornerDownLeftIcon size={16} />
-        </EditorCommand>
-        <div class="min-h-full w-[1px] self-stretch bg-gray-200" />
-        <EditorCommand
-          on:click={() => assetsDialog.open('image')}
-          tooltip="Додати зображення"
-        >
-          <ImageIcon size={16} />
-        </EditorCommand>
-        <EditorCommand
-          on:click={() => assetsDialog.open('video')}
-          tooltip="Додати відео"
-        >
-          <VideoIcon size={16} />
-        </EditorCommand>
-        <EditorCommand
-          on:click={() => youtubeDialog.open()}
-          tooltip="Додати YouTube відео"
-        >
-          <YoutubeIcon size={16} />
-        </EditorCommand>
+          <EditorCommand
+            onClick={() =>
+              editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+            active={editor.isActive('heading', { level: 2 })}
+          >
+            <TextHTwo size={16} />
+          </EditorCommand>
+          <EditorCommand
+            onClick={() =>
+              editor?.chain().focus().toggleHeading({ level: 3 }).run()}
+            active={editor.isActive('heading', { level: 3 })}
+          >
+            <TextHThree size={16} />
+          </EditorCommand>
+          <EditorCommand
+            onClick={() => editor?.chain().focus().setParagraph().run()}
+            active={editor.isActive('paragraph')}
+          >
+            <Paragraph size={16} />
+          </EditorCommand>
+          <EditorCommand
+            onClick={handleOpenLinkDialog}
+            active={editor.isActive('link')}
+          >
+            <Link size={16} />
+          </EditorCommand>
+          {#if editor.isActive('link')}
+            <EditorCommand
+              onClick={() => editor?.chain().focus().unsetLink().run()}
+            >
+              <LinkBreak size={16} />
+            </EditorCommand>
+          {/if}
+          <EditorCommand
+            onClick={() => editor?.chain().focus().toggleBulletList().run()}
+            active={editor.isActive('bulletList')}
+          >
+            <ListBullets size={16} />
+          </EditorCommand>
+          <EditorCommand
+            onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+            active={editor.isActive('orderedList')}
+          >
+            <ListNumbers size={16} />
+          </EditorCommand>
+          <EditorCommandDivider />
+          <EditorCommand
+            onClick={() => editor?.chain().focus().toggleBold().run()}
+            active={editor.isActive('bold')}
+          >
+            <TextB size={16} />
+          </EditorCommand>
+          <EditorCommand
+            onClick={() => editor?.chain().focus().toggleItalic().run()}
+            active={editor.isActive('italic')}
+          >
+            <TextItalic size={16} />
+          </EditorCommand>
+          <EditorCommand
+            onClick={() => editor?.chain().focus().toggleUnderline().run()}
+            active={editor.isActive('underline')}
+          >
+            <TextUnderline size={16} />
+          </EditorCommand>
+          <EditorCommand
+            onClick={() => editor?.chain().focus().toggleStrike().run()}
+            active={editor.isActive('strike')}
+          >
+            <TextStrikethrough size={16} />
+          </EditorCommand>
+          <EditorCommandDivider />
+          <EditorCommand
+            onClick={() => editor?.chain().focus().setTextAlign('left').run()}
+          >
+            <TextAlignLeft size={16} />
+          </EditorCommand>
+          <EditorCommand
+            onClick={() => editor?.chain().focus().setTextAlign('center').run()}
+          >
+            <TextAlignCenter size={16} />
+          </EditorCommand>
+          <EditorCommand
+            onClick={() => editor?.chain().focus().setTextAlign('right').run()}
+          >
+            <TextAlignRight size={16} />
+          </EditorCommand>
+          <EditorCommand
+            onClick={() => editor?.chain().focus().setHardBreak().run()}
+          >
+            <ArrowElbowDownLeft size={16} />
+          </EditorCommand>
+          <EditorCommandDivider />
+          <EditorCommand onClick={handleOpenImageDialog}>
+            <ImageSquare size={16} />
+          </EditorCommand>
+          <EditorCommand onClick={handleOpenVideoDialog}>
+            <VideoCamera size={16} />
+          </EditorCommand>
+          <EditorCommand onClick={handleOpenYouTubeDialog}>
+            <YoutubeLogo size={16} />
+          </EditorCommand>
+        </div>
       </div>
-    </div>
-  {/if}
-  <div bind:this={element} />
-</div>
+    {/if}
+    <div bind:this={element}></div>
+  </div>
+</span>
 
-<AssetDialog bind:this={assetsDialog} on:select={selectAsset} />
+<LinkDialog bind:open={isLinkDialogOpen} onSelect={handleAddLink} />
 
-<LinkDialog bind:this={linkDialog} on:done={addLink} />
+<AssetDialog
+  bind:open={isAssetDialogOpen}
+  contentType={assetContentType}
+  onSelect={handleAddAsset}
+/>
 
-<YouTubeVideoDialog bind:this={youtubeDialog} on:done={addYouTubeVideo} />
+<YouTubeLinkDialog
+  bind:open={isYoutubeDialogOpen}
+  onSelect={handleAddYouTubeVideo}
+/>

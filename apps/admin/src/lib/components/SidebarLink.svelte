@@ -1,4 +1,4 @@
-<script context="module">
+<script module>
   import { crossfade } from 'svelte/transition'
   import { cubicInOut } from 'svelte/easing'
 
@@ -9,19 +9,25 @@
 </script>
 
 <script lang="ts">
-  import { page } from '$app/stores'
+  import { page } from '$app/state'
   import { cn } from '$lib/cn'
-  import { isMobileDrawerOpen } from '$lib/stores'
-  import { derived } from 'svelte/store'
+  import { mobileDrawer } from '$lib/state.svelte'
+  import type { Snippet } from 'svelte'
 
-  export let href: string
+  type Props = {
+    href: string
+    icon: Snippet
+    children: Snippet
+  }
 
-  const isActive = derived(page, $page => $page.url.pathname.startsWith(href))
+  const { href, icon, children }: Props = $props()
+
+  let isActive = $derived(page.url.pathname.startsWith(href))
 </script>
 
 <div class="flex flex-col gap-0.5">
   <span class="relative">
-    {#if $isActive}
+    {#if isActive}
       <span
         class="absolute inset-y-2 -left-4 inline-block w-0.5 rounded-full bg-zinc-950"
         aria-hidden={!isActive}
@@ -33,15 +39,15 @@
       {href}
       class={cn(
         `relative flex min-w-0 cursor-default items-center gap-3 rounded-lg px-2 py-2.5 text-left
-        text-base/6 font-medium text-zinc-950 hover:bg-zinc-950/5 *:data-[slot=icon]:shrink-0 sm:py-2
-        sm:text-sm/5 *:[svg]:size-6 *:[svg]:fill-zinc-500 hover:*:[svg]:fill-zinc-950 sm:*:[svg]:size-5`,
-        $isActive && '*:[svg]:fill-zinc-950'
+        text-base/6 font-medium text-zinc-950 hover:bg-zinc-950/5 *:data-[slot=icon]:size-6 *:data-[slot=icon]:shrink-0
+        *:data-[slot=icon]:fill-zinc-500 hover:*:data-[slot=icon]:fill-zinc-950 sm:py-2 sm:text-sm/5 sm:*:data-[slot=icon]:size-5`,
+        isActive && '*:data-[slot=icon]:fill-zinc-950'
       )}
-      on:click={() => isMobileDrawerOpen.set(false)}
+      onclick={mobileDrawer.close}
     >
-      <slot name="icon" />
+      {@render icon()}
       <span class="truncate">
-        <slot />
+        {@render children()}
       </span>
     </a>
   </span>

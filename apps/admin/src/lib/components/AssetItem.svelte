@@ -1,11 +1,16 @@
 <script lang="ts">
-  import { FileVideo2, FileText } from 'lucide-svelte'
+  import VideoCamera from 'phosphor-svelte/lib/VideoCamera'
+  import FileText from 'phosphor-svelte/lib/FileText'
 
-  export let contentType: string
-  export let src: string
-  export let fileName: string
+  type Props = {
+    contentType: string
+    src: string
+    fileName: string
+  }
 
-  $: [name, ext] = fileName.split('.')
+  let { contentType, src, fileName }: Props = $props()
+
+  let [name, ext] = $derived(fileName.split('.'))
 </script>
 
 <div
@@ -16,9 +21,14 @@
       class="flex h-[100px] items-center justify-center text-gray-500 lg:h-[140px]"
     >
       {#if contentType.startsWith('image')}
-        <img {src} alt={fileName} class="!max-h-full !max-w-full" />
+        <img
+          src="https://public.babynyar.work/cdn-cgi/image/width=440,height=280,fit=contain,quality=85,format=auto/{src}"
+          alt={fileName}
+          loading="lazy"
+          class="!max-h-full !max-w-full"
+        />
       {:else if contentType.startsWith('video')}
-        <FileVideo2 class="h-12 w-12 text-amber-400 lg:h-16 lg:w-16" />
+        <VideoCamera class="h-12 w-12 text-amber-400 lg:h-16 lg:w-16" />
       {:else}
         <FileText class="h-12 w-12 text-blue-400 lg:h-16 lg:w-16" />
       {/if}

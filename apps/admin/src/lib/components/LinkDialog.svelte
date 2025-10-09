@@ -1,76 +1,81 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
-  import { LinkOptionsMenu, Button } from '$components'
-  import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogTitle
-  } from '$components'
+  import Dialog from './Dialog.svelte'
+  import DialogTitle from './DialogTitle.svelte'
+  import DialogDescription from './DialogDescription.svelte'
+  import DialogBody from './DialogBody.svelte'
+  import DialogActions from './DialogActions.svelte'
+  import DialogClose from './DialogClose.svelte'
+  import Button from './Button.svelte'
+  import Field from './Field.svelte'
+  import Label from './Label.svelte'
+  import Input from './Input.svelte'
+  import Select from './Select.svelte'
+  import SelectOption from './SelectOption.svelte'
+  import Link from 'phosphor-svelte/lib/Link'
+  import Globe from 'phosphor-svelte/lib/Globe'
+  import At from 'phosphor-svelte/lib/At'
 
-  export function open() {
-    dialog.show()
+  type Props = {
+    open: boolean
+    onSelect: (href: string, type: 'internal' | 'external' | 'email') => void
   }
 
-  export function close() {
-    dialog.dissmis()
+  let { open = $bindable(), onSelect }: Props = $props()
+
+  let href = $state('')
+  let type: 'internal' | 'external' | 'email' = $state('internal')
+
+  function handleConfirm() {
+    onSelect(href, type)
+    href = ''
+    type = 'internal'
   }
 
-  export let value = ''
-
-  let type = ''
-  let dialog: Dialog
-
-  const dispatch = createEventDispatcher()
-
-  function done() {
-    dispatch('done', { value, type })
-    value = ''
-  }
-
-  function selectType(e: CustomEvent<string>) {
-    type = e.detail
-  }
+  const options = [
+    {
+      label: 'Internal',
+      value: 'internal',
+      Icon: Link
+    },
+    {
+      label: 'URL',
+      value: 'external',
+      Icon: Globe
+    },
+    {
+      label: 'Email',
+      value: 'email',
+      Icon: At
+    }
+  ]
 </script>
 
-<Dialog bind:this={dialog} size="md">
-  <DialogContent>
-    <DialogTitle slot="title">Посилання</DialogTitle>
-    <DialogDescription slot="description">
-      Додати будь-яке посилання
-    </DialogDescription>
-    <div class="mt-7 min-h-[30px]">
-      <div class="pb-5">
-        <div class="relative h-full">
-          <div
-            class="flex h-10 w-full items-center overflow-hidden rounded border px-4 hover:border-sky-400"
-          >
-            <div
-              class="inline-flex items-center border-r border-gray-700/20 pr-2"
-            >
-              <LinkOptionsMenu on:select={selectType} />
-            </div>
-            <input
-              type="text"
-              name="link-variant"
-              bind:value
-              class="h-full w-full border-none pl-4 outline-none"
-              autocomplete="off"
-            />
-          </div>
-        </div>
-      </div>
+<Dialog bind:open class="sm:max-w-xl">
+  <DialogTitle>Посилання</DialogTitle>
+  <DialogDescription>Додати будь-яке посилання</DialogDescription>
+  <DialogBody>
+    <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-3">
+      <Field class="sm:col-span-2">
+        <Label for="link">Посилання</Label>
+        <Input bind:value={href} id="link" />
+      </Field>
+      <Field>
+        <Label for="link-type">Тип</Label>
+        <Select bind:value={type} items={options}>
+          {#each options as option (option.value)}
+            <SelectOption value={option.value} label={option.label}>
+              {#snippet icon()}
+                <option.Icon />
+              {/snippet}
+              {option.label}
+            </SelectOption>
+          {/each}
+        </Select>
+      </Field>
     </div>
-    <div
-      class="-mr-5 -mb-9 -ml-5 flex min-h-[80px] items-center justify-end gap-2.5 rounded-br-lg rounded-bl-lg bg-gray-100 px-9 lg:-mr-9 lg:-ml-9"
-    >
-      <button
-        on:click={() => dialog.dissmis()}
-        class="rounded-md border bg-white px-4 py-3 text-sm leading-none font-semibold outline-none focus:ring focus:ring-gray-300 disabled:opacity-60"
-      >
-        Відмінити
-      </button>
-      <Button isDisabled={value.length === 0} on:click={done}>Готово</Button>
-    </div>
-  </DialogContent>
+  </DialogBody>
+  <DialogActions>
+    <DialogClose />
+    <Button disabled={href.length === 0} onclick={handleConfirm}>Готово</Button>
+  </DialogActions>
 </Dialog>

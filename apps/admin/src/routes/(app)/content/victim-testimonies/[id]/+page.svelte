@@ -1,117 +1,90 @@
 <script lang="ts">
-  import { page } from '$app/stores'
+  import PageHeader from '$components/PageHeader.svelte'
+  import Button from '$components/Button.svelte'
+  import Container from '$components/Container.svelte'
+  import { page } from '$app/state'
+  import EditorSkeleton from '$components/Skeletons/EditorSkeleton.svelte'
   import {
-    Input,
-    LangSelect,
-    CoverSelect,
-    RichTextEditor,
-    DocumentsSelect,
-    Button,
-    PageHeader,
-    Container,
-    NotFound,
-    DatePicker
-  } from '$components'
-  import type { VictimTestimony } from '$lib/types'
-  import type { ResponseError } from '$lib/response-error'
-  import { getTestimony, updateTestimony } from '$lib/api-utils'
-  import { onMount } from 'svelte'
-  import { addToast } from '$components/Toaster.svelte'
-  import { SaveIcon } from 'lucide-svelte'
-  import { updateRecordSuccessMsg } from '$lib/toast-messages'
+    useTestimony,
+    useTestimonies,
+    useUpdateTestimony
+  } from '$lib/content/query'
+  import { type ContentFormSimple as Form } from '$lib/content/schema'
+  import { toast } from 'svelte-sonner'
+  import { trimText } from '$lib/trim-text'
+  import ContentFormSimple from '$components/ContentFormSimple.svelte'
 
-  let isSubmitting = false
-  let testimony: VictimTestimony
-  let error: ResponseError | undefined
+  let id = $derived(page.params.id) as string
+  let isTranslationQueryEnabled = $state(false)
+  let canSubmit = $state(true)
+  let isSubmitting = $state(false)
 
-  onMount(async function () {
-    const res = await getTestimony($page.params.id)
-    if (res.ok) {
-      testimony = res.data.testimony
-      testimony.content = JSON.parse(testimony.content as unknown as string)
-    } else {
-      error = res.error
-    }
-  })
+  const content = useTestimony(() => ({ id }))
+  const updateContent = useUpdateTestimony(() => ({ id }))
 
-  async function submit() {
-    isSubmitting = true
-    const body = JSON.stringify({
-      title: testimony.title,
-      description: testimony.description,
-      lang: testimony.lang,
-      cover: testimony.cover,
-      documents: testimony.documents,
-      content: JSON.stringify(testimony.content),
-      occuredOn: new Date(testimony.occuredOn).toISOString()
+  let translation = $derived(
+    content.data?.translation &&
+      content.data.testimony &&
+      content.data.translation
+      ? content.data.testimony.lang === 'en'
+        ? {
+            id: content.data.translation.ukrainianId,
+            title: content.data.translation.ukrainianTitle
+          }
+        : {
+            id: content.data.translation.englishId,
+            title: content.data.translation.englishTitle
+          }
+      : undefined
+  )
+
+  let translationSearch = $derived(translation?.title || '')
+  let currentLanguage = $derived<'ua' | 'en'>(
+    content.data?.testimony.lang || 'ua'
+  )
+
+  const translations = useTestimonies(() => ({
+    title: translationSearch,
+    lang: currentLanguage === 'en' ? 'ua' : 'en',
+    page_size: 20,
+    staleTime: 1000 * 15,
+    enabled: isTranslationQueryEnabled
+  }))
+
+  async function handleSubmit(form: Form) {
+    const promise = updateContent.mutateAsync(form)
+    toast.promise(promise, {
+      loading: 'Loading...',
+      success: data => `Запис "${trimText(data.testimony.title, 20)}" змінено`,
+      error: 'Помилка'
     })
-    const response = await updateTestimony($page.params.id, body)
-    if (!response.ok) {
-      error = response.error
-      isSubmitting = false
-      return
+    try {
+      await promise
+    } catch (error) {
+      console.error(error)
     }
-    addToast(updateRecordSuccessMsg)
-    isSubmitting = false
-    error = undefined
   }
 </script>
 
-{#if !error?.isNotFoundError()}
-  <PageHeader>
-    <svelte:fragment slot="heading">Редагування запису</svelte:fragment>
-    <Button
-      slot="right-items"
-      isLoading={isSubmitting}
-      loadingText="Збереження..."
-      form="edit-record"
-    >
-      <SaveIcon size={16} slot="icon" />
-      Зберегти зміни
-    </Button>
-  </PageHeader>
-
-  <Container title="Редагування запису">
-    {#if testimony}
-      <form
-        on:submit|preventDefault={submit}
-        id="edit-record"
-        class="space-y-5"
-      >
-        <LangSelect
-          bind:lang={testimony.lang}
-          error={error?.isFormError() ? error.error.lang : undefined}
-        />
-        <DatePicker bind:datetime={testimony.occuredOn} />
-        <CoverSelect
-          bind:cover={testimony.cover}
-          error={error?.isFormError() ? error.error.cover : undefined}
-        />
-        <Input
-          bind:value={testimony.title}
-          name="title"
-          label="Назва"
-          error={error?.isFormError() ? error.error.title : undefined}
-          required
-        />
-        <Input
-          bind:value={testimony.description}
-          name="description"
-          label="Опис"
-          error={error?.isFormError() ? error.error.description : undefined}
-          required
-        />
-        <DocumentsSelect bind:documents={testimony.documents} />
-        <div>
-          <p class="mb-1.5 text-gray-500">Контент</p>
-          {#if error?.isFormError() && error?.error.content}
-            <p class="text-red-500">{error.error.content}</p>
-          {/if}
-          <RichTextEditor bind:content={testimony.content} />
-        </div>
-      </form>
-    {/if}
-  </Container>
-{:else if error.isNotFoundError()}
-  <NotFound />
-{/if}
+<PageHeader title="Редагування запису">
+  <Button disabled={!canSubmit || isSubmitting} form="record-form">
+    Зберегти зміни
+  </Button>
+</PageHeader>
+<Container title="Редагувати запис">
+  {#if content.isLoading}
+    <EditorSkeleton />
+  {:else}
+    <ContentFormSimple
+      bind:searchTerm={translationSearch}
+      bind:currentLanguage
+      bind:isTranslationOpen={isTranslationQueryEnabled}
+      bind:isSubmitting
+      bind:canSubmit
+      content={content.data?.testimony}
+      selectedTranslation={translation}
+      translations={translations.data?.testimonies}
+      onSubmit={handleSubmit}
+    />
+  {/if}
+</Container>

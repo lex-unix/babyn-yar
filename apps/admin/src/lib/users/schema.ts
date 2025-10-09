@@ -40,8 +40,22 @@ export const RegisterUser = v.object({
   permission: v.union([v.literal('admin'), v.literal('publisher')])
 })
 
+export const EditUser = v.object({
+  email: Email,
+  fullName: FullName,
+  permission: v.union([v.literal('admin'), v.literal('publisher')])
+})
+
+export const ResetPassword = v.object({
+  password: v.pipe(v.string(), v.minLength(8))
+})
+
 export const UserResponse = v.object({
   user: User
+})
+
+export const UserFilters = v.object({
+  page: v.optional(v.pipe(v.number(), v.minValue(1)))
 })
 
 export const PaginatedUsersResponse = v.object({
@@ -56,3 +70,6 @@ export type PaginatedUsersResponse = v.InferOutput<
 >
 export type Settings = v.InferOutput<typeof Settings>
 export type RegisterUser = v.InferInput<typeof RegisterUser>
+export type EditUser = v.InferOutput<typeof EditUser>
+export type ResetPassword = v.InferOutput<typeof ResetPassword>
+export type UserFilters = v.InferInput<typeof UserFilters>

@@ -1,4 +1,6 @@
 <script>
   import { goto } from '$app/navigation'
-  goto('/content')
+  import { resolve } from '$app/paths'
+
+  goto(resolve('/content'))
 </script>

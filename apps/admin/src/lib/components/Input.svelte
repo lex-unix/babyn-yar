@@ -1,61 +1,42 @@
 <script lang="ts">
-  import type { HTMLInputTypeAttribute } from 'svelte/elements'
-  import { Eye, EyeOff } from 'lucide-svelte'
   import { cn } from '$lib/cn'
+  import { getFieldContext } from '$lib/context'
+  import type { HTMLInputAttributes } from 'svelte/elements'
 
-  let className = ''
-  export { className as class }
-
-  export let value: string = ''
-  export let label: string
-  export let error: string | undefined = undefined
-  export let type: HTMLInputTypeAttribute = 'text'
-
-  let isPasswordVisible = false
-
-  function change(
-    e: Event & {
-      currentTarget: EventTarget & HTMLInputElement
-    }
-  ) {
-    value = e.currentTarget.value
+  type Props = HTMLInputAttributes & {
+    value?: string
+    invalid?: boolean
+    class?: string
   }
 
-  function togglePasswordVisibility() {
-    isPasswordVisible = !isPasswordVisible
-  }
+  let {
+    value = $bindable(''),
+    invalid = false,
+    class: className = '',
+    disabled = false,
+    ...rest
+  }: Props = $props()
+
+  const ctx = getFieldContext()
+
+  let isDisabled = $derived(disabled || ctx?.disabled())
 </script>
 
-<label class="block text-gray-500">
-  {label}
-  {#if error}
-    <p class="mt-1.5 text-red-500">{error}</p>
-  {/if}
-  <div class="relative w-full">
-    <input
-      {value}
-      type={isPasswordVisible && type === 'password' ? 'text' : type}
-      {...$$restProps}
-      autocomplete="off"
-      aria-invalid={error ? 'true' : undefined}
-      on:input={change}
-      class={cn(
-        'mt-1.5 block h-10 w-full rounded border bg-white px-2 text-base text-gray-900 transition-all outline-none hover:border-sky-400 focus:border-sky-400 focus:ring focus:ring-sky-100 aria-invalid:border-red-400',
-        className
-      )}
-    />
-    {#if type === 'password'}
-      <button
-        type="button"
-        on:click={togglePasswordVisibility}
-        class="absolute top-1/2 right-4 -translate-y-1/2"
-      >
-        {#if isPasswordVisible}
-          <EyeOff size={20} class="text-gray-400 hover:text-indigo-400" />
-        {:else}
-          <Eye size={20} class="text-gray-400 hover:text-indigo-400" />
-        {/if}
-      </button>
-    {/if}
-  </div>
-</label>
+<span
+  class="relative block w-full before:absolute before:inset-px before:rounded-lg before:bg-white before:shadow-sm after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:ring-transparent after:ring-inset has-data-disabled:opacity-50 has-data-disabled:before:bg-zinc-950/5 has-data-disabled:before:shadow-none has-data-invalid:before:shadow-red-500/10 sm:focus-within:after:ring-2 sm:focus-within:after:ring-blue-500"
+  data-slot="control"
+>
+  <input
+    bind:value
+    class={cn(
+      'relative block  w-full rounded-lg border border-zinc-950/10 bg-transparent px-3.5 py-2.5 text-base/6 text-zinc-950 placeholder:text-zinc-500 hover:border-zinc-950/20 focus:outline-hidden data-disabled:border-zinc-950/20 data-invalid:border-red-500 data-invalid:hover:border-red-500 sm:px-3 sm:py-1.5 sm:text-sm/6',
+      className
+    )}
+    disabled={isDisabled}
+    data-invalid={invalid ? 'true' : undefined}
+    data-disabled={isDisabled || undefined}
+    autocorrect="off"
+    autocomplete="off"
+    {...rest}
+  />
+</span>

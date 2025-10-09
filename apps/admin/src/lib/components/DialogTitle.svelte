@@ -1,15 +1,11 @@
 <script lang="ts">
-  import { melt, type Dialog } from '@melt-ui/svelte'
-  import { getContext } from 'svelte'
+  import { Dialog } from 'bits-ui'
 
-  const {
-    elements: { title }
-  } = getContext<Dialog>('dialog')
+  const { children } = $props()
 </script>
 
-<h2
-  use:melt={$title}
+<Dialog.Title
   class="text-lg/6 font-semibold text-balance text-zinc-950 sm:text-base/6"
 >
-  <slot />
-</h2>
+  {@render children()}
+</Dialog.Title>

@@ -1,127 +1,90 @@
 <script lang="ts">
-  import { page } from '$app/stores'
+  import PageHeader from '$components/PageHeader.svelte'
+  import Button from '$components/Button.svelte'
+  import Container from '$components/Container.svelte'
+  import { page } from '$app/state'
+  import EditorSkeleton from '$components/Skeletons/EditorSkeleton.svelte'
   import {
-    Input,
-    LangSelect,
-    CoverSelect,
-    RichTextEditor,
-    PageHeader,
-    DocumentsSelect,
-    Button,
-    Container,
-    NotFound,
-    EditorSkeleton,
-    DatePicker
-  } from '$components'
-  import type { LegalDocument } from '$lib/types'
-  import type { ResponseError } from '$lib/response-error'
-  import { getLegalDocument, updateLegalDocument } from '$lib/api-utils'
-  import { onMount } from 'svelte'
-  import { addToast } from '$components/Toaster.svelte'
-  import { SaveIcon } from 'lucide-svelte'
+    useLegalDocument,
+    useLegalDocuments,
+    useUpdateLegalDocument
+  } from '$lib/content/query'
+  import ContentForm from '$components/ContentForm.svelte'
+  import { type ContentForm as Form } from '$lib/content/schema'
+  import { toast } from 'svelte-sonner'
+  import { trimText } from '$lib/trim-text'
 
-  let isSubmitting = false
-  let isLoading = false
-  let legalDocument: LegalDocument
-  let error: ResponseError | undefined
+  let id = $derived(page.params.id) as string
+  let isTranslationQueryEnabled = $state(false)
+  let canSubmit = $state(true)
+  let isSubmitting = $state(false)
 
-  onMount(async function () {
-    isLoading = true
-    const response = await getLegalDocument($page.params.id)
-    if (response.ok) {
-      legalDocument = response.data.document
-      legalDocument.content = JSON.parse(
-        legalDocument.content as unknown as string
-      )
-      isLoading = false
-      return
-    }
-    error = response.error
-    isLoading = false
-  })
+  const content = useLegalDocument(() => ({ id }))
+  const updateContent = useUpdateLegalDocument(() => ({ id }))
 
-  async function submit() {
-    isSubmitting = true
-    const body = JSON.stringify({
-      title: legalDocument.title,
-      description: legalDocument.description,
-      lang: legalDocument.lang,
-      cover: legalDocument.cover,
-      content: JSON.stringify(legalDocument.content),
-      documents: legalDocument.documents,
-      occuredOn: new Date(legalDocument.occuredOn).toISOString()
+  let translation = $derived(
+    content.data?.translation &&
+      content.data.document &&
+      content.data.translation
+      ? content.data.document.lang === 'en'
+        ? {
+            id: content.data.translation.ukrainianId,
+            title: content.data.translation.ukrainianTitle
+          }
+        : {
+            id: content.data.translation.englishId,
+            title: content.data.translation.englishTitle
+          }
+      : undefined
+  )
+
+  let translationSearch = $derived(translation?.title || '')
+  let currentLanguage = $derived<'ua' | 'en'>(
+    content.data?.document.lang || 'ua'
+  )
+
+  const translations = useLegalDocuments(() => ({
+    title: translationSearch,
+    lang: currentLanguage === 'en' ? 'ua' : 'en',
+    page_size: 20,
+    staleTime: 1000 * 15,
+    enabled: isTranslationQueryEnabled
+  }))
+
+  async function handleSubmit(form: Form) {
+    const promise = updateContent.mutateAsync(form)
+    toast.promise(promise, {
+      loading: 'Loading...',
+      success: data => `Запис "${trimText(data.document.title, 20)}" змінено`,
+      error: 'Помилка'
     })
-    const response = await updateLegalDocument($page.params.id, body)
-    isSubmitting = false
-    if (!response.ok) {
-      error = response.error
-      return
+    try {
+      await promise
+    } catch (error) {
+      console.error(error)
     }
-    addToast({
-      data: {
-        title: 'Чудово!',
-        description: 'Ваші зміни було збережено',
-        variant: 'success'
-      }
-    })
-    error = undefined
   }
 </script>
 
-{#if !error?.isNotFoundError()}
-  <PageHeader>
-    <svelte:fragment slot="heading">Редагування запису</svelte:fragment>
-    <Button
-      slot="right-items"
-      isLoading={isSubmitting}
-      loadingText="Збереження..."
-      form="edit-record"
-    >
-      <SaveIcon size={16} slot="icon" />
-      Зберегти зміни
-    </Button>
-  </PageHeader>
-  <Container title="Редагувати запис">
-    {#if !legalDocument || isLoading}
-      <EditorSkeleton />
-    {:else}
-      <form
-        on:submit|preventDefault={submit}
-        id="edit-record"
-        class="space-y-5"
-      >
-        <LangSelect
-          bind:lang={legalDocument.lang}
-          error={error?.isFormError() ? error.error.lang : undefined}
-        />
-        <DatePicker bind:datetime={legalDocument.occuredOn} />
-        <CoverSelect
-          bind:cover={legalDocument.cover}
-          error={error?.isFormError() ? error.error.cover : undefined}
-        />
-        <Input
-          bind:value={legalDocument.title}
-          name="title"
-          label="Назва"
-          error={error?.isFormError() ? error.error.title : undefined}
-        />
-        <Input
-          bind:value={legalDocument.description}
-          name="description"
-          label="Опис"
-          error={error?.isFormError() ? error.error.description : undefined}
-        />
-        <DocumentsSelect bind:documents={legalDocument.documents} />
-        <div>
-          <p class="mb-1.5 text-gray-500">Контент</p>
-          {#if error?.isFormError() && error?.error.content}
-            <p class="text-red-500">{error.error.content}</p>
-          {/if}
-          <RichTextEditor bind:content={legalDocument.content} />
-        </div>
-      </form>
-    {/if}
-  </Container>
-{:else if error?.isNotFoundError()}
-  <NotFound />
-{/if}
+<PageHeader title="Редагування запису">
+  <Button disabled={!canSubmit || isSubmitting} form="record-form">
+    Зберегти зміни
+  </Button>
+</PageHeader>
+<Container title="Редагувати запис">
+  {#if content.isLoading}
+    <EditorSkeleton />
+  {:else}
+    <ContentForm
+      bind:searchTerm={translationSearch}
+      bind:currentLanguage
+      bind:isTranslationOpen={isTranslationQueryEnabled}
+      bind:isSubmitting
+      bind:canSubmit
+      content={content.data?.document}
+      selectedTranslation={translation}
+      translations={translations.data?.documents}
+      onSubmit={handleSubmit}
+    />
+  {/if}
+</Container>

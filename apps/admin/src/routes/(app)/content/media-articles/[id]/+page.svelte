@@ -1,138 +1,90 @@
 <script lang="ts">
-  import { page } from '$app/stores'
+  import PageHeader from '$components/PageHeader.svelte'
+  import Button from '$components/Button.svelte'
+  import Container from '$components/Container.svelte'
+  import { page } from '$app/state'
+  import EditorSkeleton from '$components/Skeletons/EditorSkeleton.svelte'
   import {
-    Input,
-    LangSelect,
-    CoverSelect,
-    RichTextEditor,
-    Button,
-    PageHeader,
-    Container,
-    NotFound,
-    DatePicker,
-    TranslationSelect
-  } from '$components'
-  import type { MediaArticle, Translation } from '$lib/types'
-  import type { ResponseError } from '$lib/response-error'
-  import { fetchArticle, getArticles, updateArticle } from '$lib/api-utils'
-  import { onMount } from 'svelte'
-  import { addToast } from '$components/Toaster.svelte'
-  import { SaveIcon } from 'lucide-svelte'
-  import { updateRecordSuccessMsg } from '$lib/toast-messages'
+    useMediaArticle,
+    useMediaArticles,
+    useUpdateMediaArticle
+  } from '$lib/content/query'
+  import ContentFormSimple from '$components/ContentFormSimple.svelte'
+  import { type ContentFormSimple as Form } from '$lib/content/schema'
+  import { toast } from 'svelte-sonner'
+  import { trimText } from '$lib/trim-text'
 
-  let isSubmitting = false
-  let article: MediaArticle
-  let translations: Translation[] = []
-  let selectedTranslation: Translation | undefined
-  let error: ResponseError | undefined
+  let id = $derived(page.params.id) as string
+  let isTranslationQueryEnabled = $state(false)
+  let canSubmit = $state(true)
+  let isSubmitting = $state(false)
 
-  onMount(async function () {
-    const response = await fetchArticle($page.params.id)
-    if (!response.ok) {
-      error = response.error
-      return
-    }
-    article = response.data.article
-    article.content = JSON.parse(article.content as unknown as string)
+  const content = useMediaArticle(() => ({ id }))
+  const updateContent = useUpdateMediaArticle(() => ({ id }))
 
-    if (response.data.translation) {
-      const translation = response.data.translation
-      selectedTranslation =
-        article.lang === 'ua'
-          ? { id: translation.englishId, title: translation.englishTitle }
-          : { id: translation.ukrainianId, title: translation.ukrainianTitle }
-    }
+  let translation = $derived(
+    content.data?.translation &&
+      content.data.article &&
+      content.data.translation
+      ? content.data.article.lang === 'en'
+        ? {
+            id: content.data.translation.ukrainianId,
+            title: content.data.translation.ukrainianTitle
+          }
+        : {
+            id: content.data.translation.englishId,
+            title: content.data.translation.englishTitle
+          }
+      : undefined
+  )
 
-    const translationResponse = await getArticles()
-    if (translationResponse.ok) {
-      translations = translationResponse.data.articles
-    }
-  })
+  let translationSearch = $derived(translation?.title || '')
+  let currentLanguage = $derived<'ua' | 'en'>(
+    content.data?.article.lang || 'ua'
+  )
 
-  async function submit() {
-    isSubmitting = true
-    const body = JSON.stringify({
-      occuredOn: new Date(article.occuredOn).toISOString(),
-      title: article.title,
-      description: article.description,
-      lang: article.lang,
-      cover: article.cover,
-      content: JSON.stringify(article.content),
-      translationId: selectedTranslation ? selectedTranslation.id : null
+  const translations = useMediaArticles(() => ({
+    title: translationSearch,
+    lang: currentLanguage === 'en' ? 'ua' : 'en',
+    page_size: 20,
+    staleTime: 1000 * 15,
+    enabled: isTranslationQueryEnabled
+  }))
+
+  async function handleSubmit(form: Form) {
+    const promise = updateContent.mutateAsync(form)
+    toast.promise(promise, {
+      loading: 'Loading...',
+      success: data => `Запис "${trimText(data.article.title, 20)}" змінено`,
+      error: 'Помилка'
     })
-    const response = await updateArticle($page.params.id, body)
-    if (!response.ok) {
-      error = response.error
-      isSubmitting = false
-      return
-    }
-    addToast(updateRecordSuccessMsg)
-    isSubmitting = false
-    error = undefined
-  }
-
-  async function searchTranslations(e: CustomEvent<{ search: string }>) {
-    const response = await getArticles({ title: e.detail.search })
-    if (response.ok) {
-      translations = response.data.articles
+    try {
+      await promise
+    } catch (error) {
+      console.error(error)
     }
   }
 </script>
 
-{#if !error?.isNotFoundError()}
-  <PageHeader>
-    <svelte:fragment slot="heading">Редагувати запис</svelte:fragment>
-    <Button slot="right-items" isLoading={isSubmitting} form="edit-record">
-      <SaveIcon size={16} slot="icon" />
-      Зберегти зміни
-    </Button>
-  </PageHeader>
-
-  <Container title="Редагувати запис">
-    {#if article}
-      <form
-        on:submit|preventDefault={submit}
-        id="edit-record"
-        class="space-y-5"
-      >
-        <LangSelect
-          bind:lang={article.lang}
-          error={error?.isFormError() ? error.error.lang : undefined}
-        />
-        <DatePicker bind:datetime={article.occuredOn} />
-        <TranslationSelect
-          {translations}
-          bind:selected={selectedTranslation}
-          on:search={searchTranslations}
-        />
-        <CoverSelect
-          bind:cover={article.cover}
-          error={error?.isFormError() ? error.error.cover : undefined}
-        />
-        <Input
-          bind:value={article.title}
-          name="title"
-          label="Назва"
-          error={error?.isFormError() ? error.error.title : undefined}
-          required
-        />
-        <Input
-          bind:value={article.description}
-          name="description"
-          label="Опис"
-          error={error?.isFormError() ? error.error.description : undefined}
-          required
-        />
-        <div>
-          <p class="mb-1.5 text-gray-500">Контент</p>
-          {#if error?.isFormError() && error?.error.content}
-            <p class="text-red-500">{error.error.content}</p>
-          {/if}
-          <RichTextEditor bind:content={article.content} />
-        </div>
-      </form>
-    {/if}
-  </Container>
-{:else if error?.isNotFoundError()}
-  <NotFound />
-{/if}
+<PageHeader title="Редагування запису">
+  <Button disabled={!canSubmit || isSubmitting} form="record-form">
+    Зберегти зміни
+  </Button>
+</PageHeader>
+<Container title="Редагувати запис">
+  {#if content.isLoading}
+    <EditorSkeleton />
+  {:else}
+    <ContentFormSimple
+      bind:searchTerm={translationSearch}
+      bind:currentLanguage
+      bind:isTranslationOpen={isTranslationQueryEnabled}
+      bind:isSubmitting
+      bind:canSubmit
+      content={content.data?.article}
+      selectedTranslation={translation}
+      translations={translations.data?.articles}
+      onSubmit={handleSubmit}
+    />
+  {/if}
+</Container>

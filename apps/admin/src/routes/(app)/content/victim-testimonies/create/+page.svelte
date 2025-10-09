@@ -1,102 +1,50 @@
 <script lang="ts">
-  import {
-    Input,
-    RichTextEditor,
-    LangSelect,
-    CoverSelect,
-    DocumentsSelect,
-    Button,
-    PageHeader,
-    Container,
-    DatePicker
-  } from '$components'
-  import type { ResponseError } from '$lib/response-error'
-  import { createTestimony } from '$lib/api-utils'
-  import type { JSONContent } from '@tiptap/core'
-  import { PlusIcon } from 'lucide-svelte'
-  import { addToast } from '$components/Toaster.svelte'
+  import PageHeader from '$components/PageHeader.svelte'
+  import Button from '$components/Button.svelte'
+  import Container from '$components/Container.svelte'
+  import { useTestimonies, useCreateTestimony } from '$lib/content/query'
+  import { type ContentFormSimple as Form } from '$lib/content/schema'
+  import Plus from 'phosphor-svelte/lib/Plus'
   import { goto } from '$app/navigation'
-  import { createRecordSuccessMsg } from '$lib/toast-messages'
+  import { resolve } from '$app/paths'
+  import ContentFormSimple from '$components/ContentFormSimple.svelte'
 
-  let isSubmitting = false
-  let content: JSONContent
-  let title = ''
-  let description = ''
-  let lang = ''
-  let cover = ''
-  let documents: string[] = []
-  let occuredOn = ''
-  let error: ResponseError | undefined
+  let isTranslationQueryEnabled = $state(false)
+  let translationSearch = $state('')
+  let currentLanguage = $state<Form['lang']>('ua')
+  let canSubmit = $state(true)
+  let isSubmitting = $state(false)
 
-  async function submit() {
-    isSubmitting = true
-    const body = JSON.stringify({
-      title,
-      description,
-      lang,
-      cover,
-      documents,
-      content: JSON.stringify(content),
-      occuredOn: new Date(occuredOn).toISOString()
-    })
-    const response = await createTestimony(body)
-    if (!response.ok) {
-      error = response.error
-      isSubmitting = false
-      return
-    }
-    addToast(createRecordSuccessMsg)
-    isSubmitting = false
-    error = undefined
-    goto('/content/victim-testimonies')
-  }
+  const translations = useTestimonies(() => ({
+    title: translationSearch,
+    lang: currentLanguage === 'en' ? 'ua' : 'en',
+    page_size: 20,
+    staleTime: 1000 * 15,
+    enabled: isTranslationQueryEnabled
+  }))
+
+  const createTestimonyMutation = useCreateTestimony()
 </script>
 
-<PageHeader>
-  <svelte:fragment slot="heading">Новий запис</svelte:fragment>
-  <Button
-    slot="right-items"
-    isLoading={isSubmitting}
-    loadingText="Створення..."
-    form="create-record"
-  >
-    <PlusIcon size={16} slot="icon" />
+<PageHeader title="Новий запис">
+  <Button disabled={!canSubmit || isSubmitting} form="record-form">
+    {#snippet icon()}
+      <Plus size={16} />
+    {/snippet}
     Створити
   </Button>
 </PageHeader>
-
-<Container title="Новий запис">
-  <form id="create-record" on:submit|preventDefault={submit} class="space-y-5">
-    <LangSelect
-      bind:lang
-      error={error?.isFormError() ? error.error.lang : undefined}
-    />
-    <CoverSelect
-      bind:cover
-      error={error?.isFormError() ? error.error.cover : undefined}
-    />
-    <DatePicker bind:datetime={occuredOn} />
-    <Input
-      name="title"
-      label="Назва"
-      error={error?.isFormError() ? error.error.title : undefined}
-      bind:value={title}
-      required
-    />
-    <Input
-      name="description"
-      label="Опис"
-      error={error?.isFormError() ? error.error.description : undefined}
-      bind:value={description}
-      required
-    />
-    <DocumentsSelect bind:documents />
-    <div>
-      <p class="mb-1.5 text-gray-500">Контент</p>
-      {#if error?.isFormError() && error?.error.content}
-        <p class="text-red-500">{error.error.content}</p>
-      {/if}
-      <RichTextEditor bind:content />
-    </div>
-  </form>
+<Container title="Створити запис">
+  <ContentFormSimple
+    bind:searchTerm={translationSearch}
+    bind:currentLanguage
+    bind:isTranslationOpen={isTranslationQueryEnabled}
+    bind:isSubmitting
+    bind:canSubmit
+    translations={translations.data?.testimonies}
+    onSubmit={async form => {
+      await createTestimonyMutation.mutateAsync(form)
+      goto(resolve('/content/victim-testimonies'))
+    }}
+  />
 </Container>

@@ -1,76 +1,64 @@
 <script lang="ts">
-  import { ContentPage, LinkButton, PageHeader } from '$components'
-  import type { ContentData, Metadata } from '$lib/types'
-  import { onMount } from 'svelte'
-  import { getLegalDocuments, deleteLegalDocuments } from '$lib/api-utils'
-  import { addToast } from '$components/Toaster.svelte'
-  import { deleteErrorMsg, fetchErrorMsg } from '$lib/toast-messages'
-  import { page } from '$app/stores'
-  import { Plus } from 'lucide-svelte'
+  import ContentPage from '$components/ContentPage.svelte'
+  import Plus from 'phosphor-svelte/lib/Plus'
+  import PageHeader from '$components/PageHeader.svelte'
+  import Button from '$components/Button.svelte'
+  import { useContentFilters } from '$lib/use-content-filters'
+  import {
+    useDeleteLegalDocuments,
+    useLegalDocuments
+  } from '$lib/content/query'
+  import type { ContentFilters } from '$lib/content/schema'
 
-  let data: ContentData[] = []
-  let metadata: Metadata
-  let isLoading = false
+  const slug = 'legal-documents'
 
-  onMount(async () => {
-    isLoading = true
-    const params = Object.fromEntries($page.url.searchParams)
-    await load(replaceSearch(params))
-    isLoading = false
-  })
+  const filters = useContentFilters()
+  const content = useLegalDocuments(() => filters.current)
 
-  function replaceSearch(params: Record<string, string>) {
-    if (params.search) {
-      params.title = params.search
-    }
-    return params
+  const deleteContent = useDeleteLegalDocuments()
+
+  function handleDelete(selected: number[]) {
+    deleteContent.mutate(selected)
   }
 
-  async function load(params: Record<string, string> = {}) {
-    const response = await getLegalDocuments(params)
-    if (!response.ok) {
-      addToast(fetchErrorMsg)
-      return
-    }
-    data = response.data.documents.map(e => ({
-      id: e.id,
-      title: e.title,
-      author: e.user.fullName,
-      lastChange: e.updatedAt
-    }))
-    metadata = response.data.metadata
+  function handleFilter(title: string) {
+    filters.set(prev => ({ ...prev, page: 1, title }))
   }
 
-  async function _delete(e: CustomEvent<{ selected: number[] }>) {
-    const { ok } = await deleteLegalDocuments(e.detail.selected)
-    if (!ok) {
-      addToast(deleteErrorMsg)
-      return
-    }
-    const params = Object.fromEntries($page.url.searchParams)
-    await load(replaceSearch(params))
+  function handlePageSelect(page: number) {
+    filters.set(prev => ({ ...prev, page }))
   }
 
-  async function filter(e: CustomEvent<Record<string, string>>) {
-    const filters = replaceSearch(e.detail)
-    await load({ ...filters })
+  function handleSort(sort: ContentFilters['sort']) {
+    filters.set(prev => ({ ...prev, page: 1, sort }))
   }
 </script>
 
-<PageHeader>
-  <svelte:fragment slot="heading">Документи</svelte:fragment>
-  <LinkButton slot="right-items" href="/content/legal-documents/create">
-    <Plus slot="icon" size={16} />
+<PageHeader title="Документи">
+  <Button href={`/content/${slug}/create`}>
+    {#snippet icon()}
+      <Plus size={16} />
+    {/snippet}
     Cтворити
-  </LinkButton>
+  </Button>
 </PageHeader>
 
 <ContentPage
-  {metadata}
-  {data}
-  {isLoading}
+  data={content.data?.documents.map(e => ({
+    id: e.id,
+    title: e.title,
+    author: e.user.fullName,
+    lastChange: e.updatedAt
+  })) || []}
+  metadata={content.data?.metadata}
+  isLoading={content.isLoading}
   title="Документи"
-  entryHref="/content/legal-documents"
-  on:filter={filter}
-  on:delete={_delete}
+  entryHref={`/content/${slug}`}
+  searchValue={filters.current?.title}
+  sortValue={filters.current?.sort}
+  isDeleting={deleteContent.isPending}
+  onFilter={handleFilter}
+  onDelete={handleDelete}
+  onPageSelect={handlePageSelect}
+  onSort={handleSort}
 />
