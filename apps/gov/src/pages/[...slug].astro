@@ -1,19 +1,23 @@
 ---
-import type { CollectionEntry } from 'astro:content'
-import { allPages } from '@/content'
+export const prerender = true
+
+import { render } from '@/content'
 import LayoutSwitcher from '@/layouts/LayoutSwitcher.astro'
+import { getCollection } from 'astro:content'
 
 export async function getStaticPaths() {
-  return allPages.map(page => {
-    const slug = page.slug || undefined
-    return { params: { slug }, props: page }
+  const pages = await getCollection('site')
+  return pages.map(page => {
+    return {
+      params: { slug: page.id === 'index' ? undefined : page.id },
+      props: { page }
+    }
   })
 }
 
-export type Props = CollectionEntry<'site'>
-const { data, render } = Astro.props
-const { Content } = await render()
-const { title, description, type } = data
+const { page } = Astro.props
+const { Content } = await render(page)
+const { title, description, type } = page.data
 ---
 
 <LayoutSwitcher {title} {description} {type}>

@@ -4,6 +4,7 @@ import Footer from '@/components/Footer.astro'
 import { Head, HeadSEO } from 'ui'
 import '@/styles/roboto.css'
 import MobileMenu from '@/components/MobileMenu.astro'
+import '../styles/global.css'
 
 export interface Props {
   title: string
@@ -14,7 +15,7 @@ export interface Props {
 const { title, description, translationId } = Astro.props
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uk">
   <head>
     <Head />
