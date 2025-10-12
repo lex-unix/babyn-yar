@@ -1,58 +1,21 @@
 ---
-import type { Book, Metadata } from 'shared-types'
-import { FloatImage, MediaListItem, SSRPagination } from 'ui'
-import MainLayout from '@/layouts/MainLayout.astro'
-import { formatDate } from 'shared'
-import { getTestimonies } from '@/api'
-import InternalError from '@/components/InternalError.astro'
+import type { ContentSchema, Metadata } from '@repo/schema'
+import { ContentAPI } from '@repo/api'
+import CMSList from '@/components/CMSList.astro'
 
 export const prerender = false
 
-let testimonies: Book[] = []
-let metadata: Metadata | undefined = undefined
-
-const currentPage = Astro.url.searchParams.get('page') || '1'
-const response = await getTestimonies(currentPage)
-
-if (response.ok) {
-  testimonies = response.data.testimonies
-  metadata = response.data.metadata
-}
-
-if (!response.ok && response.error.isNotFoundError()) {
-  return new Response(null, { status: 404 })
-}
+const page = Number(Astro.url.searchParams.get('page') || '1')
+const response = await ContentAPI.list<{
+  testimonies: ContentSchema.Content[]
+  metadata: Metadata
+}>({ slug: 'victim-testimonies', filters: { page, lang: 'en' } })
 ---
 
-{
-  !response.ok ? (
-    <InternalError />
-  ) : (
-    <MainLayout
-      title="Eyewitnesses’ testimony"
-      description="Eyewitnesses’ testimony"
-    >
-      <div class="not-prose">
-        <h1 class="mb-10 text-3xl font-bold">Eyewitnesses’ testimony</h1>
-        {testimonies.map(t => (
-          <MediaListItem href={`/en/holocaust/testimonies/${t.id}`}>
-            <div slot="header" class="">
-              <h2 class="text-2xl font-bold">{t.title}</h2>
-              <p class="text-base opacity-40">{formatDate(t.createdAt)}</p>
-            </div>
-            <FloatImage slot="left" src={t.cover} alt={t.title} />
-            <p slot="right">{t.description}</p>
-          </MediaListItem>
-        ))}
-        <div class="mt-10">
-          {testimonies.length > 0 && metadata && (
-            <SSRPagination
-              current={metadata.currentPage}
-              total={metadata.lastPage}
-            />
-          )}
-        </div>
-      </div>
-    </MainLayout>
-  )
-}
+<CMSList
+  title="Eyewitnesses’ testimony"
+  description="Eyewitnesses’ testimony"
+  slug="en/holocaust/testimonies"
+  list={response.testimonies}
+  metadata={response.metadata}
+/>

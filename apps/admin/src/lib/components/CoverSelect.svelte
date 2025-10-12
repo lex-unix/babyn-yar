@@ -2,7 +2,7 @@
   import Image from 'phosphor-svelte/lib/Image'
   import Plus from 'phosphor-svelte/lib/Plus'
   import AssetDialog from './AssetDialog.svelte'
-  import { Asset } from '$lib/assets/schema'
+  import { AssetSchema } from '@repo/schema'
 
   type Props = {
     id?: string
@@ -20,7 +20,7 @@
 
   let isDialogOpen = $state(false)
 
-  function handleCoverSelect(asset: Asset) {
+  function handleCoverSelect(asset: AssetSchema.Asset) {
     onSelect(asset.url)
     isDialogOpen = false
   }

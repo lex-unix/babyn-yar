@@ -2,7 +2,6 @@
   import { createForm } from '@tanstack/svelte-form'
   import { permissionOptions } from '$lib/select-options'
   import { useRegister } from '$lib/auth/query'
-  import { RegisterUser } from '$lib/auth/schema'
   import { ResponseError } from '$lib/response-error'
   import Dialog from './Dialog.svelte'
   import DialogTitle from './DialogTitle.svelte'
@@ -20,6 +19,7 @@
   import FieldError from './FieldError.svelte'
   import DialogClose from './DialogClose.svelte'
   import Description from './Description.svelte'
+  import { UserSchema } from '@repo/schema'
 
   type Props = {
     open: boolean
@@ -35,9 +35,9 @@
       email: '',
       password: '',
       permission: 'admin'
-    } as RegisterUser,
+    } as UserSchema.Register,
     validators: {
-      onSubmit: RegisterUser,
+      onSubmit: UserSchema.Register,
       onSubmitAsync: async ({ value }) => {
         try {
           await register.mutateAsync(value)

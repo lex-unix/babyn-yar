@@ -5,7 +5,7 @@
   import Button from '$components/Button.svelte'
   import { useContentFilters } from '$lib/use-content-filters'
   import { useDeleteMediaArticles, useMediaArticles } from '$lib/content/query'
-  import type { ContentFilters } from '$lib/content/schema'
+  import { ContentSchema } from '@repo/schema'
 
   const slug = 'media-articles'
 
@@ -26,7 +26,7 @@
     filters.set(prev => ({ ...prev, page }))
   }
 
-  function handleSort(sort: ContentFilters['sort']) {
+  function handleSort(sort: ContentSchema.Filters['sort']) {
     filters.set(prev => ({ ...prev, page: 1, sort }))
   }
 </script>

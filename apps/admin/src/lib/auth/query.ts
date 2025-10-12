@@ -3,11 +3,10 @@ import {
   createQuery,
   useQueryClient
 } from '@tanstack/svelte-query'
-import { ResponseError } from '$lib/response-error'
-import { fetchLoggedUser, login, register } from './api'
 import { userKeys } from '$lib/users/query'
-import type { Login, RegisterUser } from './schema'
+import type { UserSchema } from '@repo/schema'
 import { authToasts } from './toast'
+import { ResponseError, UserAPI } from '@repo/api'
 
 export const authKeys = {
   all: ['auth'] as const,
@@ -18,7 +17,7 @@ export function useRegister() {
   const client = useQueryClient()
 
   return createMutation(() => ({
-    mutationFn: (newUser: RegisterUser) => register(newUser),
+    mutationFn: (newUser: UserSchema.Register) => UserAPI.register(newUser),
     onSettled: () => {
       client.invalidateQueries({ queryKey: userKeys.all })
     },
@@ -32,7 +31,7 @@ export function useLogin() {
   const client = useQueryClient()
 
   return createMutation(() => ({
-    mutationFn: (credentials: Login) => login(credentials),
+    mutationFn: (credentials: UserSchema.Login) => UserAPI.login(credentials),
     onSuccess: loggedUser => {
       client.setQueryData(authKeys.me(), loggedUser.user)
     }
@@ -44,7 +43,7 @@ export function useLoggedUser() {
     queryKey: authKeys.me(),
     refetchInterval: 1000 * 60 * 5,
     refetchIntervalInBackground: true,
-    queryFn: () => fetchLoggedUser(),
+    queryFn: () => UserAPI.me(),
     retry: (failureCount, error) => {
       if (error instanceof ResponseError && error.isUnauthorized()) {
         return false

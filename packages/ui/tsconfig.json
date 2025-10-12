@@ -1,7 +1,13 @@
 {
   "$schema": "https://www.schemastore.org/tsconfig.json",
   "compilerOptions": {
+    "moduleResolution": "bundler",
     "jsx": "react",
-    "jsxImportSource": "react"
+    "jsxImportSource": "react",
+    "plugins": [
+      {
+        "name": "@astrojs/ts-plugin"
+      }
+    ]
   }
 }

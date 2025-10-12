@@ -1,0 +1,21 @@
+---
+import CMSContent from './CMSContent.astro'
+import type { ContentSchema } from '@repo/schema'
+
+type Props = {
+  loader: () => Promise<{
+    content: ContentSchema.Content
+    translationId?: number
+  }>
+}
+
+const { content, translationId } = await Astro.props.loader()
+---
+
+<CMSContent
+  title={content.title}
+  description={content.description}
+  content={content.content}
+  attachemnts={content.documents}
+  translationId={translationId}
+/>

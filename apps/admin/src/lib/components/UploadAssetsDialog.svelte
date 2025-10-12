@@ -14,7 +14,7 @@
   import Code from './Code.svelte'
   import { toast } from 'svelte-sonner'
   import { ResponseError } from '$lib/response-error'
-  import { AssetsForm } from '$lib/assets/schema'
+  import { AssetSchema } from '@repo/schema'
   import { createForm } from '@tanstack/svelte-form'
 
   type Props = {
@@ -29,9 +29,9 @@
     defaultValues: {
       prefix: '',
       files: []
-    } as AssetsForm,
+    } as AssetSchema.Form,
     validators: {
-      onSubmit: AssetsForm
+      onSubmit: AssetSchema.Form
     },
     defaultState: {
       canSubmit: true

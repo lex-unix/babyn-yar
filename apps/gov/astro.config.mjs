@@ -7,12 +7,9 @@ import sitemap from '@astrojs/sitemap'
 
 import tailwindcss from '@tailwindcss/vite'
 
-const isProd = import.meta.env.PROD
-
 // https://astro.build/config
 export default defineConfig({
   site: 'https://babynyar.gov.ua',
-  publicDir: isProd ? './public' : '../../public',
   integrations: [react(), mdx(), sitemap(), robots()],
   adapter: node({ mode: 'standalone' }),
 

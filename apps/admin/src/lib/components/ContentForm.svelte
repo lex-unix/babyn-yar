@@ -10,23 +10,23 @@
   import DocumentsSelect from '$components/DocumentsSelect.svelte'
   import DatePickerCalendar from './DatePickerCalendar.svelte'
   import { createForm } from '@tanstack/svelte-form'
-  import { Content, ContentForm } from '$lib/content/schema'
+  import { ContentSchema } from '@repo/schema'
   import Combobox from '$components/Combobox.svelte'
   import ComboboxOption from '$components/ComboboxOption.svelte'
   import ComboboxLabel from '$components/ComboboxLabel.svelte'
 
-  type ContentWithoutTranslation = Omit<ContentForm, 'translation'>
+  type ContentWithoutTranslation = Omit<ContentSchema.Form, 'translation'>
 
   type Props = {
     content?: ContentWithoutTranslation
-    selectedTranslation?: ContentForm['translation']
-    translations?: Content[]
-    currentLanguage: ContentForm['lang']
+    selectedTranslation?: ContentSchema.Form['translation']
+    translations?: ContentSchema.Content[]
+    currentLanguage: ContentSchema.Form['lang']
     isTranslationOpen: boolean
     isSubmitting: boolean
     canSubmit: boolean
     searchTerm: string
-    onSubmit: (form: ContentForm) => void
+    onSubmit: (form: ContentSchema.Form) => void
   }
 
   let {
@@ -51,9 +51,9 @@
       documents: content?.documents ?? [],
       content: content?.content ?? undefined,
       translation: selectedTranslation ?? undefined
-    } as ContentForm,
+    } as ContentSchema.Form,
     validators: {
-      onSubmit: ContentForm
+      onSubmit: ContentSchema.Form
     },
     onSubmit: ({ value }) => {
       onSubmit(value)

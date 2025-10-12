@@ -1,29 +1,20 @@
 ---
-import InternalError from '@/components/InternalError.astro'
-import type { DevConcept } from 'shared-types'
-import { getDevConcept } from '@/api'
-import CMSContent from '@/components/CMSContent.astro'
+import CMSLoader from '@/components/CMSLoader.astro'
+import type { ContentSchema } from '@repo/schema'
+import { ContentAPI } from '@repo/api'
 
 export const prerender = false
 
-let concept: DevConcept | undefined = undefined
-const response = await getDevConcept(Astro.params.id as string)
-if (!response.ok && response.error.isNotFoundError()) {
-  return new Response(null, { status: 404 })
-}
-if (response.ok) {
-  concept = response.data.concept
-}
+const { id } = Astro.params
 ---
 
-{
-  !response.ok || !concept ? (
-    <InternalError />
-  ) : (
-    <CMSContent
-      title={concept.title}
-      description={concept.description}
-      content={concept.content}
-    />
-  )
-}
+<CMSLoader
+  loader={async () =>
+    ContentAPI.detail<{
+      concept: ContentSchema.Content
+      translation?: ContentSchema.Translation
+    }>({ slug: 'development-concepts', id: id as string }).then(data => ({
+      content: data.concept,
+      translationId: data.translation?.ukrainianId
+    }))}
+/>

@@ -9,7 +9,7 @@
     useTestimonies,
     useUpdateTestimony
   } from '$lib/content/query'
-  import { type ContentFormSimple as Form } from '$lib/content/schema'
+  import { ContentSchema } from '@repo/schema'
   import { toast } from 'svelte-sonner'
   import { trimText } from '$lib/trim-text'
   import ContentFormSimple from '$components/ContentFormSimple.svelte'
@@ -51,7 +51,7 @@
     enabled: isTranslationQueryEnabled
   }))
 
-  async function handleSubmit(form: Form) {
+  async function handleSubmit(form: ContentSchema.FormSimple) {
     const promise = updateContent.mutateAsync(form)
     toast.promise(promise, {
       loading: 'Loading...',

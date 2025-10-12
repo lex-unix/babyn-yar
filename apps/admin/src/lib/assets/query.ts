@@ -4,12 +4,11 @@ import {
   keepPreviousData,
   useQueryClient
 } from '@tanstack/svelte-query'
-import { deleteAssets, fetchAssets, uploadAssets } from './api'
-import { ResponseError } from '$lib/response-error'
 import { assetToasts } from './toast'
 import type { Getter } from '$lib/runes'
-import { AssetFilters, AssetsForm } from './schema'
+import { AssetSchema } from '@repo/schema'
 import { useAssetFilters } from '$lib/use-asset-filters'
+import { AssetAPI } from '@repo/api'
 
 type QueryOptions = {
   staleTime?: number
@@ -18,10 +17,10 @@ type QueryOptions = {
 
 export const assetKeys = {
   all: ['assets'] as const,
-  list: (filters: AssetFilters) => [...assetKeys.all, filters]
+  list: (filters: AssetSchema.Filters) => [...assetKeys.all, filters]
 }
 
-export function useAssets(opts: Getter<QueryOptions>) {
+export function useAssets(opts: Getter<QueryOptions> = () => ({})) {
   const filters = useAssetFilters()
 
   return createInfiniteQuery(() => ({
@@ -31,12 +30,10 @@ export function useAssets(opts: Getter<QueryOptions>) {
     staleTime: 1000 * 10,
     enabled: opts().enabled,
     queryFn: async ({ pageParam = 1 }) =>
-      fetchAssets(pageParam, filters.current),
-    getNextPageParam: lastPage => {
-      if (lastPage.metadata.currentPage >= lastPage.metadata.lastPage) {
-        return undefined
-      }
-      return lastPage.metadata.currentPage + 1
+      AssetAPI.list(pageParam, filters.current),
+    getNextPageParam: prevPage => {
+      const { currentPage, lastPage } = prevPage.metadata
+      return currentPage < lastPage ? currentPage + 1 : undefined
     }
   }))
 }
@@ -45,7 +42,7 @@ export function useUploadAssets() {
   const client = useQueryClient()
 
   return createMutation(() => ({
-    mutationFn: async (assets: AssetsForm) => uploadAssets(assets),
+    mutationFn: async (assets: AssetSchema.Form) => AssetAPI.upload(assets),
     onSuccess: () => {
       client.invalidateQueries({ queryKey: assetKeys.all })
     }
@@ -55,10 +52,8 @@ export function useUploadAssets() {
 export function useDeleteAssets() {
   const client = useQueryClient()
 
-  return createMutation<unknown, ResponseError, number[]>(() => ({
-    mutationFn: ids => {
-      return deleteAssets(ids)
-    },
+  return createMutation(() => ({
+    mutationFn: (ids: number[]) => AssetAPI.remove(ids),
     onSettled: () => {
       client.invalidateQueries({ queryKey: assetKeys.all })
     },

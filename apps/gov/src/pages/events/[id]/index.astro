@@ -1,31 +1,20 @@
 ---
-import InternalError from '@/components/InternalError.astro'
-import type { Event } from 'shared-types'
-import { getEvent } from '@/api'
-import CMSContent from '@/components/CMSContent.astro'
+import CMSLoader from '@/components/CMSLoader.astro'
+import { ContentAPI } from '@repo/api'
+import type { ContentSchema } from '@repo/schema'
 
 export const prerender = false
 
-let event: Event | undefined = undefined
-const response = await getEvent(Astro.params.id as string)
-if (!response.ok && response.error.isNotFoundError()) {
-  return new Response(null, { status: 404 })
-}
-if (response.ok) {
-  event = response.data.event
-}
+const { id } = Astro.params
 ---
 
-{
-  !response.ok || !event ? (
-    <InternalError />
-  ) : (
-    <CMSContent
-      title={event.title}
-      description={event.description}
-      content={event.content}
-      attachemnts={event.documents}
-      translationId={response.data.translation?.englishId}
-    />
-  )
-}
+<CMSLoader
+  loader={async () =>
+    ContentAPI.detail<{
+      event: ContentSchema.Content
+      translation?: ContentSchema.Translation
+    }>({ slug: 'events', id: id as string }).then(data => ({
+      content: data.event,
+      translationId: data.translation?.englishId
+    }))}
+/>

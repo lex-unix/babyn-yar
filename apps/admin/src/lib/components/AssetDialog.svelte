@@ -16,14 +16,14 @@
   import { useIntersect } from '$lib/use-intersect.svelte'
   import { useAssets } from '$lib/assets/query'
   import { DEFAULT_SORT_OPTION, sortOptions } from '$lib/select-options'
-  import { Asset, AssetFilters } from '$lib/assets/schema'
+  import { AssetSchema } from '@repo/schema'
   import { untrack } from 'svelte'
   import { useAssetFilters } from '$lib/use-asset-filters'
 
   type Props = {
     open?: boolean
     contentType?: string
-    onSelect: (asset: Asset) => void
+    onSelect: (asset: AssetSchema.Asset) => void
   }
 
   let { open = $bindable(false), contentType, onSelect }: Props = $props()
@@ -56,7 +56,7 @@
     }
   }
 
-  function handleSort(sort: AssetFilters['sort']) {
+  function handleSort(sort: AssetSchema.Filters['sort']) {
     filters.set(prev => ({ ...prev, sort }))
   }
 
@@ -65,7 +65,7 @@
     filters.set(prev => ({ ...prev, filename }))
   }
 
-  function handleSelect(asset: Asset) {
+  function handleSelect(asset: AssetSchema.Asset) {
     onSelect(asset)
     open = false
   }

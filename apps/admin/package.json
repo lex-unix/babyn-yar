@@ -8,7 +8,7 @@
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "lint": "prettier --plugin-search-dir . --check . && eslint .",
+    "clean": "rm -rf ./.turbo && rm -rf ./.svelte-kit && rm -rf ./build",
     "format": "prettier --plugin-search-dir . --write ."
   },
   "devDependencies": {
@@ -52,10 +52,10 @@
     "bits-ui": "^2.11.4",
     "clsx": "^2.1.0",
     "nuqs-svelte": "^1.2.2",
-    "shared": "*",
-    "shared-types": "*",
     "svelte-sonner": "^1.0.5",
     "tailwind-merge": "^3.0.2",
-    "valibot": "^1.0.0"
+    "valibot": "^1.0.0",
+    "@repo/api": "*",
+    "@repo/schema": "*"
   }
 }

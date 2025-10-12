@@ -1,24 +1,43 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDotEnv": [
+  "globalDependencies": [
     ".env"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
+      "env": [
+        "SENTRY_AUTH_TOKEN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "VITE_API_URL"
+      ],
       "dependsOn": [
         "^build"
       ],
       "outputs": [
         "dist/**",
-        "build/**"
+        "build/**",
+        ".svelte-kit/**"
       ]
     },
-    "lint": {},
+    "check": {
+      "dependsOn": [
+        "topo"
+      ]
+    },
     "dev": {
       "cache": false,
       "persistent": true,
-      "dotEnv": [
-        ".env"
+      "env": [
+        "VITE_API_URL"
+      ]
+    },
+    "clean": {
+      "cache": false
+    },
+    "topo": {
+      "dependsOn": [
+        "^topo"
       ]
     }
   }

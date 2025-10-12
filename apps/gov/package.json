@@ -8,36 +8,37 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "check": "astro check",
     "astro": "astro",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "clean": "rm -rf ./.turbo && rm -rf ./.astro && rm -rf ./dist"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.4",
     "@astrojs/mdx": "^4.3.7",
-    "@astrojs/node": "^9.4.5",
+    "@astrojs/node": "^9.4.6",
     "@astrojs/react": "^4.4.0",
     "@astrojs/sitemap": "^3.6.0",
-    "@heroicons/react": "^2.0.18",
-    "@radix-ui/react-popover": "^1.0.6",
+    "@repo/api": "*",
+    "@repo/schema": "*",
+    "@tailwindcss/typography": "^0.5.9",
     "@tailwindcss/vite": "^4.1.14",
-    "@types/react": "^18.2.18",
-    "@types/react-dom": "^18.2.7",
     "astro": "^5.14.3",
     "astro-robots": "^2.0.1",
     "i18n": "*",
     "lucide-react": "^0.292.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "shared": "*",
-    "shared-types": "*",
     "tailwindcss": "^4.1.14",
     "tip-tap-utils": "*",
     "ui": "*"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.9",
+    "@astrojs/ts-plugin": "^1.10.4",
+    "@types/react": "^18.2.18",
+    "@types/react-dom": "^18.2.7",
     "prettier": "3.6.2",
-    "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-tailwindcss": "^0.6.14",
-    "tsconfig": "*"
+    "typescript": "^5.9.3"
   }
 }

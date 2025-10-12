@@ -27,7 +27,7 @@
   import { onDestroy, onMount } from 'svelte'
   import { type JSONContent } from '@tiptap/core'
   import LinkDialog from './LinkDialog.svelte'
-  import { Asset } from '$lib/assets/schema'
+  import { AssetSchema } from '@repo/schema'
 
   type Props = {
     content: JSONContent | undefined
@@ -95,7 +95,7 @@
     assetContentType = 'image'
   }
 
-  function handleAddAsset(asset: Asset) {
+  function handleAddAsset(asset: AssetSchema.Asset) {
     const { url } = asset
     if (assetContentType === 'image') {
       editor?.commands.setImage({ src: url })

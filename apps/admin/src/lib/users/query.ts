@@ -5,15 +5,15 @@ import {
   createQuery,
   useQueryClient
 } from '@tanstack/svelte-query'
-import { deleteUsers, fetchUsers, updateSettings } from './api'
-import type { PaginatedUsersResponse, Settings, UserFilters } from './schema'
 import { userToasts } from './toast'
 import { authKeys } from '$lib/auth/query'
 import { useUserFilters } from '$lib/use-user-filters'
+import type { UserSchema } from '@repo/schema'
+import { UserAPI } from '@repo/api'
 
 export const userKeys = {
   all: ['users'] as const,
-  table: (filters: UserFilters) => [...userKeys.all, filters]
+  table: (filters: UserSchema.Filters) => [...userKeys.all, filters]
 }
 
 export function useUsers() {
@@ -21,9 +21,7 @@ export function useUsers() {
 
   return createQuery(() => ({
     queryKey: userKeys.table(filters.current),
-    queryFn: () => {
-      return fetchUsers(filters.current)
-    },
+    queryFn: () => UserAPI.list(filters.current),
     placeholderData: keepPreviousData
   }))
 }
@@ -33,19 +31,16 @@ export function useDeleteUsers() {
   const client = useQueryClient()
 
   return createMutation(() => ({
-    mutationFn: async (userIds: number[]) => {
-      await new Promise(res => setTimeout(res, 1500))
-      return deleteUsers(userIds)
-    },
+    mutationFn: async (userIds: number[]) => UserAPI.remove(userIds),
     onMutate: async userIds => {
       await client.cancelQueries({ queryKey: userKeys.all })
-      const prevUsers = client.getQueryData<PaginatedUsersResponse>(
+      const prevUsers = client.getQueryData<UserSchema.ListResponse>(
         userKeys.table(filters.current)
       )
 
       if (!prevUsers) return
 
-      client.setQueryData<PaginatedUsersResponse>(
+      client.setQueryData<UserSchema.ListResponse>(
         userKeys.table(filters.current),
         old => {
           if (!old) return old
@@ -76,9 +71,8 @@ export function useDeleteUsers() {
 
 export function useUpdateSettings() {
   return createMutation(() => ({
-    mutationFn: (settings: Settings) => {
-      return updateSettings(settings)
-    },
+    mutationFn: (settings: UserSchema.Settings) =>
+      UserAPI.updateSettings(settings),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all })
       queryClient.invalidateQueries({ queryKey: authKeys.me() })

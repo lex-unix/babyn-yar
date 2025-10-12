@@ -1,8 +1,8 @@
 import { getContext, setContext } from 'svelte'
 import type { Getter } from './runes'
-import type { User } from './users/schema'
+import type { UserSchema } from '@repo/schema'
 
-export type LoggedUserContext = User | undefined
+export type LoggedUserContext = UserSchema.User | undefined
 
 export type TableRowContext = {
   href?: string
@@ -45,7 +45,7 @@ export function getLoggedUserContext() {
   if (!user) {
     throw new Error('getLoggedUserContext must be used with LoggedUserContext')
   }
-  return user as User
+  return user
 }
 
 export function setComboboxContext<T>(ctx: ComboxContext<T>) {

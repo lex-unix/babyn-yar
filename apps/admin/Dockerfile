@@ -5,9 +5,9 @@ RUN apk add --no-cache libc6-compat
 RUN apk update
 
 WORKDIR /app
-RUN npm install -g turbo@1.10.14
+RUN npm install -g turbo@^2.5.8
 COPY . .
-RUN turbo prune --scope=admin --docker
+RUN turbo prune admin --docker
 
 FROM base AS installer
 RUN apk add --no-cache libc6-compat
@@ -20,8 +20,7 @@ COPY --from=builder /app/out/package-lock.json ./package-lock.json
 RUN npm install
 
 ARG PUBLIC_API_URL
-
-ENV PUBLIC_API_URL=${PUBLIC_API_URL}
+ENV VITE_API_URL=${PUBLIC_API_URL}
 
 COPY --from=builder /app/out/full/ .
 COPY public ./apps/admin/public
@@ -29,7 +28,7 @@ COPY public ./apps/admin/public
 RUN --mount=type=secret,id=sentry-org,env=SENTRY_ORG  \
   --mount=type=secret,id=sentry-project,env=SENTRY_PROJECT  \
   --mount=type=secret,id=sentry-auth-token,env=SENTRY_AUTH_TOKEN \
-  npx turbo run build --filter=admin...
+  npx turbo run build
 
 FROM nginx:1.24-alpine AS runtime
 

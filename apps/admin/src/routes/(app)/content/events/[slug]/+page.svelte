@@ -6,7 +6,7 @@
   import EditorSkeleton from '$components/Skeletons/EditorSkeleton.svelte'
   import { useEvent, useEvents, useUpdateEvent } from '$lib/content/query'
   import ContentForm from '$components/ContentForm.svelte'
-  import { type ContentForm as Form } from '$lib/content/schema'
+  import { ContentSchema } from '@repo/schema'
   import { toast } from 'svelte-sonner'
   import { trimText } from '$lib/trim-text'
 
@@ -43,7 +43,7 @@
     enabled: isTranslationQueryEnabled
   }))
 
-  async function handleSubmit(form: Form) {
+  async function handleSubmit(form: ContentSchema.Form) {
     const promise = updateContent.mutateAsync(form)
     toast.promise(promise, {
       loading: 'Loading...',

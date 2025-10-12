@@ -5,7 +5,7 @@
   import Input from '$components/Input.svelte'
   import FieldError from '$components/FieldError.svelte'
   import { useLoggedUser, useLogin } from '$lib/auth/query'
-  import { Login } from '$lib/auth/schema'
+  import { UserSchema } from '@repo/schema'
   import { createForm } from '@tanstack/svelte-form'
   import { ResponseError } from '$lib/response-error'
   import { goto } from '$app/navigation'
@@ -18,9 +18,9 @@
     defaultValues: {
       email: '',
       password: ''
-    } as Login,
+    } as UserSchema.Login,
     validators: {
-      onSubmit: Login,
+      onSubmit: UserSchema.Login,
       onSubmitAsync: async ({ value }) => {
         try {
           await login.mutateAsync(value)

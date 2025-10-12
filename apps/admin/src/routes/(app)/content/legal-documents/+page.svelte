@@ -8,7 +8,7 @@
     useDeleteLegalDocuments,
     useLegalDocuments
   } from '$lib/content/query'
-  import type { ContentFilters } from '$lib/content/schema'
+  import { ContentSchema } from '@repo/schema'
 
   const slug = 'legal-documents'
 
@@ -29,7 +29,7 @@
     filters.set(prev => ({ ...prev, page }))
   }
 
-  function handleSort(sort: ContentFilters['sort']) {
+  function handleSort(sort: ContentSchema.Filters['sort']) {
     filters.set(prev => ({ ...prev, page: 1, sort }))
   }
 </script>

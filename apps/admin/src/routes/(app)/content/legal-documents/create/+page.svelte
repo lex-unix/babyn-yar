@@ -4,14 +4,14 @@
   import Container from '$components/Container.svelte'
   import { useLegalDocuments, useCreateLegalDocument } from '$lib/content/query'
   import ContentForm from '$components/ContentForm.svelte'
-  import { type ContentForm as Form } from '$lib/content/schema'
+  import { ContentSchema } from '@repo/schema'
   import Plus from 'phosphor-svelte/lib/Plus'
   import { goto } from '$app/navigation'
   import { resolve } from '$app/paths'
 
   let isTranslationQueryEnabled = $state(false)
   let translationSearch = $state('')
-  let currentLanguage = $state<Form['lang']>('ua')
+  let currentLanguage = $state<ContentSchema.Form['lang']>('ua')
   let canSubmit = $state(true)
   let isSubmitting = $state(false)
 

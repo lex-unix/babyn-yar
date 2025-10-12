@@ -1,55 +1,21 @@
 ---
-import type { Book, Metadata } from 'shared-types'
-import { FloatImage, MediaListItem, SSRPagination } from 'ui'
-import MainLayout from '@/layouts/MainLayout.astro'
-import { formatDate } from 'shared'
-import { getBooks } from '@/api'
-import InternalError from '@/components/InternalError.astro'
+import type { ContentSchema, Metadata } from '@repo/schema'
+import { ContentAPI } from '@repo/api'
+import CMSList from '@/components/CMSList.astro'
 
 export const prerender = false
 
-let books: Book[] = []
-let metadata: Metadata | undefined = undefined
-
-const currentPage = Astro.url.searchParams.get('page') || '1'
-const response = await getBooks(currentPage)
-
-if (response.ok) {
-  books = response.data.books
-  metadata = response.data.metadata
-}
-
-if (!response.ok && response.error.isNotFoundError()) {
-  return new Response(null, { status: 404 })
-}
+const page = Number(Astro.url.searchParams.get('page') || '1')
+const response = await ContentAPI.list<{
+  books: ContentSchema.Content[]
+  metadata: Metadata
+}>({ slug: 'books', filters: { page, lang: 'en' } })
 ---
 
-{
-  !response.ok ? (
-    <InternalError />
-  ) : (
-    <MainLayout title="Library" description="Library">
-      <div class="not-prose">
-        <h1 class="mb-10 text-3xl font-bold">Library</h1>
-        {books.map(book => (
-          <MediaListItem href={`/en/education/library/${book.id}`}>
-            <div slot="header" class="">
-              <h2 class="text-2xl font-bold">{book.title}</h2>
-              <p class="text-base opacity-40">{formatDate(book.createdAt)}</p>
-            </div>
-            <FloatImage slot="left" src={book.cover} alt={book.title} />
-            <p slot="right">{book.description}</p>
-          </MediaListItem>
-        ))}
-        <div class="mt-10">
-          {books.length > 0 && metadata && (
-            <SSRPagination
-              current={metadata.currentPage}
-              total={metadata.lastPage}
-            />
-          )}
-        </div>
-      </div>
-    </MainLayout>
-  )
-}
+<CMSList
+  title="Library"
+  description="Library"
+  slug="en/education/library"
+  list={response.books}
+  metadata={response.metadata}
+/>

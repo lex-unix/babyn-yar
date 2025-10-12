@@ -1,14 +1,14 @@
 import { useTranslations } from 'i18n'
 import type { ComponentProps, ReactNode } from 'react'
 import { EnvelopeIcon, MapPinIcon } from '@heroicons/react/24/outline'
-import { EMAIL } from 'shared'
 import { languages } from 'i18n'
 
 interface ContactFormProps {
   lang: keyof typeof languages
+  email: string
 }
 
-export default function ContactForm({ lang }: ContactFormProps) {
+export default function ContactForm({ lang, email }: ContactFormProps) {
   const t = useTranslations(lang)
 
   return (
@@ -52,7 +52,7 @@ export default function ContactForm({ lang }: ContactFormProps) {
           icon={<EnvelopeIcon className="2-6 h-6 text-emerald-900" />}
           className="order-3 md:order-none"
         >
-          <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+          <a href={`mailto:${email}`}>{email}</a>
         </InfoSection>
         <label className="block w-full text-base">
           {t('contact.form.message')}

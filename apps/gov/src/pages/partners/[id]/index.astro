@@ -1,30 +1,21 @@
 ---
-import InternalError from '@/components/InternalError.astro'
-import type { Partner } from 'shared-types'
-import { getPartner } from '@/api'
-import CMSContent from '@/components/CMSContent.astro'
+import CMSLoader from '@/components/CMSLoader.astro'
+import type { ContentSchema } from '@repo/schema'
+import { ContentAPI } from '@repo/api'
 
 export const prerender = false
 
-let partner: Partner | undefined = undefined
-const response = await getPartner(Astro.params.id as string)
-if (!response.ok && response.error.isNotFoundError()) {
-  return new Response(null, { status: 404 })
-}
-if (response.ok) {
-  partner = response.data.partner
-}
+const id = Astro.params.id as string
 ---
 
-{
-  !response.ok || !partner ? (
-    <InternalError />
-  ) : (
-    <CMSContent
-      title={partner.title}
-      description={partner.description}
-      content={partner.content}
-      translationId={response.data.translation?.englishId}
-    />
-  )
-}
+<CMSLoader
+  loader={async () => {
+    return ContentAPI.detail<{
+      partner: ContentSchema.Content
+      translation?: ContentSchema.Translation
+    }>({ slug: 'partners', id }).then(data => ({
+      content: data.partner,
+      translationId: data.translation?.englishId
+    }))
+  }}
+/>
