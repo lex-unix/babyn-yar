@@ -23,7 +23,6 @@ ARG PUBLIC_API_URL
 ENV VITE_API_URL=${PUBLIC_API_URL}
 
 COPY --from=builder /app/out/full/ .
-COPY public ./apps/admin/public
 
 RUN --mount=type=secret,id=sentry-org,env=SENTRY_ORG  \
   --mount=type=secret,id=sentry-project,env=SENTRY_PROJECT  \
