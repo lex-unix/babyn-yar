@@ -3,12 +3,8 @@ import {
   createQuery,
   useQueryClient
 } from '@tanstack/svelte-query'
-import {
-  createGalleryImage,
-  deleteGalleryImage,
-  fetchGalleryImages
-} from './api'
-import type { GalleryImage } from './schema'
+import type { GallerySchema } from '@repo/schema'
+import { GalleryAPI } from '@repo/api'
 
 const galleryKeys = {
   all: ['gallery'] as const
@@ -17,9 +13,7 @@ const galleryKeys = {
 export function useGalleryImages() {
   return createQuery(() => ({
     queryKey: galleryKeys.all,
-    queryFn: () => {
-      return fetchGalleryImages()
-    }
+    queryFn: () => GalleryAPI.list()
   }))
 }
 
@@ -27,9 +21,7 @@ export function useCreateGalleryImage() {
   const client = useQueryClient()
 
   return createMutation(() => ({
-    mutationFn: (image: { url: string; id: number }) => {
-      return createGalleryImage(image)
-    },
+    mutationFn: (image: GallerySchema.Form) => GalleryAPI.add(image),
     onSettled: () => {
       client.invalidateQueries({ queryKey: galleryKeys.all })
     }
@@ -40,18 +32,16 @@ export function useDeleteGalleryImage() {
   const client = useQueryClient()
 
   return createMutation(() => ({
-    mutationFn: (id: number) => {
-      return deleteGalleryImage(id)
-    },
+    mutationFn: (id: number) => GalleryAPI.remove(id),
     onMutate: async id => {
       await client.cancelQueries({ queryKey: galleryKeys.all })
-      const prevGallery = client.getQueryData<{ images: GalleryImage[] }>(
+      const prevGallery = client.getQueryData<GallerySchema.ListResponse>(
         galleryKeys.all
       )
 
       if (!prevGallery) return prevGallery
 
-      client.setQueryData<{ images: GalleryImage[] }>(galleryKeys.all, old => {
+      client.setQueryData<GallerySchema.ListResponse>(galleryKeys.all, old => {
         if (!old) return old
         return {
           images: old.images.filter(image => image.id !== id)

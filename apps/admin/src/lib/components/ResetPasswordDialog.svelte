@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ResetPassword } from '$lib/users/schema'
+  import { UserSchema } from '@repo/schema'
   import { createForm } from '@tanstack/svelte-form'
   import Button from './Button.svelte'
   import Dialog from './Dialog.svelte'
@@ -22,9 +22,9 @@
   const form = createForm(() => ({
     defaultValues: {
       password: ''
-    } as ResetPassword,
+    } as UserSchema.ResetPassword,
     validators: {
-      onSubmit: ResetPassword
+      onSubmit: UserSchema.ResetPassword
     },
     onSubmit: ({ formApi }) => {
       formApi.reset()

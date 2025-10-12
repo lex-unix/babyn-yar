@@ -1,7 +1,6 @@
 <script lang="ts">
   import Plus from 'phosphor-svelte/lib/Plus'
   import Trash from 'phosphor-svelte/lib/Trash'
-  import type { GalleryImage } from '$lib/gallery/schema'
   import {
     useGalleryImages,
     useDeleteGalleryImage,
@@ -10,7 +9,7 @@
   import AssetDialog from '$components/AssetDialog.svelte'
   import PageHeader from '$components/PageHeader.svelte'
   import Container from '$components/Container.svelte'
-  import { Asset } from '$lib/assets/schema'
+  import { AssetSchema, GallerySchema } from '@repo/schema'
 
   const images = useGalleryImages()
   const deleteImage = useDeleteGalleryImage()
@@ -18,7 +17,7 @@
 
   let isDialogOpen = $state(false)
 
-  function handleAddImage(asset: Asset) {
+  function handleAddImage(asset: AssetSchema.Asset) {
     const existingImage = images.data?.images.find(i => i.id === asset.id)
     if (images.data && !existingImage) {
       createImage.mutate({ url: asset.url, id: asset.id })
@@ -29,7 +28,7 @@
     isDialogOpen = true
   }
 
-  function removeImage(image: GalleryImage) {
+  function removeImage(image: GallerySchema.Image) {
     deleteImage.mutate(image.id)
   }
 </script>

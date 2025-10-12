@@ -3,7 +3,7 @@
   import Button from '$components/Button.svelte'
   import Container from '$components/Container.svelte'
   import { useTestimonies, useCreateTestimony } from '$lib/content/query'
-  import { type ContentFormSimple as Form } from '$lib/content/schema'
+  import { ContentSchema } from '@repo/schema'
   import Plus from 'phosphor-svelte/lib/Plus'
   import { goto } from '$app/navigation'
   import { resolve } from '$app/paths'
@@ -11,7 +11,7 @@
 
   let isTranslationQueryEnabled = $state(false)
   let translationSearch = $state('')
-  let currentLanguage = $state<Form['lang']>('ua')
+  let currentLanguage = $state<ContentSchema.FormSimple['lang']>('ua')
   let canSubmit = $state(true)
   let isSubmitting = $state(false)
 

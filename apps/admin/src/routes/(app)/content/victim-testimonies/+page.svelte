@@ -4,7 +4,7 @@
   import PageHeader from '$components/PageHeader.svelte'
   import { useContentFilters } from '$lib/use-content-filters'
   import { useDeleteTestimonies, useTestimonies } from '$lib/content/query'
-  import type { ContentFilters } from '$lib/content/schema'
+  import { ContentSchema } from '@repo/schema'
   import Button from '$components/Button.svelte'
 
   const slug = 'victim-testimonies'
@@ -24,7 +24,7 @@
     filters.set(prev => ({ ...prev, page }))
   }
 
-  function handleSort(sort: ContentFilters['sort']) {
+  function handleSort(sort: ContentSchema.Filters['sort']) {
     filters.set(prev => ({ ...prev, page: 1, sort }))
   }
 </script>

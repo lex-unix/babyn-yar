@@ -5,15 +5,14 @@
   "license": "MIT",
   "scripts": {
     "build": "turbo run build",
-    "dev": "dotenv -- turbo run dev --concurrency 12",
-    "lint": "turbo run lint",
+    "dev": "turbo run --ui tui dev",
+    "check": "turbo run check",
+    "clean": "turbo run clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "@turbo/gen": "^1.9.7",
-    "dotenv-cli": "latest",
     "prettier": "^2.8.8",
-    "turbo": "latest"
+    "turbo": "^2.5.8"
   },
   "packageManager": "npm@9.3.0",
   "workspaces": [

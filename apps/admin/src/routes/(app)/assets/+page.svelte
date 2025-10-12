@@ -24,7 +24,7 @@
   import { useIntersect } from '$lib/use-intersect.svelte'
   import Checkbox from '$components/Checkbox.svelte'
   import Divider from '$components/Divider.svelte'
-  import { AssetFilters } from '$lib/assets/schema'
+  import { AssetSchema } from '@repo/schema'
   import { debounce } from '$lib/debounce'
   import { useAssetFilters } from '$lib/use-asset-filters'
 
@@ -35,10 +35,7 @@
   let hasSelectedAssets = $derived(selectedAssets.length > 0)
 
   let filters = useAssetFilters()
-  const assets = useAssets(() => ({
-    filename: filters.current?.filename || '',
-    sort: filters.current?.sort || DEFAULT_SORT_OPTION
-  }))
+  const assets = useAssets()
 
   const deleteAssets = useDeleteAssets()
 
@@ -59,7 +56,7 @@
     filters.set(prev => ({ ...prev, filename }))
   }
 
-  function handleSort(sort: AssetFilters['sort']) {
+  function handleSort(sort: AssetSchema.Filters['sort']) {
     filters.set(prev => ({ ...prev, sort }))
   }
 

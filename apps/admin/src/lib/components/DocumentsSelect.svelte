@@ -2,7 +2,7 @@
   import X from 'phosphor-svelte/lib/X'
   import Plus from 'phosphor-svelte/lib/Plus'
   import AssetDialog from './AssetDialog.svelte'
-  import { Asset } from '$lib/assets/schema'
+  import { AssetSchema } from '@repo/schema'
 
   type Props = {
     id?: string
@@ -28,7 +28,7 @@
     isDialogOpen = true
   }
 
-  function handleSelect(asset: Asset) {
+  function handleSelect(asset: AssetSchema.Asset) {
     const isSelected = documents.find(d => d === asset.url)
     if (isSelected) return
     onSelect(asset.url)

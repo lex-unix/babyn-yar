@@ -1,7 +1,6 @@
 <script lang="ts">
   import { permissionOptions } from '$lib/select-options'
-  import { EditUser } from '$lib/users/schema'
-  import type { User } from '$lib/users/schema'
+  import { UserSchema } from '@repo/schema'
   import { createForm } from '@tanstack/svelte-form'
   import Button from './Button.svelte'
   import Dialog from './Dialog.svelte'
@@ -18,7 +17,7 @@
 
   type Props = {
     open: boolean
-    selectedUser: User
+    selectedUser: UserSchema.User
   }
 
   let { open = $bindable(), selectedUser }: Props = $props()
@@ -28,9 +27,9 @@
       fullName: selectedUser.fullName,
       email: selectedUser.email,
       permission: selectedUser.permissions[0]
-    } as EditUser,
+    } as UserSchema.Edit,
     validators: {
-      onSubmit: EditUser
+      onSubmit: UserSchema.Edit
     },
     onSubmit: ({ formApi }) => {
       formApi.reset()

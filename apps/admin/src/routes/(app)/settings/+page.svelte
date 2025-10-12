@@ -6,7 +6,7 @@
   import Button from '$components/Button.svelte'
   import { ResponseError } from '$lib/response-error'
   import { useUpdateSettings } from '$lib/users/query'
-  import { Settings } from '$lib/users/schema'
+  import { UserSchema } from '@repo/schema'
   import Description from '$components/Description.svelte'
   import { createForm } from '@tanstack/svelte-form'
   import { getLoggedUserContext } from '$lib/context'
@@ -20,10 +20,10 @@
       fullName: loggedUser.fullName ?? '',
       email: loggedUser.email ?? '',
       password: ''
-    } as Settings,
+    } as UserSchema.Settings,
     validators: {
-      onSubmit: Settings,
-      onBlur: Settings,
+      onSubmit: UserSchema.Settings,
+      onBlur: UserSchema.Settings,
       onSubmitAsync: async ({ value }) => {
         try {
           await updateSettigs.mutateAsync(value)

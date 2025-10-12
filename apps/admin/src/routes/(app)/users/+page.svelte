@@ -24,13 +24,13 @@
   import LockOpen from 'phosphor-svelte/lib/LockOpen'
   import { formatDate } from '$lib/format-date'
   import { useUsers, useDeleteUsers } from '$lib/users/query'
-  import type { User } from '$lib/users/schema'
+  import type { UserSchema } from '@repo/schema'
   import TableIconCell from '$components/TableIconCell.svelte'
   import ResetPasswordDialog from '$components/ResetPasswordDialog.svelte'
   import { useUserFilters } from '$lib/use-user-filters'
   import { getLoggedUserContext } from '$lib/context'
 
-  let selectedUser: User | undefined = $state()
+  let selectedUser: UserSchema.User | undefined = $state()
   let isRegisterDialogOpen = $state(false)
   let isEditDialogOpen = $state(false)
   let isResetPassswrodDialogOpen = $state(false)
@@ -45,12 +45,12 @@
     isResetPassswrodDialogOpen = true
   }
 
-  function handleShowEditDialog(user: User) {
+  function handleShowEditDialog(user: UserSchema.User) {
     selectedUser = user
     isEditDialogOpen = true
   }
 
-  function handleShowAlert(user: User) {
+  function handleShowAlert(user: UserSchema.User) {
     selectedUser = user
     isAlertOpen = true
   }

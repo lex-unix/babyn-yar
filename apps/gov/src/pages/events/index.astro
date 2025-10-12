@@ -1,72 +1,21 @@
 ---
-import MainLayout from '@/layouts/MainLayout.astro'
-import { FloatImage, MediaListItem, SSRPagination } from 'ui'
-import type { Event, Metadata } from 'shared-types'
-import { ResponseError } from 'shared'
-import { getEvents } from '@/api'
-import InternalError from '@/components/InternalError.astro'
+import type { ContentSchema, Metadata } from '@repo/schema'
+import { ContentAPI } from '@repo/api'
+import CMSList from '@/components/CMSList.astro'
 
 export const prerender = false
 
-let events: Event[] = []
-let metadata: Metadata | undefined = undefined
-let error: ResponseError | undefined = undefined
-
-const currentPage = Astro.url.searchParams.get('page') || '1'
-const response = await getEvents(currentPage)
-
-if (!response.ok && response.error.isNotFoundError()) {
-  return new Response(null, { status: 404 })
-}
-
-if (!response.ok) {
-  error = response.error
-} else {
-  events = response.data.events
-  metadata = response.data.metadata
-}
+const page = Number(Astro.url.searchParams.get('page') || '1')
+const response = await ContentAPI.list<{
+  events: ContentSchema.Content[]
+  metadata: Metadata
+}>({ slug: 'events', filters: { page, lang: 'ua' } })
 ---
 
-{
-  error ? (
-    <InternalError />
-  ) : (
-    <MainLayout title="Події" description="Переглянути всі події">
-      <div class="not-prose">
-        {events.map((e, i) => (
-          <MediaListItem
-            href={`/events/${e.id}`}
-            maxImgWidth={`${i === 0 ? 'md:max-w-[480px]' : 'md:max-w-[400px]'}`}
-          >
-            <h2
-              slot="header"
-              class={`${
-                i === 0 ? 'text-3xl' : 'text-2xl'
-              } font-bold text-black`}
-            >
-              {e.title}
-            </h2>
-            <FloatImage slot="left" src={e.cover} alt={e.title} />
-
-            <p
-              slot="right"
-              class={`${
-                i === 0 ? 'line-clamp-4' : 'line-clamp-2'
-              } italic hover:underline hover:underline-offset-4`}
-            >
-              {e.description}
-            </p>
-          </MediaListItem>
-        ))}
-        <div class="mt-10">
-          {events.length > 0 && metadata && (
-            <SSRPagination
-              current={metadata.currentPage}
-              total={metadata.lastPage}
-            />
-          )}
-        </div>
-      </div>
-    </MainLayout>
-  )
-}
+<CMSList
+  title="Події"
+  description="Переглянути всі події"
+  slug="events"
+  list={response.events}
+  metadata={response.metadata}
+/>

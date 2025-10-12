@@ -1,31 +1,20 @@
 ---
-import InternalError from '@/components/InternalError.astro'
-import { getBook } from '@/api'
-import type { Book } from 'shared-types'
-import CMSContent from '@/components/CMSContent.astro'
+import CMSLoader from '@/components/CMSLoader.astro'
+import type { ContentSchema } from '@repo/schema'
+import { ContentAPI } from '@repo/api'
 
 export const prerender = false
 
-let book: Book | undefined = undefined
-const response = await getBook(Astro.params.id as string)
-if (!response.ok && response.error.isNotFoundError()) {
-  return new Response(null, { status: 404 })
-}
-if (response.ok) {
-  book = response.data.book
-}
+const { id } = Astro.params
 ---
 
-{
-  !response.ok || !book ? (
-    <InternalError />
-  ) : (
-    <CMSContent
-      title={book.title}
-      description={book.description}
-      content={book.content}
-      attachemnts={book.documents}
-      translationId={response.data.translation?.ukrainianId}
-    />
-  )
-}
+<CMSLoader
+  loader={async () =>
+    ContentAPI.detail<{
+      book: ContentSchema.Content
+      translation?: ContentSchema.Translation
+    }>({ slug: 'books', id: id as string }).then(data => ({
+      content: data.book,
+      translationId: data.translation?.ukrainianId
+    }))}
+/>

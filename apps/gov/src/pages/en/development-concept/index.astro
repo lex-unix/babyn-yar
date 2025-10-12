@@ -1,62 +1,21 @@
 ---
-import MainLayout from '@/layouts/MainLayout.astro'
-import { ContentGrid, SSRPagination, ContentGridItem } from 'ui'
-import type { DevConcept, Metadata } from 'shared-types'
-import { getDevConcepts } from '@/api'
-import InternalError from '@/components/InternalError.astro'
+import type { ContentSchema, Metadata } from '@repo/schema'
+import { ContentAPI } from '@repo/api'
+import CMSList from '@/components/CMSList.astro'
 
 export const prerender = false
 
-let concepts: DevConcept[] = []
-let metadata: Metadata | undefined = undefined
-
-const currentPage = Astro.url.searchParams.get('page') || '1'
-const response = await getDevConcepts(currentPage)
-
-if (response.ok) {
-  concepts = response.data.concepts
-  metadata = response.data.metadata
-}
-
-if (!response.ok && response.error.isNotFoundError()) {
-  return new Response(null, { status: 404 })
-}
+const page = Number(Astro.url.searchParams.get('page') || '1')
+const response = await ContentAPI.list<{
+  concepts: ContentSchema.Content[]
+  metadata: Metadata
+}>({ slug: 'development-concepts', filters: { page, lang: 'en' } })
 ---
 
-{
-  !response.ok ? (
-    <InternalError />
-  ) : (
-    <MainLayout
-      title="The development concept"
-      description="The development concept of the National Historical Memorial Preserve «Babyn Yar»"
-    >
-      <h2>
-        The development concept of the National Historical Memorial Preserve
-        «Babyn Yar»
-      </h2>
-      <div class="not-prose">
-        <ContentGrid>
-          {concepts.map(entry => (
-            <ContentGridItem
-              href={`/en/development-concept/${entry.id}`}
-              title={entry.title}
-              description={entry.description}
-              cover={entry.cover}
-              coverAlt={entry.title}
-              date={entry.occuredOn}
-            />
-          ))}
-        </ContentGrid>
-        <div class="mt-10">
-          {concepts.length > 0 && metadata && (
-            <SSRPagination
-              current={metadata.currentPage}
-              total={metadata.lastPage}
-            />
-          )}
-        </div>
-      </div>
-    </MainLayout>
-  )
-}
+<CMSList
+  title="The development concept"
+  description="The development concept of the National Historical Memorial Preserve «Babyn Yar»"
+  slug="en/development-concept"
+  list={response.concepts}
+  metadata={response.metadata}
+/>

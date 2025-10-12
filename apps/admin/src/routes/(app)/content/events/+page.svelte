@@ -2,7 +2,7 @@
   import ContentPage from '$components/ContentPage.svelte'
   import Plus from 'phosphor-svelte/lib/Plus'
   import PageHeader from '$components/PageHeader.svelte'
-  import { ContentFilters } from '$lib/content/schema'
+  import { ContentSchema } from '@repo/schema'
   import { useDeleteEvents, useEvents } from '$lib/content/query'
   import { useContentFilters } from '$lib/use-content-filters'
   import Button from '$components/Button.svelte'
@@ -23,7 +23,7 @@
     filters.set(prev => ({ ...prev, page }))
   }
 
-  function handleSort(sort: ContentFilters['sort']) {
+  function handleSort(sort: ContentSchema.Filters['sort']) {
     filters.set(prev => ({ ...prev, page: 1, sort }))
   }
 </script>

@@ -37,7 +37,7 @@
   import AlertActions from './AlertActions.svelte'
   import Button from './Button.svelte'
   import { goto } from '$app/navigation'
-  import type { Metadata } from '$lib/pagination/schema'
+  import type { Metadata } from '@repo/schema'
 
   type ContentData = {
     id: number

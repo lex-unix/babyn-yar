@@ -1,30 +1,20 @@
 ---
-import InternalError from '@/components/InternalError.astro'
-import type { MediaArticle } from 'shared-types'
-import { getArticle } from '@/api'
-import CMSContent from '@/components/CMSContent.astro'
+import CMSLoader from '@/components/CMSLoader.astro'
+import type { ContentSchema } from '@repo/schema'
+import { ContentAPI } from '@repo/api'
 
 export const prerender = false
 
-let article: MediaArticle | undefined = undefined
-const response = await getArticle(Astro.params.id as string)
-if (!response.ok && response.error.isNotFoundError()) {
-  return new Response(null, { status: 404 })
-}
-if (response.ok) {
-  article = response.data.article
-}
+const { id } = Astro.params
 ---
 
-{
-  !response.ok || !article ? (
-    <InternalError />
-  ) : (
-    <CMSContent
-      title={article.title}
-      description={article.description}
-      content={article.content}
-      translationId={response.data.translation?.ukrainianId}
-    />
-  )
-}
+<CMSLoader
+  loader={async () =>
+    ContentAPI.detail<{
+      article: ContentSchema.Content
+      translation?: ContentSchema.Translation
+    }>({ slug: 'media-articles', id: id as string }).then(data => ({
+      content: data.article,
+      translationId: data.translation?.ukrainianId
+    }))}
+/>
