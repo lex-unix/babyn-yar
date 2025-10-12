@@ -27,7 +27,7 @@ COPY --from=builder /app/out/full/ .
 
 # Build arguments
 ARG API_URL
-ENV API_URL=${API_URL}
+ENV VITE_API_URL=${API_URL}
 
 # Build the project
 RUN npx turbo build --filter=gov...
@@ -68,7 +68,7 @@ COPY --from=builder --chown=astrojs:nodejs /app/out/json/ .
 
 # Runtime environment variables
 ARG API_URL
-ENV API_URL=${API_URL}
+ENV VITE_API_URL=${API_URL}
 ENV HOST=0.0.0.0
 ENV PORT=4321
 ENV NODE_ENV=production
