@@ -2,7 +2,7 @@
   import { createForm } from '@tanstack/svelte-form'
   import { permissionOptions } from '$lib/select-options'
   import { useRegister } from '$lib/auth/query'
-  import { ResponseError } from '$lib/response-error'
+  import { ResponseError } from '@repo/api'
   import Dialog from './Dialog.svelte'
   import DialogTitle from './DialogTitle.svelte'
   import DialogDescription from './DialogDescription.svelte'

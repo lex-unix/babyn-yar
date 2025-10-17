@@ -4,7 +4,7 @@
   import Input from '$components/Input.svelte'
   import FieldError from '$components/FieldError.svelte'
   import Button from '$components/Button.svelte'
-  import { ResponseError } from '$lib/response-error'
+  import { ResponseError } from '@repo/api'
   import { useUpdateSettings } from '$lib/users/query'
   import { UserSchema } from '@repo/schema'
   import Description from '$components/Description.svelte'

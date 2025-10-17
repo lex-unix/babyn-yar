@@ -7,7 +7,7 @@
   import { useLoggedUser, useLogin } from '$lib/auth/query'
   import { UserSchema } from '@repo/schema'
   import { createForm } from '@tanstack/svelte-form'
-  import { ResponseError } from '$lib/response-error'
+  import { ResponseError } from '@repo/api'
   import { goto } from '$app/navigation'
   import { resolve } from '$app/paths'
 
