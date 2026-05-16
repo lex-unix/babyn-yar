@@ -28,19 +28,21 @@
 
   let { open = $bindable(false), contentType, onSelect }: Props = $props()
 
-  let filters = useAssetFilters({ content_type: contentType })
+  let filters = useAssetFilters()
 
   let rootRef: HTMLElement | null = $state(null)
   let bottomRef: HTMLElement | null = $state(null)
 
   $effect(() => {
-    filters.current.content_type = contentType
-  })
+    const nextContentType = open ? contentType : undefined
 
-  $effect(() => {
-    if (!open) {
-      untrack(() => filters.set(prev => ({ ...prev, content_type: undefined })))
-    }
+    untrack(() =>
+      filters.set(prev =>
+        prev.content_type === nextContentType
+          ? prev
+          : { ...prev, content_type: nextContentType }
+      )
+    )
   })
 
   const assets = useAssets(() => ({ enabled: open, staleTime: 1000 * 10 }))
