@@ -39,6 +39,15 @@ run/live:
 		--build.include_dir "internal,cmd" \
 		--misc.clean_on_exit "true" \
 
+## dev: run the Go API and monorepo dev servers
+.PHONY: dev
+dev:
+	@$(MAKE) -j2 run/live web/dev
+
+.PHONY: web/dev
+web/dev:
+	@npm run dev:plain
+
 ## db/psql: connect to the database using psql
 .PHONY: db/psql
 db/psql:

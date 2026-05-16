@@ -6,6 +6,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run --ui tui dev",
+    "dev:plain": "turbo run dev",
     "check": "turbo run check",
     "clean": "turbo run clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
