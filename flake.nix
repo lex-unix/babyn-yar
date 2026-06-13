@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    go-overlay.url = "github:purpleclay/go-overlay";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -11,10 +12,11 @@
       self,
       nixpkgs,
       flake-utils,
+      go-overlay,
     }:
     {
       overlays.default = final: prev: {
-        go = final.go_1_26;
+        go = final.go-bin.versions."1.26.4";
         nodejs = final.nodejs_22;
       };
     }
@@ -23,7 +25,10 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ self.overlays.default ];
+          overlays = [
+            go-overlay.overlays.default
+            self.overlays.default
+          ];
         };
       in
       {
