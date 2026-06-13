@@ -22,7 +22,7 @@ func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request
 		Translation *int64    `json:"translationId"`
 	}
 
-	err := app.readJson(w, r, &input)
+	err := app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -77,7 +77,7 @@ func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request
 	headers := make(http.Header)
 	headers.Set("Location", fmt.Sprintf("/v1/books/%d", book.ID))
 
-	err = app.writeJson(w, http.StatusCreated, envelope{"book": book}, nil)
+	err = app.writeJSON(w, http.StatusCreated, envelope{"book": book}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -115,7 +115,7 @@ func (app *application) listBooksHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"books": books, "metadata": metadata}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"books": books, "metadata": metadata}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -145,7 +145,7 @@ func (app *application) showBookHandler(w http.ResponseWriter, r *http.Request) 
 		response["translation"] = translation
 	}
 
-	err = app.writeJson(w, http.StatusOK, response, nil)
+	err = app.writeJSON(w, http.StatusOK, response, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -180,7 +180,7 @@ func (app *application) updateBookHandler(w http.ResponseWriter, r *http.Request
 		TranslationID *int64     `json:"translationId"`
 	}
 
-	err = app.readJson(w, r, &input)
+	err = app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -269,7 +269,7 @@ func (app *application) updateBookHandler(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"book": book}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"book": book}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -298,7 +298,7 @@ func (app *application) deleteBooksHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"message": "books successfully deleted"}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"message": "books successfully deleted"}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

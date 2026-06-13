@@ -38,7 +38,7 @@ func (app *application) listVictimsHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"victims": victims, "metadata": metadata}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"victims": victims, "metadata": metadata}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

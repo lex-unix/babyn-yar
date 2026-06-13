@@ -74,6 +74,9 @@ func SeedInitialUser(db *pgxpool.Pool, fullName, email, password string) error {
 	}
 
 	err := user.Password.Set(password)
+	if err != nil {
+		return err
+	}
 
 	query := `
 		INSERT INTO users (full_name, email, password_hash)

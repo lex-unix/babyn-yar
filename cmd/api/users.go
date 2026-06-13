@@ -16,7 +16,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		Permission string `json:"permission"`
 	}
 
-	err := app.readJson(w, r, &input)
+	err := app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -53,10 +53,14 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	err = app.models.Permissions.AddForUser(user.ID, input.Permission)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
 
 	user.Permissions = append(user.Permissions, input.Permission)
 
-	err = app.writeJson(w, http.StatusCreated, envelope{"user": user}, nil)
+	err = app.writeJSON(w, http.StatusCreated, envelope{"user": user}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -69,7 +73,7 @@ func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request)
 		Password string `json:"password"`
 	}
 
-	err := app.readJson(w, r, &input)
+	err := app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -103,7 +107,7 @@ func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"user": user}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"user": user}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -123,7 +127,7 @@ func (app *application) meHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"user": user}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"user": user}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -155,7 +159,7 @@ func (app *application) listUsersHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"users": users, "metadata": metadata}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"users": users, "metadata": metadata}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -170,7 +174,7 @@ func (app *application) updateUserHandler(w http.ResponseWriter, r *http.Request
 		Password *string `json:"password"`
 	}
 
-	err := app.readJson(w, r, &input)
+	err := app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -214,7 +218,7 @@ func (app *application) updateUserHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"user": user}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"user": user}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -243,7 +247,7 @@ func (app *application) deleteUsersHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"message": "users successfully deleted"}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"message": "users successfully deleted"}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

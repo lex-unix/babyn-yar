@@ -21,7 +21,7 @@ func (app *application) createPartnerHandler(w http.ResponseWriter, r *http.Requ
 		Translation *int64    `json:"translationId"`
 	}
 
-	err := app.readJson(w, r, &input)
+	err := app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -71,7 +71,7 @@ func (app *application) createPartnerHandler(w http.ResponseWriter, r *http.Requ
 	headers := make(http.Header)
 	headers.Set("Location", fmt.Sprintf("/v1/partners/%d", partner.ID))
 
-	err = app.writeJson(w, http.StatusCreated, envelope{"partner": partner}, headers)
+	err = app.writeJSON(w, http.StatusCreated, envelope{"partner": partner}, headers)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -108,7 +108,7 @@ func (app *application) listPartnersHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"partners": partners, "metadata": metadata}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"partners": partners, "metadata": metadata}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -137,7 +137,7 @@ func (app *application) deletePartnersHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"message": "partners successfully deleted"}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"message": "partners successfully deleted"}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -167,7 +167,7 @@ func (app *application) showPartnerHandler(w http.ResponseWriter, r *http.Reques
 		response["translation"] = translation
 	}
 
-	err = app.writeJson(w, http.StatusOK, response, nil)
+	err = app.writeJSON(w, http.StatusOK, response, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -201,7 +201,7 @@ func (app *application) updatePartnerHandler(w http.ResponseWriter, r *http.Requ
 		TranslationID *int64     `json:"translationId"`
 	}
 
-	err = app.readJson(w, r, &input)
+	err = app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -286,7 +286,7 @@ func (app *application) updatePartnerHandler(w http.ResponseWriter, r *http.Requ
 		}
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"partner": partner}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"partner": partner}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

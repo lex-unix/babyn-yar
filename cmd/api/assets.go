@@ -68,7 +68,7 @@ func (app *application) createAssetsHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err = app.writeJson(w, http.StatusCreated, envelope{"assets": assets}, nil)
+	err = app.writeJSON(w, http.StatusCreated, envelope{"assets": assets}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -105,7 +105,7 @@ func (app *application) listAssetsHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"assets": assets, "metadata": metadata}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"assets": assets, "metadata": metadata}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
@@ -150,7 +150,7 @@ func (app *application) deleteAssetsHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"message": "assets successfully deleted"}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"message": "assets successfully deleted"}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

@@ -21,7 +21,7 @@ func (app *application) createLegalDocumentHandler(w http.ResponseWriter, r *htt
 		Documents   []string  `json:"documents"`
 	}
 
-	err := app.readJson(w, r, &input)
+	err := app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -60,7 +60,7 @@ func (app *application) createLegalDocumentHandler(w http.ResponseWriter, r *htt
 	headers := make(http.Header)
 	headers.Set("Location", fmt.Sprintf("/v1/legal-documents/%d", document.ID))
 
-	err = app.writeJson(w, http.StatusCreated, envelope{"document": document}, headers)
+	err = app.writeJSON(w, http.StatusCreated, envelope{"document": document}, headers)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -97,7 +97,7 @@ func (app *application) listLegalDocumentsHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"documents": documents, "metadata": metadata}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"documents": documents, "metadata": metadata}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -126,7 +126,7 @@ func (app *application) deleteLegalDocumentsHandler(w http.ResponseWriter, r *ht
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"message": "documents successfully deleted"}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"message": "documents successfully deleted"}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -150,7 +150,7 @@ func (app *application) showLegalDocumentHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"document": document}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"document": document}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -184,7 +184,7 @@ func (app *application) updateLegalDocumentHandler(w http.ResponseWriter, r *htt
 		Documents   []string   `json:"documents"`
 	}
 
-	err = app.readJson(w, r, &input)
+	err = app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -236,7 +236,7 @@ func (app *application) updateLegalDocumentHandler(w http.ResponseWriter, r *htt
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"document": document}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"document": document}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

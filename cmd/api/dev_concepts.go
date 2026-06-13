@@ -20,7 +20,7 @@ func (app *application) createDevConceptHandler(w http.ResponseWriter, r *http.R
 		OccuredOn   time.Time `json:"occuredOn"`
 	}
 
-	err := app.readJson(w, r, &input)
+	err := app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -54,7 +54,7 @@ func (app *application) createDevConceptHandler(w http.ResponseWriter, r *http.R
 	headers := make(http.Header)
 	headers.Set("Location", fmt.Sprintf("/v1/concepts/%d", concept.ID))
 
-	err = app.writeJson(w, http.StatusCreated, envelope{"concept": concept}, headers)
+	err = app.writeJSON(w, http.StatusCreated, envelope{"concept": concept}, headers)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -91,7 +91,7 @@ func (app *application) listDevConceptsHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"concepts": concepts, "metadata": metadata}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"concepts": concepts, "metadata": metadata}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -120,7 +120,7 @@ func (app *application) deleteDevConceptsHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"message": "concepts successfully deleted"}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"message": "concepts successfully deleted"}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -144,7 +144,7 @@ func (app *application) showDevConceptHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"concept": concept}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"concept": concept}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -177,7 +177,7 @@ func (app *application) updateDevConceptHandler(w http.ResponseWriter, r *http.R
 		OccuredOn   *time.Time `json:"occuredOn"`
 	}
 
-	err = app.readJson(w, r, &input)
+	err = app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -225,7 +225,7 @@ func (app *application) updateDevConceptHandler(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"concept": concept}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"concept": concept}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

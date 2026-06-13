@@ -21,7 +21,7 @@ func (app *application) createTestimonyHandler(w http.ResponseWriter, r *http.Re
 		OccuredOn   time.Time `json:"occuredOn"`
 	}
 
-	err := app.readJson(w, r, &input)
+	err := app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -61,7 +61,7 @@ func (app *application) createTestimonyHandler(w http.ResponseWriter, r *http.Re
 	headers := make(http.Header)
 	headers.Set("Location", fmt.Sprintf("/v1/victim-testimonies/%d", testimony.ID))
 
-	err = app.writeJson(w, http.StatusCreated, envelope{"testimony": testimony}, headers)
+	err = app.writeJSON(w, http.StatusCreated, envelope{"testimony": testimony}, headers)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -97,7 +97,7 @@ func (app *application) listTestimoniesHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"testimonies": testimonies, "metadata": metadata}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"testimonies": testimonies, "metadata": metadata}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -121,7 +121,7 @@ func (app *application) showTestimonyHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"testimony": testimony}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"testimony": testimony}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -156,7 +156,7 @@ func (app *application) updateTestimonyHandler(w http.ResponseWriter, r *http.Re
 		OccuredOn   *time.Time `json:"occuredOn"`
 	}
 
-	err = app.readJson(w, r, &input)
+	err = app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -208,7 +208,7 @@ func (app *application) updateTestimonyHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"testimony": testimony}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"testimony": testimony}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -237,7 +237,7 @@ func (app *application) deleteTestimoniesHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"message": "testimonies successfully deleted"}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"message": "testimonies successfully deleted"}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

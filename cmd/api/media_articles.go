@@ -21,7 +21,7 @@ func (app *application) createMediaArticleHandler(w http.ResponseWriter, r *http
 		Translation *int64    `json:"translationId"`
 	}
 
-	err := app.readJson(w, r, &input)
+	err := app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -71,7 +71,7 @@ func (app *application) createMediaArticleHandler(w http.ResponseWriter, r *http
 	headers := make(http.Header)
 	headers.Set("Location", fmt.Sprintf("/v1/media-articles/%d", article.ID))
 
-	err = app.writeJson(w, http.StatusCreated, envelope{"article": article}, headers)
+	err = app.writeJSON(w, http.StatusCreated, envelope{"article": article}, headers)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -108,7 +108,7 @@ func (app *application) listMediaArticlesHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"articles": articles, "metadata": metadata}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"articles": articles, "metadata": metadata}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -137,7 +137,7 @@ func (app *application) deleteMediaArticlesHandler(w http.ResponseWriter, r *htt
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"message": "articles successfully deleted"}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"message": "articles successfully deleted"}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -167,7 +167,7 @@ func (app *application) showMediaArticleHandler(w http.ResponseWriter, r *http.R
 		response["translation"] = translation
 	}
 
-	err = app.writeJson(w, http.StatusOK, response, nil)
+	err = app.writeJSON(w, http.StatusOK, response, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -201,7 +201,7 @@ func (app *application) updateMediaArticleHandler(w http.ResponseWriter, r *http
 		TranslationID *int64     `json:"translationId"`
 	}
 
-	err = app.readJson(w, r, &input)
+	err = app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -286,7 +286,7 @@ func (app *application) updateMediaArticleHandler(w http.ResponseWriter, r *http
 		}
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"article": article}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"article": article}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

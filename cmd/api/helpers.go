@@ -16,7 +16,7 @@ import (
 
 type envelope map[string]interface{}
 
-func (app *application) writeJson(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
+func (app *application) writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
 	js, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -35,7 +35,7 @@ func (app *application) writeJson(w http.ResponseWriter, status int, data envelo
 	return nil
 }
 
-func (app *application) readJson(w http.ResponseWriter, r *http.Request, dst interface{}) error {
+func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst interface{}) error {
 	maxBytes := 1_048_576
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 	dec := json.NewDecoder(r.Body)

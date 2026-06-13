@@ -14,7 +14,7 @@ func (app *application) listGalleryImagesHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"images": imgs}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"images": imgs}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -26,7 +26,7 @@ func (app *application) createGalleryImageHandler(w http.ResponseWriter, r *http
 		URL string `json:"url"`
 	}
 
-	err := app.readJson(w, r, &input)
+	err := app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -45,7 +45,7 @@ func (app *application) createGalleryImageHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	err = app.writeJson(w, http.StatusCreated, envelope{"image": img}, nil)
+	err = app.writeJSON(w, http.StatusCreated, envelope{"image": img}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -69,7 +69,7 @@ func (app *application) deleteGalleryImageHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	err = app.writeJson(w, http.StatusOK, envelope{"message": "image successfuly deleted"}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"message": "image successfuly deleted"}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
