@@ -31,19 +31,19 @@ dev:
         --misc.clean_on_exit "true"
 
 psql:
-    @docker compose -f ./docker-compose.dev.yml exec db psql $DATABASE_URL
+    @docker compose -f {{ justfile_dir() }}/docker-compose.dev.yml exec db psql $DATABASE_URL
 
 docker-up:
-    docker compose -f ./docker-compose.dev.yml up --detach
+    docker compose -f {{ justfile_dir() }}/docker-compose.dev.yml up --detach
 
 docker-down:
-    docker compose -f ./docker-compose.dev.yml down
+    docker compose -f {{ justfile_dir() }}/docker-compose.dev.yml down
 
 migration-new name:
     @echo 'Creating migration files for {{ name }}'
-    migrate create -seq -ext=.sql -dir=./migrations {{ name }}
+    migrate create -seq -ext=.sql -dir={{ justfile_dir() }}/migrations {{ name }}
 
 [confirm("Are you sure you want to apply migration?")]
 migration-up:
     @echo 'Running migrations...'
-    migrate -path ./migrations -database $DATABASE_URL up
+    migrate -path {{ justfile_dir() }}/migrations -database $DATABASE_URL up
