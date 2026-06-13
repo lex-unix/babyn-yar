@@ -24,5 +24,6 @@ pnpm-debug.log*
 *.mp4
 *.webm
 *.pdf
-/bin/
+bin/
 /.direnv/
+/backup
