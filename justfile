@@ -25,7 +25,7 @@ run: build
 
 dev:
     @air --build.cmd "just build" \
-        --build.bin "./bin/{{ binary }}" \
+        --build.entrypoint "./bin/{{ binary }}" \
         --build.delay "100" \
         --build.include_dir "internal,cmd" \
         --misc.clean_on_exit "true"

@@ -30,6 +30,12 @@
             self.overlays.default
           ];
         };
+
+        # Avoid the Snowflake driver panic in Nixpkgs' broad go-migrate build.
+        # https://github.com/golang-migrate/migrate/issues/1279
+        go-migrate-pg = pkgs.go-migrate.overrideAttrs (_oldAttrs: {
+          tags = [ "postgres" ];
+        });
       in
       {
         devShells.default = pkgs.mkShell {
@@ -37,7 +43,7 @@
             pkgs.go
             pkgs.nodejs
             pkgs.air
-            pkgs.go-migrate
+            go-migrate-pg
             pkgs.go-tools
             pkgs.govulncheck
             pkgs.just
