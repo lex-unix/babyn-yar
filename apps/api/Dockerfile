@@ -2,11 +2,11 @@ FROM golang:latest AS builder
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
+COPY apps/api/go.mod apps/api/go.sum ./
 RUN go mod download
 
-COPY cmd/api ./cmd/api
-COPY internal ./internal
+COPY apps/api/cmd/api ./cmd/api
+COPY apps/api/internal ./internal
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o=./api ./cmd/api
 

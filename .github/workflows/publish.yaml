@@ -24,7 +24,7 @@ jobs:
             image: babyn-yar-admin
 
           - app: api
-            dockerfile: ./Dockerfile
+            dockerfile: ./apps/api/Dockerfile
             image: babyn-yar-api
 
     steps:
@@ -62,7 +62,7 @@ jobs:
         with:
           account: user
           token: ${{ secrets.PAT }}
-          image-names: 'babyn-yar-*'
+          image-names: "babyn-yar-*"
           cut-off: 1w
           keep-n-most-recent: 3
           dry-run: false
