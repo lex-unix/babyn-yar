@@ -1,0 +1,23 @@
+http://babyn-yar.gov.ua, https://babyn-yar.gov.ua {
+	redir https://babynyar.gov.ua{uri} permanent
+}
+
+babynyar.gov.ua {
+	reverse_proxy gov:4321
+}
+
+babynyar.work {
+	reverse_proxy admin:80
+}
+
+api.babynyar.gov.ua, api.babynyar.work {
+	handle /v1/assets* {
+		request_body {
+			max_size 500MB
+		}
+
+		reverse_proxy api:8000
+	}
+
+	reverse_proxy api:8000
+}
