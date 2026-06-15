@@ -65,3 +65,6 @@ remote-sync user host: build-backup
 remote-migrations-up user host:
     rsync -az --delete ./migrations {{ user }}@{{ host }}:/home/{{ user }}/babyn-yar/
     ssh {{ user }}@{{ host }} "cd /home/{{ user }}/babyn-yar && docker compose --profile tools run --rm migrate up"
+
+db-tunnel user host port="5432":
+    -ssh -N -L {{ port }}:127.0.0.1:5432 {{ user }}@{{ host }}
