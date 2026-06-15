@@ -39,12 +39,12 @@ docker-up:
 docker-down:
     docker compose -f {{ justfile_dir() }}/docker-compose.dev.yml down
 
-migration-new name:
+migrations-new name:
     @echo 'Creating migration files for {{ name }}'
     migrate create -seq -ext=.sql -dir={{ justfile_dir() }}/migrations {{ name }}
 
 [confirm("Are you sure you want to apply migration?")]
-migration-up:
+migrations-up:
     @echo 'Running migrations...'
     migrate -path {{ justfile_dir() }}/migrations -database $DATABASE_URL up
 
@@ -52,7 +52,7 @@ build-backup os="linux" arch="amd64":
     mkdir -p ./bin
     GOOS={{ os }} GOARCH={{ arch }} go build -o ./bin/dbbackup ./cmd/dbbackup
 
-transfer-remote user host: build-backup
+remote-sync user host: build-backup
     ssh {{ user }}@{{ host }} 'mkdir -p /home/{{ user }}/babyn-yar /home/{{ user }}/bin'
     scp ./docker-compose.yml {{ user }}@{{ host }}:/home/{{ user }}/babyn-yar/docker-compose.yml
     scp ./.env.production {{ user }}@{{ host }}:/home/{{ user }}/babyn-yar/.env
@@ -60,3 +60,8 @@ transfer-remote user host: build-backup
     scp ./bin/dbbackup {{ user }}@{{ host }}:/home/{{ user }}/bin/dbbackup
     ssh {{ user }}@{{ host }} 'chmod +x /home/{{ user }}/bin/dbbackup'
     ssh {{ user }}@{{ host }} 'sudo ln -sfn /home/{{ user }}/bin/dbbackup /usr/local/bin/dbbackup'
+
+[confirm("Are you sure you want to apply migrations on remote?")]
+remote-migrations-up user host:
+    rsync -az --delete ./migrations {{ user }}@{{ host }}:/home/{{ user }}/babyn-yar/
+    ssh {{ user }}@{{ host }} "cd /home/{{ user }}/babyn-yar && docker compose --profile tools run --rm migrate up"
