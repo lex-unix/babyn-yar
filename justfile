@@ -47,3 +47,16 @@ migration-new name:
 migration-up:
     @echo 'Running migrations...'
     migrate -path {{ justfile_dir() }}/migrations -database $DATABASE_URL up
+
+build-backup os="linux" arch="amd64":
+    mkdir -p ./bin
+    GOOS={{ os }} GOARCH={{ arch }} go build -o ./bin/dbbackup ./cmd/dbbackup
+
+transfer-remote user host: build-backup
+    ssh {{ user }}@{{ host }} 'mkdir -p /home/{{ user }}/babyn-yar /home/{{ user }}/bin'
+    scp ./docker-compose.yml {{ user }}@{{ host }}:/home/{{ user }}/babyn-yar/docker-compose.yml
+    scp ./.env.production {{ user }}@{{ host }}:/home/{{ user }}/babyn-yar/.env
+    scp -r ./caddy {{ user }}@{{ host }}:/home/{{ user }}/babyn-yar/
+    scp ./bin/dbbackup {{ user }}@{{ host }}:/home/{{ user }}/bin/dbbackup
+    ssh {{ user }}@{{ host }} 'chmod +x /home/{{ user }}/bin/dbbackup'
+    ssh {{ user }}@{{ host }} 'sudo ln -sfn /home/{{ user }}/bin/dbbackup /usr/local/bin/dbbackup'
