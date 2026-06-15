@@ -7,13 +7,12 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs =
-    {
-      self,
-      nixpkgs,
-      flake-utils,
-      go-overlay,
-    }:
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+    go-overlay,
+  }:
     {
       overlays.default = final: prev: {
         go = final.go-bin.versions."1.26.4";
@@ -21,8 +20,7 @@
       };
     }
     // (flake-utils.lib.eachDefaultSystem (
-      system:
-      let
+      system: let
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
@@ -34,10 +32,11 @@
         # Avoid the Snowflake driver panic in Nixpkgs' broad go-migrate build.
         # https://github.com/golang-migrate/migrate/issues/1279
         go-migrate-pg = pkgs.go-migrate.overrideAttrs (_oldAttrs: {
-          tags = [ "postgres" ];
+          tags = ["postgres"];
         });
-      in
-      {
+      in {
+        formatter = pkgs.alejandra;
+
         devShells.default = pkgs.mkShell {
           packages = [
             pkgs.go
