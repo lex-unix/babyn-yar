@@ -37,6 +37,12 @@
       in {
         formatter = pkgs.alejandra;
 
+        packages = let
+          api = pkgs.callPackage ./apps/api/default.nix {};
+        in {
+          api = api;
+          api-image = pkgs.callPackage ./apps/api/image.nix {inherit api;};
+        };
         devShells.default = pkgs.mkShell {
           packages = [
             pkgs.go
