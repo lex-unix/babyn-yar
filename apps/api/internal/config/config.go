@@ -39,7 +39,7 @@ type Config struct {
 	CORS struct {
 		TrustedOrigins []string `env:"CORS_ORIGINS"`
 	}
-	Seed bool `env:"REDIS_PASSWORD" envDefault:"false"`
+	Seed bool `env:"SEED_USER" envDefault:"false"`
 }
 
 func NewConfig(opts ...Option) (Config, error) {
