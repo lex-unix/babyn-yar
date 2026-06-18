@@ -76,3 +76,25 @@ remote-migrations-up user host:
 
 db-tunnel user host port="5432":
     -ssh -N -L {{ port }}:127.0.0.1:5432 {{ user }}@{{ host }}
+
+[confirm("Are you sure you want to sync local db with prod?")]
+db-sync remote="babynyar" bucket="db-backup":
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    backup_dir="./backup"
+    mkdir -p "$backup_dir"
+
+    latest="$(rclone lsjson {{ remote }}:{{ bucket }} --recursive | jq -r 'sort_by(.ModTime) | last | .Path')"
+
+    if [[ -z "$latest" || "$latest" == "null" ]]; then
+        echo "No dump_*.gz backups found in {{ remote }}:{{ bucket }}" >&2
+        exit 1
+    fi
+
+    backup_path="$backup_dir/$latest"
+    dump_path="$backup_dir/dump.sql"
+
+    rclone copyto "{{ remote }}:{{ bucket }}/$latest" "$backup_path"
+    gunzip -c "$backup_path" > "$dump_path"
+    docker compose -f docker-compose.dev.yml exec -T db psql -U postgres -d postgres < "$dump_path"

@@ -46,6 +46,8 @@
             pkgs.go-tools
             pkgs.govulncheck
             pkgs.just
+            pkgs.rclone
+            pkgs.jq
           ];
         };
       }
