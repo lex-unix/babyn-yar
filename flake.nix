@@ -38,8 +38,11 @@
         formatter = pkgs.alejandra;
 
         packages = let
+          admin = pkgs.callPackage ./apps/admin/default.nix {};
           api = pkgs.callPackage ./apps/api/default.nix {};
         in {
+          admin = admin;
+          admin-image = pkgs.callPackage ./apps/admin/image.nix {inherit admin;};
           api = api;
           api-image = pkgs.callPackage ./apps/api/image.nix {inherit api;};
         };
