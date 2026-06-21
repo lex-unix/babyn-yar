@@ -18,7 +18,7 @@ services:
       api:
         condition: service_healthy
   gov:
-    image: ghcr.io/lex-unix/babyn-yar-gov:latest
+    image: ghcr.io/lexmiin/babyn-yar-gov:latest
     restart: unless-stopped
     expose:
       - 4321
@@ -26,7 +26,7 @@ services:
       api:
         condition: service_healthy
   admin:
-    image: ghcr.io/lex-unix/babyn-yar-admin:latest
+    image: ghcr.io/lexmiin/babyn-yar-admin:latest
     restart: unless-stopped
     expose:
       - 80
@@ -34,7 +34,7 @@ services:
       api:
         condition: service_healthy
   api:
-    image: ghcr.io/lex-unix/babyn-yar-api:latest
+    image: ghcr.io/lexmiin/babyn-yar-api:latest
     restart: unless-stopped
     env_file: .env
     expose:
