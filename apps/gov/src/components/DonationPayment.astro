@@ -1,0 +1,40 @@
+---
+import { getLangFromUrl, useTranslations } from 'i18n'
+
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+const paymentUrl = 'https://secure.wayforpay.com/donate/babyn_yar'
+---
+
+<section
+  class="not-prose my-8 flex max-w-4xl flex-col gap-6 md:flex-row md:items-start md:gap-10"
+>
+  <div class="max-w-2xl">
+    <h2 class="text-2xl font-bold md:text-3xl">
+      {t('donation.payment.title')}
+    </h2>
+    <p class="mt-3 text-lg">{t('donation.payment.text')}</p>
+    <a
+      href={paymentUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="mt-5 inline-flex w-fit bg-black px-4 py-2 text-base font-bold text-white no-underline transition-colors duration-200 hover:bg-black/80"
+    >
+      {t('donation.payment.button')}
+    </a>
+  </div>
+  <a
+    href={paymentUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="block w-40 shrink-0"
+    aria-label={t('donation.payment.button')}
+  >
+    <img
+      src="/assets/donations-qr.png"
+      alt={t('donation.payment.qrAlt')}
+      class="m-0 h-auto w-full p-0"
+      loading="lazy"
+    />
+  </a>
+</section>
